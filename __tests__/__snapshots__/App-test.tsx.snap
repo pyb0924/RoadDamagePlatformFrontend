@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "#C3E8BD",
+      "flex": 1,
+      "paddingHorizontal": 10,
+      "paddingTop": 40,
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "fontSize": 40,
+      }
+    }
+  >
+    Hello from 
+    
+
+    React Native Web!
+  </Text>
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignSelf": "flex-start",
+        "backgroundColor": "#ADBDFF",
+        "marginVertical": 20,
+        "opacity": 1,
+        "padding": 5,
+      }
+    }
+  >
+    <Text>
+      Click me!
+    </Text>
+  </View>
+  <Text>
+    You clicked 
+    0
+     times!
+  </Text>
+</View>
+`;

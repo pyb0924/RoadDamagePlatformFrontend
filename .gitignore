@@ -67,3 +67,4 @@ buck-out/
 /vendor/bundle/
 
 .vscode
+msbuild.binlog
