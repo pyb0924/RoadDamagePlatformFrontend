@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, TextInput, View} from 'react-native';
 import {Formik} from 'formik';
 
+// !! only for example!
 export const MyReactNativeForm = () => (
   <Formik initialValues={{email: ''}} onSubmit={values => console.log(values)}>
     {({handleChange, handleBlur, handleSubmit, values}) => (
