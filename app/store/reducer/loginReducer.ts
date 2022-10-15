@@ -4,7 +4,7 @@ import {LoginBody} from '../types/login';
 const initialState: LoginBody = {username: '', password: ''};
 
 const loginSlice = createSlice({
-  name: 'token',
+  name: 'login',
   initialState,
   reducers: {
     setUsername: (state: LoginBody, action: PayloadAction<string>) => {

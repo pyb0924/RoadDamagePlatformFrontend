@@ -3,7 +3,7 @@ import {TokenResponse, LoginBody} from '../types/login';
 
 export const loginApi = createApi({
   reducerPath: 'loginApi',
-  baseQuery: fetchBaseQuery({baseUrl: 'ht'}),
+  baseQuery: fetchBaseQuery({baseUrl: 'http://xxx./api/'}),
   endpoints: builder => ({
     postLogin: builder.query<TokenResponse, LoginBody>({
       query: (loginBody: LoginBody) => ({
