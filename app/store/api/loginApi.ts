@@ -3,16 +3,16 @@ import {TokenResponse, LoginBody} from '../types/login';
 
 export const loginApi = createApi({
   reducerPath: 'loginApi',
-  baseQuery: fetchBaseQuery({baseUrl: 'http://xxx./api/'}),
+  baseQuery: fetchBaseQuery({baseUrl: 'http://8.133.173.48:8889/api/'}),
   endpoints: builder => ({
-    postLogin: builder.query<TokenResponse, LoginBody>({
+    login: builder.mutation<TokenResponse, LoginBody>({
       query: (loginBody: LoginBody) => ({
         url: 'login',
         method: 'POST',
         body: JSON.stringify(loginBody),
       }),
     }),
-    postRefresh: builder.query<TokenResponse, string>({
+    refresh: builder.mutation<TokenResponse, string>({
       query: (authorization: string) => ({
         url: 'refresh',
         method: 'POST',
@@ -24,4 +24,4 @@ export const loginApi = createApi({
   }),
 });
 
-export const {usePostLoginQuery, usePostRefreshQuery} = loginApi;
+export const {useLoginMutation, useRefreshMutation} = loginApi;

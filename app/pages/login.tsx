@@ -1,36 +1,55 @@
-import {View, Text, StyleSheet, Button} from 'react-native';
-import React from 'react';
-import {TextInput} from 'react-native';
-import {usePostLoginQuery} from '../store/api/loginApi';
-import {useAppSelector, useAppDispatch} from '../store/hook';
-import {setPassword, setUsername} from '../store/reducer/loginReducer';
+import React, {useState} from 'react';
+import {SafeAreaView} from 'react-native';
+import {Text, Button, Input} from '@rneui/base';
 
-export default function Login() {
+import {useLoginMutation} from '../store/api/loginApi';
+import {useAppSelector, useAppDispatch} from '../store/hook';
+import {setPassword, setUsername} from '../store/slices/loginReducer';
+
+export default function LoginView() {
   const loginBody = useAppSelector(state => state.login);
   const dispatch = useAppDispatch();
 
-  const {data: post, isFetching, isLoading} = usePostLoginQuery(loginBody);
+  const [loginState, setloginState] = useState('未登录');
 
-  const onLoginHandler = () => {};
+  const [login, {isLoading}] = useLoginMutation();
+
+  const onLoginHandler = async () => {
+    console.log('login button pressed');
+    console.log(loginBody);
+    try {
+      const loginResponse = await login(loginBody).unwrap();
+      if (loginResponse.code === 200) {
+        setloginState('登陆成功');
+      } else {
+        setloginState('登陆失败');
+      }
+      console.log(loginResponse.message);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <View>
+    <SafeAreaView>
       <Text>智慧公路管理平台登陆</Text>
-      <TextInput
-        style={styles.textInput}
+      <Input
         onChangeText={text => dispatch(setUsername(text))}
+        placeholder="用户名"
         value={loginBody.username}
       />
-      <TextInput
-        style={styles.textInput}
+      <Input
         onChangeText={text => dispatch(setPassword(text))}
+        placeholder="密码"
         value={loginBody.password}
+        secureTextEntry={true}
       />
-      <Button title="登陆" color="#f194ff" onPress={() => onLoginHandler} />
-    </View>
+      <Button title="登陆" color="#f194ff" onPress={onLoginHandler} />
+      <Text>{loginState}</Text>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  textInput: {height: 40, borderColor: 'gray', borderWidth: 1},
-});
+// const styles = StyleSheet.create({
+//   textInput: {height: 40, borderColor: 'gray', borderWidth: 1},
+// });

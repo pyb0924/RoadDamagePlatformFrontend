@@ -7,6 +7,9 @@ const appDirectory = path.resolve(__dirname, '../');
 //const {presets} = require(`${appDirectory}/babel.config.js`);
 
 const compileNodeModules = [
+  '@rneui',
+  'react-native-vector-icons',
+  'react-native-ratings',
   // Add every react-native package that needs compiling
   // 'react-native-gesture-handler',
 ].map(moduleName => path.resolve(appDirectory, `node_modules/${moduleName}`));
@@ -16,7 +19,8 @@ const babelLoaderConfiguration = {
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
     path.resolve(appDirectory, 'index.web.js'), // Entry to your application
-    path.resolve(appDirectory, 'App.tsx'), // Change this to your main App file
+    path.resolve(appDirectory, 'app/App.tsx'), // Change this to your main App file
+    path.resolve(appDirectory, 'app'),
     path.resolve(appDirectory, 'web/src'),
     ...compileNodeModules,
   ],
