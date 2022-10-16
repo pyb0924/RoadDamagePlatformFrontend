@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import {Text, Button, Input} from '@rneui/base';
 
 import {useLoginMutation} from '../store/api/loginApi';
 import {useAppSelector, useAppDispatch} from '../store/hook';
 import {setPassword, setUsername} from '../store/slices/loginReducer';
+import {Text, Button, Input, Header} from '@rneui/themed';
 
 export default function LoginView() {
   const loginBody = useAppSelector(state => state.login);
@@ -12,7 +12,7 @@ export default function LoginView() {
 
   const [loginState, setloginState] = useState('未登录');
 
-  const [login, {isLoading}] = useLoginMutation();
+  const [login, {}] = useLoginMutation();
 
   const onLoginHandler = async () => {
     console.log('login button pressed');
@@ -32,6 +32,23 @@ export default function LoginView() {
 
   return (
     <SafeAreaView>
+      <Header
+        backgroundImageStyle={{}}
+        barStyle="default"
+        centerComponent={{
+          text: 'MY TITLE',
+          style: {color: '#fff'},
+        }}
+        centerContainerStyle={{}}
+        containerStyle={{}}
+        leftComponent={{icon: 'menu', color: '#fff'}}
+        leftContainerStyle={{}}
+        linearGradientProps={{}}
+        placement="center"
+        rightComponent={{icon: 'home', color: '#fff'}}
+        rightContainerStyle={{}}
+        statusBarProps={{}}
+      />
       <Text>智慧公路管理平台登陆</Text>
       <Input
         onChangeText={text => dispatch(setUsername(text))}

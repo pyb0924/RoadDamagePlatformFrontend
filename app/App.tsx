@@ -1,7 +1,7 @@
 import React from 'react';
 import {Provider} from 'react-redux';
 
-import {ThemeProvider,The} from '@rneui/themed';
+import {ThemeProvider} from '@rneui/themed';
 
 import LoginView from './pages/login';
 import {rootStore} from './store/store';
