@@ -1,0 +1,6 @@
+{
+  "name": "RoadDamagePlatformFrontendUtils",
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.8.6"
+  }
+}
