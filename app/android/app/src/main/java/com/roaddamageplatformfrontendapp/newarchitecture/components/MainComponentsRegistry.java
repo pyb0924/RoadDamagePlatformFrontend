@@ -1,4 +1,4 @@
-package com.roaddamageplatformfrontend.newarchitecture.components;
+package com.roaddamageplatformfrontendapp.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

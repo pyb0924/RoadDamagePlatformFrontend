@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 
-import {useLoginMutation} from '../../utils/store/api/loginApi';
-import {useAppSelector, useAppDispatch} from '../../utils/store/hook';
-import {setPassword, setUsername} from '../../utils/store/slices/loginReducer';
+import {useLoginMutation} from 'utils/api/loginApi';
+import {useAppSelector, useAppDispatch} from '../store/hook';
+import {setPassword, setUsername} from 'utils/slices/loginReducer';
 import {Text, Button, Input, Header} from '@rneui/themed';
 
 export default function LoginPage() {

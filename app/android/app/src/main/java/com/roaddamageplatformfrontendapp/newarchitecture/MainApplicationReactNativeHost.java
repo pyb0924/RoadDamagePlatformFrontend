@@ -1,4 +1,4 @@
-package com.roaddamageplatformfrontend.newarchitecture;
+package com.roaddamageplatformfrontendapp.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.roaddamageplatformfrontend.BuildConfig;
-import com.roaddamageplatformfrontend.newarchitecture.components.MainComponentsRegistry;
-import com.roaddamageplatformfrontend.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.roaddamageplatformfrontendapp.BuildConfig;
+import com.roaddamageplatformfrontendapp.newarchitecture.components.MainComponentsRegistry;
+import com.roaddamageplatformfrontendapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
