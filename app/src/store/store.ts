@@ -1,8 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit';
 import {setupListeners} from '@reduxjs/toolkit/dist/query';
-import {loginApi} from '../utils/api/loginApi';
-import loginReducer from '../../utils/slices/loginReducer';
-import tokenReducer from '../../utils/slices/tokenReducer';
+import {loginApi} from 'utils/api/loginApi';
+import loginReducer from 'utils/slices/loginReducer';
+import tokenReducer from 'utils/slices/tokenReducer';
 
 export const rootStore = configureStore({
   reducer: {
