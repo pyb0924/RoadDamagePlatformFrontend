@@ -1,18 +1,19 @@
 import React from 'react';
 import {Provider} from 'react-redux';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import StyleSheet from 'react-native';
+
 import {ThemeProvider} from '@rneui/themed';
 
+import LoginView from './pages/login';
 import {rootStore} from './store/store';
-import LoginPage from './pages/login';
-import MapPage from './pages/map';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const App = () => {
   return (
     <ThemeProvider>
       <SafeAreaProvider>
         <Provider store={rootStore}>
-          <MapPage />
+          <LoginView />
         </Provider>
       </SafeAreaProvider>
     </ThemeProvider>

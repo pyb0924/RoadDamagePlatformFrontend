@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {SafeAreaView} from 'react-native';
+import {View} from 'react-native';
 
 import {useLoginMutation} from '../store/api/loginApi';
 import {useAppSelector, useAppDispatch} from '../store/hook';
 import {setPassword, setUsername} from '../store/slices/loginReducer';
 import {Text, Button, Input, Header} from '@rneui/themed';
 
-export default function LoginView() {
+export default function LoginPage() {
   const loginBody = useAppSelector(state => state.login);
   const dispatch = useAppDispatch();
 
@@ -31,7 +31,7 @@ export default function LoginView() {
   };
 
   return (
-    <SafeAreaView>
+    <View>
       <Header
         backgroundImageStyle={{}}
         barStyle="default"
@@ -63,7 +63,7 @@ export default function LoginView() {
       />
       <Button title="登陆" color="#f194ff" onPress={onLoginHandler} />
       <Text>{loginState}</Text>
-    </SafeAreaView>
+    </View>
   );
 }
 
