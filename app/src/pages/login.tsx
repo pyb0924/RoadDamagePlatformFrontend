@@ -1,10 +1,16 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 
-import {useLoginMutation} from '../store/api/loginApi';
-import {useAppSelector, useAppDispatch} from '../store/hook';
-import {setPassword, setUsername} from '../store/slices/loginReducer';
 import {Text, Button, Input, Header} from '@rneui/themed';
+
+import {useLoginMutation} from 'road-damage-platform-utils/api/loginApi';
+
+import {
+  setPassword,
+  setUsername,
+} from 'road-damage-platform-utils/slices/loginReducer';
+
+import {useAppSelector, useAppDispatch} from '../store/hook';
 
 export default function LoginPage() {
   const loginBody = useAppSelector(state => state.login);

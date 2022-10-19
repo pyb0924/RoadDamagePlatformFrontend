@@ -1,8 +1,9 @@
 import {configureStore} from '@reduxjs/toolkit';
 import {setupListeners} from '@reduxjs/toolkit/dist/query';
-import {loginApi} from './api/loginApi';
-import loginReducer from './slices/loginReducer';
-import tokenReducer from './slices/tokenReducer';
+
+import {loginApi} from 'road-damage-platform-utils/api/loginApi';
+import loginReducer from 'road-damage-platform-utils/slices/loginReducer';
+import tokenReducer from 'road-damage-platform-utils/slices/tokenReducer';
 
 export const rootStore = configureStore({
   reducer: {

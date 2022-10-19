@@ -1,7 +1,20 @@
 {
-  "name": "utils",
-  "version": "0.0.1",
+  "name": "road-damage-platform-utils",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "tsc"
+  },
+  "author": "pyb0924",
+  "license": "MIT",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.8.6"
+    "@reduxjs/toolkit": "^1.8.6",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.4",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^18.0.6"
   }
 }
