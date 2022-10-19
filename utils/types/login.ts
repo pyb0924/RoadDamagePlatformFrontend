@@ -1,4 +1,4 @@
-import {BaseResponse, TokenData} from './data';
+import { BaseResponse, TokenData } from "./data";
 
 export interface LoginBody {
   username: string;
@@ -9,8 +9,12 @@ export interface LoginBody {
   password: string;
 }
 
+interface TokenDataWithId extends TokenData {
+  userId: number;
+}
+
 interface TokenSuccessResponse extends BaseResponse {
-  data: TokenData;
+  data: TokenDataWithId;
 }
 
 type TokenFailResponse = BaseResponse;
