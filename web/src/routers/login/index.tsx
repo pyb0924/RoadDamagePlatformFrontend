@@ -1,13 +1,15 @@
 import React, { useState } from "react";
+import {useNavigate} from "react-router-dom";
+
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Typography } from "antd";
 
 import { useLoginMutation } from "../../app/api/loginApi";
 import { LoginRequest } from "../../app/types/login";
 
-import {useNavigate} from "react-router-dom";
+import "antd/dist/antd.css";
+import "./index.css";
 
-import "./login.css";
 const { Text } = Typography;
 
 const Login: React.FC = () => {
@@ -95,7 +97,7 @@ const Login: React.FC = () => {
         </Form.Item>
       </Form>
       <Text type="danger">{loginState}</Text>
-      <Text>BaseUrl:{process.env.REACT_APP_BASE_URL}</Text>
+      <Text>BaseUrl:{process.env.REACT_APP_BASEURL}</Text>
     </>
   );
 };
