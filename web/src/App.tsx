@@ -1,20 +1,26 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import Login from "./routers/login";
-import DashBoard from "./routers/dashboard";
+import Login from "./routers/login/login";
+import DashBoard from "./routers/dashboard/dashboard";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/dashboard",
+    element: <DashBoard />,
+  },
+]);
 
 function App() {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //   </header>
-
-    //   <div className="App-main">
-        <DashBoard />
-    //   </div>
-    // </div>
+    <>
+      <RouterProvider router={router} />
+    </>
   );
 }
 

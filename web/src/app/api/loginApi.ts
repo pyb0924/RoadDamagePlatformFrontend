@@ -8,7 +8,7 @@ import {
 
 export const loginApi = createApi({
   reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.API_BASE_URL }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASEURL }),
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (request: LoginRequest) => ({
