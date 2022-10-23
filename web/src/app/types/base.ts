@@ -1,20 +1,25 @@
 // base data
 export interface User {
-  userId: number;
-  roles: Array<OperationType>;
-  isActive:boolean
+  user_id: number;
+  username: string;
+  is_active: boolean;
+  roles: Array<RoleType | number>;
+  create_time: string;
+  update_time: string;
 }
 
-export enum UserType {
-  Admin,
-  Manager,
-  User,
+// export enum UserType {
+//   Admin,
+//   Manager,
+//   User,
+// }
+
+export enum RoleType {
+  User_Add = "添加用户",
+  User_Delete = "删除用户",
 }
 
-export enum OperationType {
-  User_Add,
-  User_Delete,
-}
+export const roleTypeList = [RoleType.User_Add, RoleType.User_Delete];
 
 export enum TokenType {
   "Bearer",

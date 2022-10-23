@@ -1,19 +1,20 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import {setupListeners} from '@reduxjs/toolkit/dist/query';
+import { setupListeners } from "@reduxjs/toolkit/dist/query";
 
 import { loginApi } from "../app/api/loginApi";
 import loginReducer from "../app/slices/loginReducer";
 import tokenReducer from "../app/slices/tokenReducer";
+import { userApi } from "./api/userApi";
 
 export const store = configureStore({
   reducer: {
     [loginApi.reducerPath]: loginApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
     login: loginReducer,
     token: tokenReducer,
-    
   },
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().concat(loginApi.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(loginApi.middleware, userApi.middleware),
 });
 
 export type AppDispatch = typeof store.dispatch;
@@ -24,6 +25,5 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   unknown,
   Action<string>
 >;
-
 
 setupListeners(store.dispatch);

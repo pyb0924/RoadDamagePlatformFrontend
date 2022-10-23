@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { roleTypeList, User } from "../types/base";
 import {
   UserByIdRequest,
   UserResponse,
@@ -6,24 +7,38 @@ import {
   UsersListResponse,
 } from "../types/user";
 
+function lookupRoleType(user: User) {
+  return {
+    ...user,
+    role: user.roles.map((role) =>
+      typeof role === "number" ? roleTypeList[role] : role
+    ),
+  };
+}
+
 export const userApi = createApi({
   reducerPath: "usersApi",
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.API_BASE_URL + "user/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASEURL+"user" }),
   endpoints: (builder) => ({
-    getAllUsers: builder.query<UsersListResponse, UsersListRequest>({
+    getAllUsers: builder.query<User[], UsersListRequest>({
       query: (request: UsersListRequest) => ({
         url: "",
         params: request.params,
         headers: request.headers,
       }),
+      transformResponse: (response: UsersListResponse) =>
+        response.data.map(lookupRoleType),
     }),
-    getUserById: builder.query<UserResponse, UserByIdRequest>({
+    getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
         url: `${request.id}`,
         headers: request.headers,
       }),
+      transformResponse: (response: UserResponse) =>
+        lookupRoleType(response.data),
     }),
+    //addUser: builder.mutation<
   }),
 });
 
-export const { useGetAllUsersQuery, useGetUserByIdQuery } = userApi;
+export const { useLazyGetAllUsersQuery, useGetUserByIdQuery } = userApi;

@@ -2,6 +2,7 @@ import {
   BaseRequestByPage,
   BaseRequestWithToken,
   BaseResponse,
+  RoleType,
   User,
 } from "./base";
 
@@ -17,4 +18,12 @@ export type UsersListRequest = BaseRequestByPage;
 
 export interface UserByIdRequest extends BaseRequestWithToken {
   id: number;
+}
+
+export interface AddUserRequest extends BaseRequestWithToken {
+  body: {
+    username: string;
+    password: string;
+    role: Array<RoleType>;
+  };
 }
