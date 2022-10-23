@@ -1,7 +1,6 @@
-import { Avatar, Button, Dropdown, Menu, Space, Table, Tag } from "antd";
-import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import React, { useRef } from "react";
-import { ProTable } from "@ant-design/pro-components";
+import { Table, Button, Tag } from "antd";
+import React, { useEffect, useState } from "react";
+import type { TablePaginationConfig } from "antd/es/table";
 
 import {
   DeleteOutlined,
@@ -9,139 +8,116 @@ import {
   UnorderedListOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
+import { RoleType } from "../../app/types/base";
+import { useLazyGetAllUsersQuery } from "../../app/api/userApi";
+import Column from "antd/lib/table/Column";
 
-type UserItem = {
-  avatar: string;
-  id: number;
-  username: string;
-  tags: { role: string; status: string[] };
-};
+import { FilterValue } from "antd/lib/table/interface";
+import { useAppSelector } from "../../app/hooks";
 
-const data = Array.from({ length: 23 }).map((_, i) => ({
-  avatar: "https://joeschmoe.io/api/v1/random",
-  id: i,
-  username: `User${i}`,
-  tags: {
-    role: "user",
-    status: ["status1", "status2"],
-  },
-}));
+// const data = Array.from({ length: 23 }).map((_, i) => ({
+//   user_id: i,
+//   username: `User${i}`,
+//   is_active: true,
+//   role: [RoleType.User_Add, RoleType.User_Delete],
+//   create_time: "1997-05-25 07:51:47",
+//   update_time: "2021-06-21 23:39:51",
+// }));
 
-const columns: ProColumns<UserItem>[] = [
-  {
-    dataIndex: "index",
-    valueType: "index",
-    width: 48,
-  },
-  {
-    title: "用户名",
-    dataIndex: "avatar",
-    valueType: "avatar",
-    width: 200,
-    ellipsis: true,
-    render: (dom, record) => (
-      <Space>
-        <span>{dom}</span>
-        <span>{record.username}</span>
-      </Space>
-    ),
-  },
-  {
-    disable: true,
-    title: "标签",
-    dataIndex: "tags",
-    filters: true,
-    onFilter: true,
-    search: false,
-    render: (_, record) => (
-      <Space>
-        <Tag color={"blue"} key={record.tags.role}>
-          {record.tags.role}
-        </Tag>
-        {record.tags.status.map((status) => (
-          <Tag color={"red"} key={status}>
-            {status}
-          </Tag>
-        ))}
-      </Space>
-    ),
-  },
-  {
-    title: "操作",
-    valueType: "option",
-    key: "option",
-    render: (text, record, _, action) => [
-      <Button key="detail" size="small" icon={<UnorderedListOutlined />}>
-        详情
-      </Button>,
-      <Button key="edit" size="small" icon={<EditOutlined />}>
-        编辑
-      </Button>,
-      <Button key="delete" size="small" icon={<DeleteOutlined />} danger>
-        删除
-      </Button>,
-    ],
-  },
-];
+interface TableParams {
+  pagination: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Record<string, FilterValue>;
+}
 
 export default function UserList() {
-  const actionRef = useRef<ActionType>();
+  const token = useAppSelector((state) => state.token);
+
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      offset: 1,
+      
+    },
+  });
+
+  const [getUsersData, { data, isSuccess }] = useLazyGetAllUsersQuery();
+
+  useEffect(() => {
+    getUsersData({
+      headers: {
+        Authorization: token,
+      },
+      params: {
+        offset: tableParams.pagination.offset as number,
+        limit: tableParams.pagination.limit as number,
+      },
+    })
+  }, [getUsersData, tableParams.pagination.limit, tableParams.pagination.offset, token])
+  
+
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    console.log(pagination);
+    setTableParams({
+      pagination,
+    });
+  };
+
   return (
-    <ProTable<UserItem>
-      columns={columns}
-      actionRef={actionRef}
-      cardBordered
+    <Table
       dataSource={data}
-      // request={async (params = {}, sort, filter) => {
-      //   console.log(sort, filter);
-      //   return request<{
-      //     data: GithubIssueItem[];
-      //   }>("https://proapi.azurewebsites.net/github/issues", {
-      //     params,
-      //   });
-      // }}
-      editable={{
-        type: "multiple",
-      }}
-      columnsState={{
-        persistenceKey: "pro-table-singe-demos",
-        persistenceType: "localStorage",
-        onChange(value) {
-          console.log("value: ", value);
-        },
-      }}
-      rowKey="id"
-      search={{
-        labelWidth: "auto",
-      }}
-      options={{
-        setting: {
-          listsHeight: 400,
-        },
-      }}
-      form={{
-        // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
-        syncToUrl: (values, type) => {
-          if (type === "get") {
-            return {
-              ...values,
-              created_at: [values.startTime, values.endTime],
-            };
-          }
-          return values;
-        },
-      }}
-      pagination={{
-        pageSize: 5,
-        onChange: (page) => console.log(page),
-      }}
-      dateFormatter="string"
-      headerTitle="用户管理"
-      toolBarRender={() => [
-        <Button key="button" icon={<PlusOutlined />} type="primary">
-          新建
-        </Button>,
-      ]}
-    />
+      pagination={tableParams.pagination}
+      rowKey={(record) => record.user_id}
+      loading={!isSuccess}
+      onChange={handleTableChange}
+    >
+      <Column
+        title="用户名"
+        dataIndex="username"
+        key="username"
+        sorter={true}
+      />
+      <Column
+        title="权限"
+        dataIndex="role"
+        key="role"
+        render={(roles: RoleType[]) =>
+          roles.map((role) => (
+            <Tag color="blue" key={role}>
+              {role}
+            </Tag>
+          ))
+        }
+      />
+      <Column
+        title="创建时间"
+        dataIndex="create_time"
+        key="createTime"
+        //render={(date) => Date.parse(date)}
+      />
+      <Column
+        title="修改时间"
+        dataIndex="update_time"
+        key="updateTime"
+        //render={(date) => Date.parse(date)}
+      />
+      <Column
+        title="操作"
+        key="action"
+        render={() => (
+          <>
+            <Button key="detail" size="small" icon={<UnorderedListOutlined />}>
+              详情
+            </Button>
+            <Button key="edit" size="small" icon={<EditOutlined />}>
+              编辑
+            </Button>
+            <Button key="delete" size="small" icon={<DeleteOutlined />} danger>
+              删除
+            </Button>
+          </>
+        )}
+      />
+    </Table>
   );
 }
