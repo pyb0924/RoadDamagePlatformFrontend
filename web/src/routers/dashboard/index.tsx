@@ -38,11 +38,7 @@ const items: MenuItem[] = [
   getItem("数据地图", "map", <GlobalOutlined />),
   getItem("数据上传", "upload", <PlusCircleOutlined />),
   getItem("当前流程", "9", <FileAddOutlined />),
-  getItem("用户管理", "user", <UserOutlined />, [
-    getItem("Tom", "3"),
-    getItem("Bill", "4"),
-    getItem("Alex", "5"),
-  ]),
+  getItem("用户管理", "user", <UserOutlined />),
 ];
 
 const DashBoard: React.FC = () => {
@@ -50,6 +46,7 @@ const DashBoard: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      
       <Sider
         collapsible
         collapsed={collapsed}
@@ -74,7 +71,7 @@ const DashBoard: React.FC = () => {
             className="site-layout-background"
             style={{ padding: 24, minHeight: 360 }}
           >
-            <UserList/>
+            <UserList />
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>

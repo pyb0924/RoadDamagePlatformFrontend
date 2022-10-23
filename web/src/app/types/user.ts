@@ -27,3 +27,11 @@ export interface AddUserRequest extends BaseRequestWithToken {
     role: Array<RoleType>;
   };
 }
+
+export interface UpdatePwdRequest extends BaseRequestWithToken {
+  body: {
+    user_id: string;
+    old_password: string;
+    password: string;
+  };
+}
