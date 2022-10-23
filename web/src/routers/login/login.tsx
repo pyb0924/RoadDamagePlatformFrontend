@@ -5,12 +5,15 @@ import { Button, Checkbox, Form, Input, Typography } from "antd";
 import { useLoginMutation } from "../../app/api/loginApi";
 import { LoginRequest } from "../../app/types/login";
 
-import "./index.css";
+import {useNavigate} from "react-router-dom";
+
+import "./login.css";
 const { Text } = Typography;
 
 const Login: React.FC = () => {
   const [login] = useLoginMutation();
   const [loginState, setloginState] = useState("未登录");
+  const navigate = useNavigate();
 
   const onFinish = async (values: {
     username: string;
@@ -33,6 +36,7 @@ const Login: React.FC = () => {
         setloginState(
           `登陆成功: 用户名:${values.username} 密码:${values.password}`
         );
+        navigate('/dashboard');
       } else {
         setloginState("登陆失败!");
       }
