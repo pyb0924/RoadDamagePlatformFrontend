@@ -1,33 +1,29 @@
 // base data
 export interface User {
-  user_id: number;
+  user_id: string;
   username: string;
   is_active: boolean;
-  roles: Array<RoleType | number>;
+  permissions?: Array<PermissionType | number>;
   create_time: string;
   update_time: string;
 }
 
-// export enum UserType {
-//   Admin,
-//   Manager,
-//   User,
-// }
-
-export enum RoleType {
+export enum PermissionType {
   User_Add = "添加用户",
   User_Delete = "删除用户",
 }
 
-export const roleTypeList = [RoleType.User_Add, RoleType.User_Delete];
+export const permissionTypeList = [PermissionType.User_Add, PermissionType.User_Delete];
 
 export enum TokenType {
   "Bearer",
 }
 
+
+
 export interface TokenData {
-  accessToken: string;
-  tokenType: TokenType;
+  access_token: string;
+  token_type: TokenType;
 }
 
 // base response & request

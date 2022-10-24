@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import type { MenuProps } from "antd";
+import { Layout, Menu } from "antd";
 import {
   FileAddOutlined,
   GlobalOutlined,
@@ -7,13 +9,10 @@ import {
   PlusCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import { Breadcrumb, Layout, Menu } from "antd";
-
-import "antd/dist/antd.css";
-import "./index.css";
 
 import UserList from "../../components/userList";
+
+import "./index.css";
 
 const { Header, Content, Footer, Sider } = Layout;
 

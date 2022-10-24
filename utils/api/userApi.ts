@@ -3,7 +3,6 @@ import {Users} from '../types/data';
 
 export const usersApi = createApi({
   reducerPath: 'usersApi',
-  // TODO api base url
   baseQuery: fetchBaseQuery({baseUrl: 'https://xxxx/api/'}),
   endpoints: builder => ({
     getUserById: builder.query<Users, string>({

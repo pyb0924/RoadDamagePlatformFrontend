@@ -1,8 +1,11 @@
 import React from "react";
-import "./App.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import Login from "./routers/login";
 import DashBoard from "./routers/dashboard";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import "./App.css";
+
 
 const router = createBrowserRouter([
   {

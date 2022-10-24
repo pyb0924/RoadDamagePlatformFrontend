@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Typography } from "antd";
 
 import { useLoginMutation } from "../../app/api/loginApi";
-import { LoginRequest } from "../../app/types/login";
+import { useAppDispatch } from "../../app/hooks";
+import { setToken } from "../../app/slices/user";
+import { LoginRequest, TokenDataWithId } from "../../app/types/login";
 
-import "antd/dist/antd.css";
 import "./index.css";
 
 const { Text } = Typography;
@@ -16,14 +17,13 @@ const Login: React.FC = () => {
   const [login] = useLoginMutation();
   const [loginState, setloginState] = useState("未登录");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const onFinish = async (values: {
     username: string;
     password: string;
     remember: boolean;
   }) => {
-    console.log(values);
-
     const loginRequest: LoginRequest = {
       body: {
         username: values.username,
@@ -33,20 +33,21 @@ const Login: React.FC = () => {
 
     try {
       const loginResponse = await login(loginRequest).unwrap();
-      console.log(loginResponse);
       if (loginResponse.code === 200) {
         setloginState(
           `登陆成功: 用户名:${values.username} 密码:${values.password}`
         );
-        navigate('/dashboard');
+        dispatch(setToken(loginResponse.data as TokenDataWithId));
+        navigate("/dashboard");
       } else {
         setloginState("登陆失败!");
       }
     } catch (err) {
+      setloginState("登陆失败!");
       console.log(err);
     }
   };
-
+  // TODO beautify login page
   // TODO href route to url
   return (
     <>
@@ -80,9 +81,9 @@ const Login: React.FC = () => {
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
 
-          <a className="login-form-forgot" href="">
+          {/* <a className="login-form-forgot" href="">
             Forgot password
-          </a>
+          </a> */}
         </Form.Item>
 
         <Form.Item>
@@ -93,7 +94,7 @@ const Login: React.FC = () => {
           >
             Log in
           </Button>
-          Or <a href="">register now!</a>
+          {/* Or <a href="">register now!</a> */}
         </Form.Item>
       </Form>
       <Text type="danger">{loginState}</Text>

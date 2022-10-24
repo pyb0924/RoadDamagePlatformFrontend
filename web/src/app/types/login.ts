@@ -16,7 +16,7 @@ export interface LoginBody {
   password: string;
 }
 
-interface TokenDataWithId extends TokenData {
+export interface TokenDataWithId extends TokenData {
   userId: number;
 }
 
@@ -25,7 +25,7 @@ export interface LoginRequest extends BaseRequest {
   body: LoginBody;
 }
 
-interface LoginSuccessResponse extends BaseResponse {
+export interface LoginSuccessResponse extends BaseResponse {
   data: TokenDataWithId;
 }
 

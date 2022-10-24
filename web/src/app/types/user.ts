@@ -2,7 +2,7 @@ import {
   BaseRequestByPage,
   BaseRequestWithToken,
   BaseResponse,
-  RoleType,
+  PermissionType,
   User,
 } from "./base";
 
@@ -24,7 +24,7 @@ export interface AddUserRequest extends BaseRequestWithToken {
   body: {
     username: string;
     password: string;
-    role: Array<RoleType>;
+    permissions: PermissionType[];
   };
 }
 

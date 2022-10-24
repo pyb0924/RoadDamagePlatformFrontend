@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BaseResponse, roleTypeList, User } from "../types/base";
+
+import { BaseResponse, permissionTypeList, User } from "../types/base";
 import {
   UserByIdRequest,
   UserResponse,
@@ -10,16 +11,20 @@ import {
 } from "../types/user";
 
 function lookupRoleType(user: User) {
-  return {
-    ...user,
-    role: user.roles.map((role) =>
-      typeof role === "number" ? roleTypeList[role] : role
-    ),
-  };
+  if (user.permissions !== undefined) {
+    return {
+      ...user,
+      permissions: user.permissions.map((permission) =>
+        typeof permission === "number" ? permissionTypeList[permission] : permission
+      ),
+    };
+  } else {
+    return user;
+  }
 }
 
 export const userApi = createApi({
-  reducerPath: "usersApi",
+  reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_BASEURL + "user",
   }),
@@ -30,8 +35,7 @@ export const userApi = createApi({
         params: request.params,
         headers: request.headers,
       }),
-      transformResponse: (response: UsersListResponse) =>
-        response.data.map(lookupRoleType),
+      transformResponse: (response: UsersListResponse) => response.data,
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
