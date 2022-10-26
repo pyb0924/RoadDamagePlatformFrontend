@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import qs from "qs";
 
 import {
   RefreshResponse,
@@ -15,7 +16,10 @@ export const loginApi = createApi({
       query: (request: LoginRequest) => ({
         url: "login",
         method: "POST",
-        body: request.body,
+        body: qs.stringify(request.body),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
       }),
     }),
     refresh: builder.mutation<RefreshResponse, RefreshRequest>({

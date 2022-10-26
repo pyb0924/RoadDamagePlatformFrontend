@@ -17,7 +17,7 @@ export interface UserResponse extends BaseResponse {
 export type UsersListRequest = BaseRequestByPage;
 
 export interface UserByIdRequest extends BaseRequestWithToken {
-  id: number;
+  id: string;
 }
 
 export interface AddUserRequest extends BaseRequestWithToken {

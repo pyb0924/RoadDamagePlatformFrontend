@@ -17,7 +17,7 @@ export interface LoginBody {
 }
 
 export interface TokenDataWithId extends TokenData {
-  userId: number;
+  user_id: string;
 }
 
 // login

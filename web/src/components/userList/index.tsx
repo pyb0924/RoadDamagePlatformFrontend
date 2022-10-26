@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Button, Space } from "antd";
+import { Button, Space, Modal, Table, Form, Input } from "antd";
 import type { TablePaginationConfig } from "antd/es/table";
 import Column from "antd/lib/table/Column";
 import { FilterValue } from "antd/lib/table/interface";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+
+import {
+  useLazyGetAllUsersQuery,
+  useDeleteUserMutation,
+  useAddUserMutation,
+} from "../../app/api/userApi";
 import { useAppSelector } from "../../app/hooks";
-import { useLazyGetAllUsersQuery } from "../../app/api/userApi";
+import { HTTP_OK, User } from "../../app/types/base";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -17,8 +28,14 @@ interface TableParams {
 }
 
 export default function UserList() {
+  const [getUserList, { data: userList, isSuccess: isGetAllUsersSuccess }] =
+    useLazyGetAllUsersQuery();
+  const [deleteUser, { data: deleteUserResponse }] = useDeleteUserMutation();
+  const [addUser, { data: addUserResponse }] = useAddUserMutation();
+
   const token = useAppSelector((state) => state.user.token);
-  const [getUsersData, { data, isSuccess }] = useLazyGetAllUsersQuery();
+  const [isAddUserModalOpen, setAddUserModalOpen] = useState(false);
+  const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -27,23 +44,7 @@ export default function UserList() {
     },
   });
 
-  useEffect(() => {
-    getUsersData({
-      headers: {
-        Authorization: token,
-      },
-      params: {
-        offset: tableParams.pagination.offset as number,
-        limit: tableParams.pagination.limit as number,
-      },
-    });
-  }, [
-    getUsersData,
-    tableParams.pagination.limit,
-    tableParams.pagination.offset,
-    token,
-  ]);
-
+  // update pagination
   const handleTableChange = (pagination: TablePaginationConfig) => {
     console.log(pagination);
     setTableParams({
@@ -51,16 +52,88 @@ export default function UserList() {
     });
   };
 
+  // request by page
+  useEffect(() => {
+    getUserList({
+      headers: {
+        Authorization: token,
+      },
+      params: {
+        offset: tableParams.pagination.current as number,
+        limit: tableParams.pagination.pageSize as number,
+      },
+    });
+  }, [getUserList, tableParams.pagination, token]);
+
+  // handle add: open add modal
   const handleUserAdd = () => {
-    // TODO Add User
+    setAddUserModalOpen(true);
+  };
+
+  const handleUserAddCancel = () => {
+    Modal.destroyAll();
+  };
+
+  const handleUserAddOk = async (values: {
+    username: string;
+    password: string;
+  }) => {
+    console.log(values);
+    try {
+      const addUserResponse = await addUser({
+        headers: {
+          Authorization: token,
+        },
+        body: { ...values, permissions: [] },
+      }).unwrap();
+      if (addUserResponse.code === HTTP_OK) {
+        Modal.destroyAll();
+        Modal.success({
+          title: "用户添加成功！",
+          content: `用户名：${values.username}，密码：${values.password}`,
+        });
+      } else {
+        Modal.error({
+          title: "用户添加失败！",
+          content: addUserResponse.message,
+        });
+      }
+    } catch (err: any) {
+      Modal.error({
+        title: "用户添加失败！",
+        content: err.toString(),
+      });
+    }
   };
 
   const handleUserEdit = () => {
     //TODO Edit User
   };
 
-  const handleUserDelete = () => {
-    //TODO Delete User
+  // handle delete
+  const handleUserDelete = (record: User) => {
+    console.log(record);
+    Modal.confirm({
+      title: "删除用户",
+      icon: <ExclamationCircleOutlined />,
+      content: `确定要删除用户${record.username}吗`,
+      async onOk() {
+        try {
+          const deleteUserResponse = await deleteUser({
+            id: record.user_id,
+            headers: {
+              Authorization: token,
+            },
+          }).unwrap();
+          if (deleteUserResponse.code === HTTP_OK) {
+          }
+          return console.log(deleteUserResponse.message);
+        } catch {
+          return console.log("删除用户错误");
+        }
+      },
+      onCancel() {},
+    });
   };
 
   return (
@@ -71,13 +144,50 @@ export default function UserList() {
         icon={<PlusOutlined />}
         onClick={handleUserAdd}
       >
-        新建用户
+        新增用户
       </Button>
-      <Table
-        dataSource={data}
+
+      <Modal title="添加用户" open={isAddUserModalOpen} footer={[]}>
+        <Form
+          onFinish={handleUserAddOk}
+          labelCol={{ span: 4 }}
+          preserve={false}
+        >
+          <Form.Item
+            label="用户名"
+            name="username"
+            rules={[{ required: true, message: "请输入用户名" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="密码"
+            name="password"
+            rules={[{ required: true, message: "请输入密码" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          {/* <Form.Item label="权限" name="permission">
+            // TODO add PermissionTree
+          </Form.Item> */}
+          <div style={{ textAlign: "right" }}>
+            <Space>
+              <Button onClick={handleUserAddCancel}>取消</Button>
+              <Button type="primary" htmlType="submit">
+                提交
+              </Button>
+            </Space>
+          </div>
+        </Form>
+      </Modal>
+
+      <Table<User>
+        dataSource={userList}
         pagination={tableParams.pagination}
         rowKey={(record) => record.user_id}
-        loading={!isSuccess}
+        loading={!isGetAllUsersSuccess}
         onChange={handleTableChange}
       >
         <Column
@@ -101,7 +211,7 @@ export default function UserList() {
         <Column
           title="操作"
           key="action"
-          render={() => (
+          render={(_text, record) => (
             <Space>
               <Button
                 key="edit"
@@ -115,7 +225,7 @@ export default function UserList() {
                 key="delete"
                 size="small"
                 icon={<DeleteOutlined />}
-                onClick={handleUserDelete}
+                onClick={() => handleUserDelete(record as User)}
                 danger
               >
                 删除用户

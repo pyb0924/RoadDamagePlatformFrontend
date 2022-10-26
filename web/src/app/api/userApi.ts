@@ -15,7 +15,9 @@ function lookupRoleType(user: User) {
     return {
       ...user,
       permissions: user.permissions.map((permission) =>
-        typeof permission === "number" ? permissionTypeList[permission] : permission
+        typeof permission === "number"
+          ? permissionTypeList[permission]
+          : permission
       ),
     };
   } else {
@@ -25,6 +27,7 @@ function lookupRoleType(user: User) {
 
 export const userApi = createApi({
   reducerPath: "userApi",
+  tagTypes: ["User"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_BASEURL + "user",
   }),
@@ -36,6 +39,7 @@ export const userApi = createApi({
         headers: request.headers,
       }),
       transformResponse: (response: UsersListResponse) => response.data,
+      providesTags: ["User"],
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
@@ -52,6 +56,7 @@ export const userApi = createApi({
         body: request.body,
         headers: request.headers,
       }),
+      invalidatesTags: ["User"],
     }),
     updatePwd: builder.mutation<BaseResponse, UpdatePwdRequest>({
       query: (request: UpdatePwdRequest) => ({
@@ -67,8 +72,16 @@ export const userApi = createApi({
         method: "DELETE",
         headers: request.headers,
       }),
+      invalidatesTags: ["User"],
     }),
   }),
 });
 
-export const { useLazyGetAllUsersQuery, useGetUserByIdQuery } = userApi;
+export const {
+  useLazyGetAllUsersQuery,
+  useGetUserByIdQuery,
+  useLazyGetUserByIdQuery,
+  useAddUserMutation,
+  useUpdatePwdMutation,
+  useDeleteUserMutation,
+} = userApi;

@@ -1,4 +1,6 @@
 // base data
+export const HTTP_OK = 200;
+
 export interface User {
   user_id: string;
   username: string;
@@ -13,13 +15,14 @@ export enum PermissionType {
   User_Delete = "删除用户",
 }
 
-export const permissionTypeList = [PermissionType.User_Add, PermissionType.User_Delete];
+export const permissionTypeList = [
+  PermissionType.User_Add,
+  PermissionType.User_Delete,
+];
 
 export enum TokenType {
   "Bearer",
 }
-
-
 
 export interface TokenData {
   access_token: string;

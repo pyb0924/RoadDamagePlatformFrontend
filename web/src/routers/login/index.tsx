@@ -2,21 +2,26 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Checkbox, Form, Input, Modal, Typography } from "antd";
 
 import { useLoginMutation } from "../../app/api/loginApi";
-import { useAppDispatch } from "../../app/hooks";
-import { setToken } from "../../app/slices/user";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { setToken, setUser } from "../../app/slices/userSlice";
+import { HTTP_OK } from "../../app/types/base";
 import { LoginRequest, TokenDataWithId } from "../../app/types/login";
 
 import "./index.css";
+import { useLazyGetUserByIdQuery } from "../../app/api/userApi";
 
 const { Text } = Typography;
 
 const Login: React.FC = () => {
   const [login] = useLoginMutation();
-  const [loginState, setloginState] = useState("未登录");
+  const [getUser] = useLazyGetUserByIdQuery();
+
   const navigate = useNavigate();
+
+  const token = useAppSelector((state) => state.user.token);
   const dispatch = useAppDispatch();
 
   const onFinish = async (values: {
@@ -29,22 +34,33 @@ const Login: React.FC = () => {
         username: values.username,
         password: values.password,
       },
+      headers: {},
     };
 
     try {
       const loginResponse = await login(loginRequest).unwrap();
-      if (loginResponse.code === 200) {
-        setloginState(
-          `登陆成功: 用户名:${values.username} 密码:${values.password}`
-        );
-        dispatch(setToken(loginResponse.data as TokenDataWithId));
+      console.log(loginResponse.message);
+      if (loginResponse.code === HTTP_OK) {
         navigate("/dashboard");
+        dispatch(setToken(loginResponse.data as TokenDataWithId));
+        const userResponse = await getUser({
+          id: (loginResponse.data as TokenDataWithId).user_id,
+          headers: {
+            Authorization: token,
+          },
+        }).unwrap();
+        dispatch(setUser(userResponse));
       } else {
-        setloginState("登陆失败!");
+        Modal.error({
+          title: "用户登录失败",
+          content: loginResponse.message,
+        });
       }
     } catch (err) {
-      setloginState("登陆失败!");
-      console.log(err);
+      Modal.error({
+        title: "用户登录失败",
+        content: "网络错误",
+      });
     }
   };
   // TODO beautify login page
@@ -59,21 +75,21 @@ const Login: React.FC = () => {
       >
         <Form.Item
           name="username"
-          rules={[{ required: true, message: "Please input your Username!" }]}
+          rules={[{ required: true, message: "请输入用户名" }]}
         >
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Username"
+            placeholder="用户名"
           />
         </Form.Item>
         <Form.Item
           name="password"
-          rules={[{ required: true, message: "Please input your Password!" }]}
+          rules={[{ required: true, message: "请输入密码" }]}
         >
-          <Input
+          <Input.Password
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
-            placeholder="Password"
+            placeholder="密码 "
           />
         </Form.Item>
         <Form.Item>
@@ -97,7 +113,6 @@ const Login: React.FC = () => {
           {/* Or <a href="">register now!</a> */}
         </Form.Item>
       </Form>
-      <Text type="danger">{loginState}</Text>
       <Text>BaseUrl:{process.env.REACT_APP_BASEURL}</Text>
     </>
   );
