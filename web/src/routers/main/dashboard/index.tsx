@@ -11,7 +11,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import UserList from "../../components/userList";
+import UserList from "../../../components/userList";
 
 import "./index.css";
 import { MenuItemType } from "rc-menu/lib/interface";
@@ -42,11 +42,13 @@ const items: MenuItem[] = [
   getItem("用户管理", "user", <UserOutlined />),
 ];
 
+
+// TODO name change DashBoard => LayOut
 const DashBoard: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
-  // TODO add subpages' navigation
+  // TODO add subpages' navigation after finishing subpages
   const handleClick = (itemtype: MenuItemType) => {
     switch (itemtype.key) {
       case "dashboard":
@@ -54,6 +56,13 @@ const DashBoard: React.FC = () => {
         break;
       case "map":
         navigate("/main/map");
+        break;
+      case "upload":
+        break;
+      case "9":
+        break;
+      case "user":
+        navigate("/main/user");
         break;
       default:
         break;
