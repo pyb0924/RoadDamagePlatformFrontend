@@ -1,8 +1,10 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import Login from "./routers/login";
-import DashBoard from "./routers/dashboard";
+import Login from "./routers/login/index";
+import DashBoard from "./routers/dashboard/index";
+import UserList from "./components/userList";
+import Map from "./routers/dashboard/map";
 
 import "./App.css";
 
@@ -13,8 +15,22 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/dashboard",
+    path: "/main",
     element: <DashBoard />,
+    children: [
+      {
+        path: "dashboard",
+        element: <UserList />,
+      },
+      {
+        path: "map",
+        element: <Map />,
+      },
+      {
+        path: "userlist",
+        element: <UserList />,
+      },
+    ],
   },
 ]);
 

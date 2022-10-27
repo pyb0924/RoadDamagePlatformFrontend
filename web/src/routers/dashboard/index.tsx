@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
-import type { MenuProps } from "antd";
+import type { MenuItemProps, MenuProps } from "antd";
 import { Layout, Menu } from "antd";
 import {
   FileAddOutlined,
@@ -14,6 +14,7 @@ import {
 import UserList from "../../components/userList";
 
 import "./index.css";
+import { MenuItemType } from "rc-menu/lib/interface";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -43,10 +44,24 @@ const items: MenuItem[] = [
 
 const DashBoard: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
+  // TODO add subpages' navigation
+  const handleClick = (itemtype: MenuItemType) => {
+    switch (itemtype.key) {
+      case "dashboard":
+        navigate("/main/dashboard");
+        break;
+      case "map":
+        navigate("/main/map");
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      
       <Sider
         collapsible
         collapsed={collapsed}
@@ -58,10 +73,11 @@ const DashBoard: React.FC = () => {
           defaultSelectedKeys={["dashboard"]}
           mode="inline"
           items={items}
+          onClick={handleClick}
         />
       </Sider>
       <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0 }} >
+        <Header className="site-layout-background" style={{ padding: 0 }}>
           1234
         </Header>
         <Content style={{ margin: "0 16px" }}>
@@ -69,13 +85,7 @@ const DashBoard: React.FC = () => {
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
           </Breadcrumb> */}
-          <div
-            className="site-layout-background"
-            style={{ padding: 24, minHeight: 360 }}
-          >
-            <UserList />
-            <Outlet />
-          </div>
+          <Outlet />
         </Content>
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2018 Created by Ant UED

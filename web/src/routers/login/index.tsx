@@ -41,6 +41,7 @@ const Login: React.FC = () => {
       const loginResponse = await login(loginRequest).unwrap();
       
       if (loginResponse.code === HTTP_OK) {
+<<<<<<< Updated upstream
         navigate("/dashboard");
         const newToken =
           (loginResponse.data as TokenDataWithId).token_type +
@@ -48,6 +49,10 @@ const Login: React.FC = () => {
           (loginResponse.data as TokenDataWithId).access_token;
 
         dispatch(setToken(newToken));
+=======
+        navigate("/main");
+        dispatch(setToken(loginResponse.data as TokenDataWithId));
+>>>>>>> Stashed changes
         const userResponse = await getUser({
           id: (loginResponse.data as TokenDataWithId).user_id,
           headers: {

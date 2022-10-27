@@ -142,7 +142,7 @@ export default function UserList() {
     <div>
       <Button
         type="primary"
-        style={{ marginBottom: 16, float: "right" }}
+        style={{ marginTop: 16, marginBottom: 16, float: "right" }}
         icon={<PlusOutlined />}
         onClick={handleUserAdd}
       >
