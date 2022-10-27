@@ -2,20 +2,24 @@ import React, { useState } from "react";
 
 import { Button, Form, Input, Modal, Space } from "antd";
 
-import { HTTP_OK, PermissionType } from "../../app/types/base";
-import { useAppSelector } from "../../app/hooks";
 import { useAddUserMutation } from "../../app/api/userApi";
+import { useAppSelector } from "../../app/hooks";
+
+import { HTTP_OK } from "../../app/types/base";
+import { PermissionType } from "../../app/types/permission";
+import { UserFormType } from "../../app/types/user";
 
 interface UserFormProps {
-  title: string;
-  values: {
+  isVisible: boolean;
+  formType: UserFormType;
+  values?: {
     username: string;
     password: string;
     permissions: PermissionType[];
   };
 }
 
-function UserForm({ title, values }: UserFormProps) {
+function UserForm({ isVisible, formType, values }: UserFormProps) {
   const [addUser] = useAddUserMutation();
   const token = useAppSelector((state) => state.user.token);
 
@@ -56,14 +60,18 @@ function UserForm({ title, values }: UserFormProps) {
   };
 
   return (
-    <Modal title={title} open={true} footer={[]}>
+    <Modal
+      title={formType === UserFormType.USER_ADD ? "添加用户" : "编辑用户"}
+      open={isVisible}
+      footer={[]}
+    >
       <Form onFinish={handleUserAddOk} labelCol={{ span: 4 }} preserve={false}>
         <Form.Item
           label="用户名"
           name="username"
           rules={[{ required: true, message: "请输入用户名" }]}
         >
-          <Input placeholder={values.username} />
+          <Input placeholder={values?.username} />
         </Form.Item>
 
         <Form.Item
@@ -71,7 +79,7 @@ function UserForm({ title, values }: UserFormProps) {
           name="password"
           rules={[{ required: true, message: "请输入密码" }]}
         >
-          <Input.Password placeholder={values.password} />
+          <Input.Password placeholder={values?.password} />
         </Form.Item>
 
         {/* <Form.Item label="权限" name="permission">

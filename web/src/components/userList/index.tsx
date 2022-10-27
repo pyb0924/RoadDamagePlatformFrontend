@@ -18,7 +18,9 @@ import {
   useAddUserMutation,
 } from "../../app/api/userApi";
 import { useAppSelector } from "../../app/hooks";
-import { HTTP_OK, User } from "../../app/types/base";
+import { HTTP_OK } from "../../app/types/base";
+import { User, UserFormType } from "../../app/types/user";
+import UserForm from "../userForm";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -147,41 +149,10 @@ export default function UserList() {
         新增用户
       </Button>
 
-      <Modal title="添加用户" open={isAddUserModalOpen} footer={[]}>
-        <Form
-          onFinish={handleUserAddOk}
-          labelCol={{ span: 4 }}
-          preserve={false}
-        >
-          <Form.Item
-            label="用户名"
-            name="username"
-            rules={[{ required: true, message: "请输入用户名" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="密码"
-            name="password"
-            rules={[{ required: true, message: "请输入密码" }]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          {/* <Form.Item label="权限" name="permission">
-            // TODO add PermissionTree
-          </Form.Item> */}
-          <div style={{ textAlign: "right" }}>
-            <Space>
-              <Button onClick={handleUserAddCancel}>取消</Button>
-              <Button type="primary" htmlType="submit">
-                提交
-              </Button>
-            </Space>
-          </div>
-        </Form>
-      </Modal>
+      <UserForm
+        isVisible={isAddUserModalOpen || isEditUserModalOpen}
+        formType={UserFormType.USER_ADD}
+      />
 
       <Table<User>
         dataSource={userList}

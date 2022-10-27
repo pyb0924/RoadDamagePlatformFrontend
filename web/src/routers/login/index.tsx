@@ -39,17 +39,23 @@ const Login: React.FC = () => {
 
     try {
       const loginResponse = await login(loginRequest).unwrap();
-      console.log(loginResponse.message);
+      
       if (loginResponse.code === HTTP_OK) {
         navigate("/dashboard");
-        dispatch(setToken(loginResponse.data as TokenDataWithId));
+        const newToken =
+          (loginResponse.data as TokenDataWithId).token_type +
+          " " +
+          (loginResponse.data as TokenDataWithId).access_token;
+
+        dispatch(setToken(newToken));
         const userResponse = await getUser({
           id: (loginResponse.data as TokenDataWithId).user_id,
           headers: {
-            Authorization: token,
+            Authorization: newToken,
           },
         }).unwrap();
         dispatch(setUser(userResponse));
+        console.log(loginResponse.message);
       } else {
         Modal.error({
           title: "用户登录失败",

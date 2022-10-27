@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { BaseResponse, permissionTypeList, User } from "../types/base";
+import { BaseResponse } from "../types/base";
+import { permissionTypeList } from "../types/permission";
 import {
   UserByIdRequest,
   UserResponse,
@@ -8,9 +9,10 @@ import {
   UsersListResponse,
   AddUserRequest,
   UpdatePwdRequest,
+  User,
 } from "../types/user";
 
-function lookupRoleType(user: User) {
+function lookupPermissionType(user: User) {
   if (user.permissions !== undefined) {
     return {
       ...user,
@@ -47,7 +49,7 @@ export const userApi = createApi({
         headers: request.headers,
       }),
       transformResponse: (response: UserResponse) =>
-        lookupRoleType(response.data),
+        lookupPermissionType(response.data),
     }),
     addUser: builder.mutation<BaseResponse, AddUserRequest>({
       query: (request: AddUserRequest) => ({
