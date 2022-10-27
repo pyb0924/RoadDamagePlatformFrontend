@@ -20,7 +20,6 @@ import {
 import { useAppSelector } from "../../app/hooks";
 import { HTTP_OK } from "../../app/types/base";
 import { User, UserFormType } from "../../app/types/user";
-import UserForm from "../userForm";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -38,6 +37,12 @@ export default function UserList() {
   const token = useAppSelector((state) => state.user.token);
   const [isAddUserModalOpen, setAddUserModalOpen] = useState(false);
   const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
+
+  const [userEditPlaceholder, setUserEditPlaceholder] = useState({
+    username: "",
+    password: "",
+    permission: [],
+  });
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -73,7 +78,7 @@ export default function UserList() {
   };
 
   const handleUserAddCancel = () => {
-    Modal.destroyAll();
+    setAddUserModalOpen(false);
   };
 
   const handleUserAddOk = async (values: {
@@ -94,6 +99,7 @@ export default function UserList() {
           title: "用户添加成功！",
           content: `用户名：${values.username}，密码：${values.password}`,
         });
+        setAddUserModalOpen(false);
       } else {
         Modal.error({
           title: "用户添加失败！",
@@ -108,9 +114,15 @@ export default function UserList() {
     }
   };
 
-  const handleUserEdit = () => {
-    //TODO Edit User
+  const handleUserEdit = (record: User) => {
+    setEditUserModalOpen(true);
   };
+
+  const handleUserEditCancel = () => {
+    setEditUserModalOpen(false);
+  };
+
+  const handleUserEditOk = async () => {};
 
   // handle delete
   const handleUserDelete = (record: User) => {
@@ -149,10 +161,87 @@ export default function UserList() {
         新增用户
       </Button>
 
-      <UserForm
-        isVisible={isAddUserModalOpen || isEditUserModalOpen}
-        formType={UserFormType.USER_ADD}
-      />
+      <Modal
+        title="添加用户"
+        open={isAddUserModalOpen}
+        footer={[]}
+        closable={false}
+      >
+        <Form
+          onFinish={handleUserAddOk}
+          labelCol={{ span: 4 }}
+          preserve={false}
+        >
+          <Form.Item
+            label="用户名"
+            name="username"
+            rules={[{ required: true, message: "请输入用户名" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="密码"
+            name="password"
+            rules={[{ required: true, message: "请输入密码" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          {/* <Form.Item label="权限" name="permission">
+            // TODO add PermissionTree
+          </Form.Item> */}
+          <div style={{ textAlign: "right" }}>
+            <Space>
+              <Button onClick={handleUserAddCancel}>取消</Button>
+              <Button type="primary" htmlType="submit">
+                提交
+              </Button>
+            </Space>
+          </div>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="编辑用户"
+        open={isEditUserModalOpen}
+        footer={[]}
+        closable={false}
+      >
+        <Form
+          onFinish={handleUserEditOk}
+          labelCol={{ span: 4 }}
+          preserve={false}
+        >
+          <Form.Item
+            label="用户名"
+            name="username"
+            rules={[{ required: true, message: "请输入用户名" }]}
+          >
+            <Input placeholder={userEditPlaceholder.username} />
+          </Form.Item>
+
+          <Form.Item
+            label="密码"
+            name="password"
+            rules={[{ required: true, message: "请输入密码" }]}
+          >
+            <Input.Password placeholder={userEditPlaceholder.password} />
+          </Form.Item>
+
+          {/* <Form.Item label="权限" name="permission">
+            // TODO add PermissionTree
+          </Form.Item> */}
+          <div style={{ textAlign: "right" }}>
+            <Space>
+              <Button onClick={handleUserEditCancel}>取消</Button>
+              <Button type="primary" htmlType="submit">
+                提交
+              </Button>
+            </Space>
+          </div>
+        </Form>
+      </Modal>
 
       <Table<User>
         dataSource={userList}
@@ -188,7 +277,7 @@ export default function UserList() {
                 key="edit"
                 size="small"
                 icon={<EditOutlined />}
-                onClick={handleUserEdit}
+                onClick={() => handleUserEdit(record as User)}
               >
                 权限更改
               </Button>

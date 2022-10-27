@@ -10,24 +10,26 @@ import { PermissionType } from "../../app/types/permission";
 import { UserFormType } from "../../app/types/user";
 
 interface UserFormProps {
-  isVisible: boolean;
+  isOpen: boolean;
   formType: UserFormType;
   values?: {
     username: string;
     password: string;
     permissions: PermissionType[];
   };
+  onFinish: Function;
+  onCancel: Function;
 }
 
-function UserForm({ isVisible, formType, values }: UserFormProps) {
+function UserForm({ isOpen, formType, values }: UserFormProps) {
   const [addUser] = useAddUserMutation();
   const token = useAppSelector((state) => state.user.token);
 
-  const handleUserAddCancel = () => {
+  const handleCancel = () => {
     Modal.destroyAll();
   };
 
-  const handleUserAddOk = async (values: {
+  const handleOk = async (values: {
     username: string;
     password: string;
   }) => {
@@ -62,10 +64,11 @@ function UserForm({ isVisible, formType, values }: UserFormProps) {
   return (
     <Modal
       title={formType === UserFormType.USER_ADD ? "添加用户" : "编辑用户"}
-      open={isVisible}
+      open={isOpen}
       footer={[]}
+      closable={false}
     >
-      <Form onFinish={handleUserAddOk} labelCol={{ span: 4 }} preserve={false}>
+      <Form onFinish={handleOk} labelCol={{ span: 4 }} preserve={false}>
         <Form.Item
           label="用户名"
           name="username"
@@ -87,7 +90,7 @@ function UserForm({ isVisible, formType, values }: UserFormProps) {
           </Form.Item> */}
         <div style={{ textAlign: "right" }}>
           <Space>
-            <Button onClick={handleUserAddCancel}>取消</Button>
+            <Button onClick={handleCancel}>取消</Button>
             <Button type="primary" htmlType="submit">
               提交
             </Button>
