@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
 
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -73,6 +74,7 @@ const DashBoard: React.FC = () => {
             style={{ padding: 24, minHeight: 360 }}
           >
             <UserList />
+            <Outlet />
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
