@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
-import type { MenuProps } from "antd";
+import type { MenuItemProps, MenuProps } from "antd";
 import { Layout, Menu } from "antd";
 import {
   FileAddOutlined,
@@ -11,9 +11,10 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import UserList from "../../components/userList";
+import UserList from "../../../components/userList";
 
 import "./index.css";
+import { MenuItemType } from "rc-menu/lib/interface";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -41,12 +42,35 @@ const items: MenuItem[] = [
   getItem("用户管理", "user", <UserOutlined />),
 ];
 
+
+// TODO name change DashBoard => LayOut
 const DashBoard: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
+  // TODO add subpages' navigation after finishing subpages
+  const handleClick = (itemtype: MenuItemType) => {
+    switch (itemtype.key) {
+      case "dashboard":
+        navigate("/main/dashboard");
+        break;
+      case "map":
+        navigate("/main/map");
+        break;
+      case "upload":
+        break;
+      case "9":
+        break;
+      case "user":
+        navigate("/main/user");
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      
       <Sider
         collapsible
         collapsed={collapsed}
@@ -58,10 +82,11 @@ const DashBoard: React.FC = () => {
           defaultSelectedKeys={["dashboard"]}
           mode="inline"
           items={items}
+          onClick={handleClick}
         />
       </Sider>
       <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0 }} >
+        <Header className="site-layout-background" style={{ padding: 0 }}>
           1234
         </Header>
         <Content style={{ margin: "0 16px" }}>
@@ -69,13 +94,7 @@ const DashBoard: React.FC = () => {
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
           </Breadcrumb> */}
-          <div
-            className="site-layout-background"
-            style={{ padding: 24, minHeight: 360 }}
-          >
-            <UserList />
-            <Outlet />
-          </div>
+          <Outlet />
         </Content>
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2018 Created by Ant UED
