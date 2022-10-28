@@ -2,9 +2,10 @@ import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Login from "./routers/login/index";
-import DashBoard from "./routers/main/dashboard/index";
-import UserList from "./components/userList";
+import AppLayOut from "./routers/main";
+import DashBoard from "./routers/main/dashboard/dashboard";
 import Map from "./routers/main/map/map";
+import UserList from "./components/userList";
 
 import "./App.css";
 
@@ -17,13 +18,13 @@ const router = createBrowserRouter([
   {
     path: "/main",
     // TODO change main element
-    element: <DashBoard />,
+    element: <AppLayOut />,
     children: [
       {
         // TODO set dashboard as index page
         path: "dashboard",
         index: true,
-        element: <UserList />,
+        element: <DashBoard />,
       },
       {
         path: "map",

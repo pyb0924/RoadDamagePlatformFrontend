@@ -11,7 +11,6 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import UserList from "../../../components/userList";
 
 import "./index.css";
 import { MenuItemType } from "rc-menu/lib/interface";
@@ -44,7 +43,7 @@ const items: MenuItem[] = [
 
 
 // TODO name change DashBoard => LayOut
-const DashBoard: React.FC = () => {
+const AppLayOut: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
@@ -104,4 +103,4 @@ const DashBoard: React.FC = () => {
   );
 };
 
-export default DashBoard;
+export default AppLayOut;
