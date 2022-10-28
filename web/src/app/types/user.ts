@@ -6,15 +6,22 @@ export interface User {
   user_id: string;
   username: string;
   is_active: number;
-  permissions?: Array<PermissionType | string>;
-  permission_ids:Array<string>
+  permissions: Array<PermissionType | string>;
+  permission_ids: Array<string>;
   create_time: string;
   update_time: string;
 }
 
-export enum UserFormType {
+export enum UserModalType {
   USER_ADD,
   USER_EDIT,
+  CLOSE,
+}
+
+export interface UserModalData {
+  username: string;
+  password: string;
+  permissions: PermissionType[];
 }
 
 export interface UsersListResponse extends BaseResponse {

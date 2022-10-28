@@ -3,43 +3,59 @@ import React, { useState } from "react";
 import { Button, Form, Input, Modal, Space } from "antd";
 
 import { useAddUserMutation } from "../../app/api/userApi";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 import { HTTP_OK } from "../../app/types/base";
 import { PermissionType } from "../../app/types/permission";
-import { UserFormType } from "../../app/types/user";
+import { UserModalData, UserModalType } from "../../app/types/user";
+import {
+  setAddUserModalOpen,
+  setEditUserModalOpen,
+} from "../../app/slices/userModalSlice";
 
-interface UserFormProps {
-  isOpen: boolean;
-  formType: UserFormType;
-  values?: {
-    username: string;
-    password: string;
-    permissions: PermissionType[];
-  };
-  onFinish: Function;
-  onCancel: Function;
+interface UserModalProps {
+  modalType: UserModalType;
+  values?: UserModalData;
 }
 
-function UserForm({ isOpen, formType, values }: UserFormProps) {
+export function UserModal({ modalType, values }: UserModalProps) {
   const [addUser] = useAddUserMutation();
   const token = useAppSelector((state) => state.user.token);
+  const isAddUserModalOpen = useAppSelector(
+    (state) => state.userModal.isAddUserModalOpen
+  );
+  const isEditUserModalOpen = useAppSelector(
+    (state) => state.userModal.isEditUserModalOpen
+  );
+
+  const dispatch = useAppDispatch();
 
   const handleCancel = () => {
-    Modal.destroyAll();
+    switch (modalType) {
+      case UserModalType.USER_ADD:
+        dispatch(setAddUserModalOpen(false));
+        break;
+      case UserModalType.USER_EDIT:
+        dispatch(setEditUserModalOpen(false));
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleOk = async (values: {
-    username: string;
-    password: string;
-  }) => {
-    console.log(values);
+  const handleUserAddOk = async (values: UserModalData) => {
+    
     try {
       const addUserResponse = await addUser({
         headers: {
           Authorization: token,
         },
-        body: { ...values, permissions: [] },
+        // TODO permissions list
+        body: {
+          username: values.username,
+          password: values.password,
+          permissions: [],
+        },
       }).unwrap();
       if (addUserResponse.code === HTTP_OK) {
         Modal.destroyAll();
@@ -61,10 +77,30 @@ function UserForm({ isOpen, formType, values }: UserFormProps) {
     }
   };
 
+  const handleUserEditOk = async (values: UserModalData) => {};
+
+  const handleOk = async (values: {
+    username: string;
+    password: string;
+    permissions: PermissionType[];
+  }) => {
+    console.log(values);
+    switch (modalType) {
+      case UserModalType.USER_ADD:
+        handleUserAddOk(values);
+        break;
+      case UserModalType.USER_EDIT:
+        handleUserEditOk(values);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <Modal
-      title={formType === UserFormType.USER_ADD ? "添加用户" : "编辑用户"}
-      open={isOpen}
+      title={modalType === UserModalType.USER_ADD ? "添加用户" : "编辑用户"}
+      open={isEditUserModalOpen || isAddUserModalOpen}
       footer={[]}
       closable={false}
     >
@@ -101,4 +137,4 @@ function UserForm({ isOpen, formType, values }: UserFormProps) {
   );
 }
 
-export default UserForm;
+export default UserModal;
