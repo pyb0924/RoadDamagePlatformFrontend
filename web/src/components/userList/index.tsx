@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Space, Modal, Table, Form, Input } from "antd";
+import { Button, Space, Modal, Table } from "antd";
 import type { TablePaginationConfig } from "antd/es/table";
 import Column from "antd/lib/table/Column";
 import { FilterValue } from "antd/lib/table/interface";
@@ -15,11 +15,14 @@ import {
 import {
   useLazyGetAllUsersQuery,
   useDeleteUserMutation,
-  useAddUserMutation,
+  useLazyGetUserByIdQuery,
 } from "../../app/api/userApi";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { HTTP_OK } from "../../app/types/base";
-import { User, UserFormType } from "../../app/types/user";
+import { User, UserModalStateType } from "../../app/types/user";
+import { setUserModalState } from "../../app/slices/userModalSlice";
+
+import UserModal from "../userModal";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -31,23 +34,23 @@ interface TableParams {
 export default function UserList() {
   const [getUserList, { data: userList, isSuccess: isGetAllUsersSuccess }] =
     useLazyGetAllUsersQuery();
-  const [deleteUser, { data: deleteUserResponse }] = useDeleteUserMutation();
-  const [addUser, { data: addUserResponse }] = useAddUserMutation();
+  const [getUserById] = useLazyGetUserByIdQuery();
+  const [deleteUser] = useDeleteUserMutation();
 
   const token = useAppSelector((state) => state.user.token);
-  const [isAddUserModalOpen, setAddUserModalOpen] = useState(false);
-  const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
   const [userEditPlaceholder, setUserEditPlaceholder] = useState({
     username: "",
     password: "",
-    permission: [],
+    permissions: [] as string[],
   });
 
   const [tableParams, setTableParams] = useState<TableParams>({
+    // TODO fix bug: data lost after change page
     pagination: {
-      defaultCurrent: 1,
-      defaultPageSize: 5,
+      current: 1,
+      pageSize: 5,
     },
   });
 
@@ -61,68 +64,51 @@ export default function UserList() {
 
   // request by page
   useEffect(() => {
-    getUserList({
-      headers: {
-        Authorization: token,
-      },
-      params: {
-        offset: tableParams.pagination.current as number,
-        limit: tableParams.pagination.pageSize as number,
-      },
-    });
+    console.log(tableParams.pagination);
+    if (
+      token !== undefined &&
+      tableParams.pagination.current !== undefined &&
+      tableParams.pagination.pageSize !== undefined
+    ) {
+      getUserList({
+        headers: {
+          Authorization: token,
+        },
+        params: {
+          offset: tableParams.pagination.current as number,
+          limit: tableParams.pagination.pageSize as number,
+        },
+      });
+    }
   }, [getUserList, tableParams.pagination, token]);
 
   // handle add: open add modal
   const handleUserAdd = () => {
-    setAddUserModalOpen(true);
+    dispatch(setUserModalState(UserModalStateType.USER_ADD));
   };
 
-  const handleUserAddCancel = () => {
-    setAddUserModalOpen(false);
-  };
-
-  const handleUserAddOk = async (values: {
-    username: string;
-    password: string;
-  }) => {
-    console.log(values);
+  const handleUserEdit = async (record: User) => {
+    
     try {
-      const addUserResponse = await addUser({
+      const user = await getUserById({
+        id: record.user_id,
         headers: {
           Authorization: token,
         },
-        body: { ...values, permissions: [] },
       }).unwrap();
-      if (addUserResponse.code === HTTP_OK) {
-        Modal.destroyAll();
-        Modal.success({
-          title: "用户添加成功！",
-          content: `用户名：${values.username}，密码：${values.password}`,
+      console.log(user);
+      if ("username" in user && "permissions" in user) {
+        setUserEditPlaceholder({
+          username: user.username,
+          password: "",
+          permissions: user.permissions,
         });
-        setAddUserModalOpen(false);
-      } else {
-        Modal.error({
-          title: "用户添加失败！",
-          content: addUserResponse.message,
-        });
+        dispatch(setUserModalState(UserModalStateType.USER_EDIT));
       }
-    } catch (err: any) {
-      Modal.error({
-        title: "用户添加失败！",
-        content: err.toString(),
-      });
+    } catch (err) {
+      console.log(err);
     }
   };
-
-  const handleUserEdit = (record: User) => {
-    setEditUserModalOpen(true);
-  };
-
-  const handleUserEditCancel = () => {
-    setEditUserModalOpen(false);
-  };
-
-  const handleUserEditOk = async () => {};
 
   // handle delete
   const handleUserDelete = (record: User) => {
@@ -161,87 +147,7 @@ export default function UserList() {
         新增用户
       </Button>
 
-      <Modal
-        title="添加用户"
-        open={isAddUserModalOpen}
-        footer={[]}
-        closable={false}
-      >
-        <Form
-          onFinish={handleUserAddOk}
-          labelCol={{ span: 4 }}
-          preserve={false}
-        >
-          <Form.Item
-            label="用户名"
-            name="username"
-            rules={[{ required: true, message: "请输入用户名" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="密码"
-            name="password"
-            rules={[{ required: true, message: "请输入密码" }]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          {/* <Form.Item label="权限" name="permission">
-            // TODO add PermissionTree
-          </Form.Item> */}
-          <div style={{ textAlign: "right" }}>
-            <Space>
-              <Button onClick={handleUserAddCancel}>取消</Button>
-              <Button type="primary" htmlType="submit">
-                提交
-              </Button>
-            </Space>
-          </div>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="编辑用户"
-        open={isEditUserModalOpen}
-        footer={[]}
-        closable={false}
-      >
-        <Form
-          onFinish={handleUserEditOk}
-          labelCol={{ span: 4 }}
-          preserve={false}
-        >
-          <Form.Item
-            label="用户名"
-            name="username"
-            rules={[{ required: true, message: "请输入用户名" }]}
-          >
-            <Input placeholder={userEditPlaceholder.username} />
-          </Form.Item>
-
-          <Form.Item
-            label="密码"
-            name="password"
-            rules={[{ required: true, message: "请输入密码" }]}
-          >
-            <Input.Password placeholder={userEditPlaceholder.password} />
-          </Form.Item>
-
-          {/* <Form.Item label="权限" name="permission">
-            // TODO add PermissionTree
-          </Form.Item> */}
-          <div style={{ textAlign: "right" }}>
-            <Space>
-              <Button onClick={handleUserEditCancel}>取消</Button>
-              <Button type="primary" htmlType="submit">
-                提交
-              </Button>
-            </Space>
-          </div>
-        </Form>
-      </Modal>
+      <UserModal placeholder={userEditPlaceholder} />
 
       <Table<User>
         dataSource={userList}

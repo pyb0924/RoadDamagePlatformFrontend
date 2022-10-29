@@ -1,52 +1,49 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Button, Form, Input, Modal, Space } from "antd";
 
 import { useAddUserMutation } from "../../app/api/userApi";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 import { HTTP_OK } from "../../app/types/base";
 import { PermissionType } from "../../app/types/permission";
-import { UserFormType } from "../../app/types/user";
+import { UserModalData, UserModalStateType } from "../../app/types/user";
+import { setUserModalState } from "../../app/slices/userModalSlice";
 
-interface UserFormProps {
-  isOpen: boolean;
-  formType: UserFormType;
-  values?: {
-    username: string;
-    password: string;
-    permissions: PermissionType[];
-  };
-  onFinish: Function;
-  onCancel: Function;
+interface UserModalProps {
+  placeholder: UserModalData;
 }
 
-function UserForm({ isOpen, formType, values }: UserFormProps) {
+export function UserModal({ placeholder }: UserModalProps) {
   const [addUser] = useAddUserMutation();
   const token = useAppSelector((state) => state.user.token);
+  const userModalState = useAppSelector((state) => state.userModal.modelState);
+
+  const dispatch = useAppDispatch();
 
   const handleCancel = () => {
-    Modal.destroyAll();
+    dispatch(setUserModalState(UserModalStateType.DEFAULT));
   };
 
-  const handleOk = async (values: {
-    username: string;
-    password: string;
-  }) => {
-    console.log(values);
+  const handleUserAddOk = async (values: UserModalData) => {
     try {
       const addUserResponse = await addUser({
         headers: {
           Authorization: token,
         },
-        body: { ...values, permissions: [] },
+        // TODO permissions list
+        body: {
+          username: values.username,
+          password: values.password,
+          permissions: [],
+        },
       }).unwrap();
       if (addUserResponse.code === HTTP_OK) {
-        Modal.destroyAll();
         Modal.success({
           title: "用户添加成功！",
           content: `用户名：${values.username}，密码：${values.password}`,
         });
+        dispatch(setUserModalState(UserModalStateType.DEFAULT));
       } else {
         Modal.error({
           title: "用户添加失败！",
@@ -61,10 +58,34 @@ function UserForm({ isOpen, formType, values }: UserFormProps) {
     }
   };
 
+  const handleUserEditOk = async (values: UserModalData) => {};
+
+  const handleOk = async (values: {
+    username: string;
+    password: string;
+    permissions: PermissionType[];
+  }) => {
+    switch (userModalState) {
+      case UserModalStateType.USER_ADD:
+        handleUserAddOk(values);
+        break;
+      case UserModalStateType.USER_EDIT:
+        handleUserEditOk(values);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <Modal
-      title={formType === UserFormType.USER_ADD ? "添加用户" : "编辑用户"}
-      open={isOpen}
+      title={
+        userModalState === UserModalStateType.USER_ADD ? "添加用户" : "编辑用户"
+      }
+      open={
+        userModalState === UserModalStateType.USER_ADD ||
+        userModalState === UserModalStateType.USER_EDIT
+      }
       footer={[]}
       closable={false}
     >
@@ -74,7 +95,7 @@ function UserForm({ isOpen, formType, values }: UserFormProps) {
           name="username"
           rules={[{ required: true, message: "请输入用户名" }]}
         >
-          <Input placeholder={values?.username} />
+          <Input placeholder={placeholder?.username} />
         </Form.Item>
 
         <Form.Item
@@ -82,7 +103,7 @@ function UserForm({ isOpen, formType, values }: UserFormProps) {
           name="password"
           rules={[{ required: true, message: "请输入密码" }]}
         >
-          <Input.Password placeholder={values?.password} />
+          <Input.Password placeholder={placeholder?.password} />
         </Form.Item>
 
         {/* <Form.Item label="权限" name="permission">
@@ -101,4 +122,4 @@ function UserForm({ isOpen, formType, values }: UserFormProps) {
   );
 }
 
-export default UserForm;
+export default UserModal;
