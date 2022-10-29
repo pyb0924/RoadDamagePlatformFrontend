@@ -1,23 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { UserModalStateType } from "../types/user";
+
 const initialState = {
-  isEditUserModalOpen: false,
-  isAddUserModalOpen: false,
+  modelState: UserModalStateType.DEFAULT,
 };
 const UserModalSlice = createSlice({
   name: "userModel",
   initialState,
   reducers: {
-    setAddUserModalOpen(state, action: PayloadAction<boolean>) {
-      state.isAddUserModalOpen = action.payload;
-    },
-    setEditUserModalOpen(state, action: PayloadAction<boolean>) {
-      state.isEditUserModalOpen = action.payload;
+    setUserModalState(state, action: PayloadAction<UserModalStateType>) {
+      state.modelState = action.payload;
     },
   },
 });
 
-export const { setAddUserModalOpen, setEditUserModalOpen } =
-  UserModalSlice.actions;
+export const { setUserModalState } = UserModalSlice.actions;
 
 export default UserModalSlice.reducer;

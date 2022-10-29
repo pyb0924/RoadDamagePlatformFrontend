@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Button, Form, Input, Modal, Space } from "antd";
 
@@ -7,44 +7,25 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 import { HTTP_OK } from "../../app/types/base";
 import { PermissionType } from "../../app/types/permission";
-import { UserModalData, UserModalType } from "../../app/types/user";
-import {
-  setAddUserModalOpen,
-  setEditUserModalOpen,
-} from "../../app/slices/userModalSlice";
+import { UserModalData, UserModalStateType } from "../../app/types/user";
+import { setUserModalState } from "../../app/slices/userModalSlice";
 
 interface UserModalProps {
-  modalType: UserModalType;
-  values?: UserModalData;
+  placeholder: UserModalData;
 }
 
-export function UserModal({ modalType, values }: UserModalProps) {
+export function UserModal({ placeholder }: UserModalProps) {
   const [addUser] = useAddUserMutation();
   const token = useAppSelector((state) => state.user.token);
-  const isAddUserModalOpen = useAppSelector(
-    (state) => state.userModal.isAddUserModalOpen
-  );
-  const isEditUserModalOpen = useAppSelector(
-    (state) => state.userModal.isEditUserModalOpen
-  );
+  const userModalState = useAppSelector((state) => state.userModal.modelState);
 
   const dispatch = useAppDispatch();
 
   const handleCancel = () => {
-    switch (modalType) {
-      case UserModalType.USER_ADD:
-        dispatch(setAddUserModalOpen(false));
-        break;
-      case UserModalType.USER_EDIT:
-        dispatch(setEditUserModalOpen(false));
-        break;
-      default:
-        break;
-    }
+    dispatch(setUserModalState(UserModalStateType.DEFAULT));
   };
 
   const handleUserAddOk = async (values: UserModalData) => {
-    
     try {
       const addUserResponse = await addUser({
         headers: {
@@ -58,11 +39,11 @@ export function UserModal({ modalType, values }: UserModalProps) {
         },
       }).unwrap();
       if (addUserResponse.code === HTTP_OK) {
-        Modal.destroyAll();
         Modal.success({
           title: "用户添加成功！",
           content: `用户名：${values.username}，密码：${values.password}`,
         });
+        dispatch(setUserModalState(UserModalStateType.DEFAULT));
       } else {
         Modal.error({
           title: "用户添加失败！",
@@ -84,12 +65,11 @@ export function UserModal({ modalType, values }: UserModalProps) {
     password: string;
     permissions: PermissionType[];
   }) => {
-    console.log(values);
-    switch (modalType) {
-      case UserModalType.USER_ADD:
+    switch (userModalState) {
+      case UserModalStateType.USER_ADD:
         handleUserAddOk(values);
         break;
-      case UserModalType.USER_EDIT:
+      case UserModalStateType.USER_EDIT:
         handleUserEditOk(values);
         break;
       default:
@@ -99,8 +79,13 @@ export function UserModal({ modalType, values }: UserModalProps) {
 
   return (
     <Modal
-      title={modalType === UserModalType.USER_ADD ? "添加用户" : "编辑用户"}
-      open={isEditUserModalOpen || isAddUserModalOpen}
+      title={
+        userModalState === UserModalStateType.USER_ADD ? "添加用户" : "编辑用户"
+      }
+      open={
+        userModalState === UserModalStateType.USER_ADD ||
+        userModalState === UserModalStateType.USER_EDIT
+      }
       footer={[]}
       closable={false}
     >
@@ -110,7 +95,7 @@ export function UserModal({ modalType, values }: UserModalProps) {
           name="username"
           rules={[{ required: true, message: "请输入用户名" }]}
         >
-          <Input placeholder={values?.username} />
+          <Input placeholder={placeholder?.username} />
         </Form.Item>
 
         <Form.Item
@@ -118,7 +103,7 @@ export function UserModal({ modalType, values }: UserModalProps) {
           name="password"
           rules={[{ required: true, message: "请输入密码" }]}
         >
-          <Input.Password placeholder={values?.password} />
+          <Input.Password placeholder={placeholder?.password} />
         </Form.Item>
 
         {/* <Form.Item label="权限" name="permission">

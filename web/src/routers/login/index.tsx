@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
@@ -21,7 +21,6 @@ const Login: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const token = useAppSelector((state) => state.user.token);
   const dispatch = useAppDispatch();
 
   const onFinish = async (values: {

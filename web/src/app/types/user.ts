@@ -12,20 +12,20 @@ export interface User {
   update_time: string;
 }
 
-export enum UserModalType {
+export enum UserModalStateType {
+  DEFAULT,
   USER_ADD,
   USER_EDIT,
-  CLOSE,
 }
 
 export interface UserModalData {
   username: string;
   password: string;
-  permissions: PermissionType[];
+  permissions: string[];
 }
 
 export interface UsersListResponse extends BaseResponse {
-  data: Array<User>;
+  data: User[];
 }
 
 export interface UserResponse extends BaseResponse {

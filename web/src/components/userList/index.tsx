@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Space, Modal, Table, Form, Input } from "antd";
+import { Button, Space, Modal, Table } from "antd";
 import type { TablePaginationConfig } from "antd/es/table";
 import Column from "antd/lib/table/Column";
 import { FilterValue } from "antd/lib/table/interface";
@@ -15,16 +15,13 @@ import {
 import {
   useLazyGetAllUsersQuery,
   useDeleteUserMutation,
-  useAddUserMutation,
   useLazyGetUserByIdQuery,
 } from "../../app/api/userApi";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { HTTP_OK } from "../../app/types/base";
-import { User } from "../../app/types/user";
-import {
-  setAddUserModalOpen,
-  setEditUserModalOpen,
-} from "../../app/slices/userModalSlice";
+import { User, UserModalStateType } from "../../app/types/user";
+import { setUserModalState } from "../../app/slices/userModalSlice";
+
 import UserModal from "../userModal";
 
 interface TableParams {
@@ -38,23 +35,22 @@ export default function UserList() {
   const [getUserList, { data: userList, isSuccess: isGetAllUsersSuccess }] =
     useLazyGetAllUsersQuery();
   const [getUserById] = useLazyGetUserByIdQuery();
-  const [deleteUser, { data: deleteUserResponse }] = useDeleteUserMutation();
-  const [addUser, { data: addUserResponse }] = useAddUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
   const token = useAppSelector((state) => state.user.token);
-
   const dispatch = useAppDispatch();
 
   const [userEditPlaceholder, setUserEditPlaceholder] = useState({
     username: "",
     password: "",
-    permissions: [],
+    permissions: [] as string[],
   });
 
   const [tableParams, setTableParams] = useState<TableParams>({
+    // TODO fix bug: data lost after change page
     pagination: {
-      defaultCurrent: 1,
-      defaultPageSize: 5,
+      current: 1,
+      pageSize: 5,
     },
   });
 
@@ -68,37 +64,47 @@ export default function UserList() {
 
   // request by page
   useEffect(() => {
-    getUserList({
-      headers: {
-        Authorization: token,
-      },
-      params: {
-        offset: tableParams.pagination.current as number,
-        limit: tableParams.pagination.pageSize as number,
-      },
-    });
+    console.log(tableParams.pagination);
+    if (
+      token !== undefined &&
+      tableParams.pagination.current !== undefined &&
+      tableParams.pagination.pageSize !== undefined
+    ) {
+      getUserList({
+        headers: {
+          Authorization: token,
+        },
+        params: {
+          offset: tableParams.pagination.current as number,
+          limit: tableParams.pagination.pageSize as number,
+        },
+      });
+    }
   }, [getUserList, tableParams.pagination, token]);
 
   // handle add: open add modal
   const handleUserAdd = () => {
-    dispatch(setAddUserModalOpen(true));
+    dispatch(setUserModalState(UserModalStateType.USER_ADD));
   };
 
   const handleUserEdit = async (record: User) => {
+    
     try {
       const user = await getUserById({
         id: record.user_id,
         headers: {
           Authorization: token,
         },
-      });
-      if ("username" in user && "permissions" in user)
+      }).unwrap();
+      console.log(user);
+      if ("username" in user && "permissions" in user) {
         setUserEditPlaceholder({
           username: user.username,
           password: "",
           permissions: user.permissions,
         });
-      dispatch(setEditUserModalOpen(true));
+        dispatch(setUserModalState(UserModalStateType.USER_EDIT));
+      }
     } catch (err) {
       console.log(err);
     }
@@ -141,7 +147,7 @@ export default function UserList() {
         新增用户
       </Button>
 
-      <UserModal modalType={} />
+      <UserModal placeholder={userEditPlaceholder} />
 
       <Table<User>
         dataSource={userList}
