@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Button, Form, Input, Modal, Space } from "antd";
 
@@ -9,15 +9,18 @@ import { HTTP_OK } from "../../app/types/base";
 import { PermissionType } from "../../app/types/permission";
 import { UserModalData, UserModalStateType } from "../../app/types/user";
 import { setUserModalState } from "../../app/slices/userModalSlice";
+import { FormInstance } from "antd/es/form/Form";
 
-interface UserModalProps {
-  placeholder: UserModalData;
-}
-
-export function UserModal({ placeholder }: UserModalProps) {
+export function UserModal() {
   const [addUser] = useAddUserMutation();
   const token = useAppSelector((state) => state.user.token);
-  const userModalState = useAppSelector((state) => state.userModal.modelState);
+  const userModalState = useAppSelector((state) => state.userModal.modalState);
+  const userModalData = useAppSelector((state) => state.userModal.modalData);
+
+  const formRef = useRef<FormInstance>(null);
+  useEffect(() => {
+    formRef.current?.resetFields();
+  }, [userModalData]);
 
   const dispatch = useAppDispatch();
 
@@ -89,26 +92,31 @@ export function UserModal({ placeholder }: UserModalProps) {
       footer={[]}
       closable={false}
     >
-      <Form onFinish={handleOk} labelCol={{ span: 4 }} preserve={false}>
+      <Form
+        onFinish={handleOk}
+        labelCol={{ span: 4 }}
+        preserve={false}
+        ref={formRef}
+      >
         <Form.Item
           label="用户名"
           name="username"
           rules={[{ required: true, message: "请输入用户名" }]}
+          initialValue={userModalData?.username}
         >
-          <Input placeholder={placeholder?.username} />
+          <Input />
         </Form.Item>
 
         <Form.Item
           label="密码"
           name="password"
           rules={[{ required: true, message: "请输入密码" }]}
+          initialValue={userModalData?.password}
         >
-          <Input.Password placeholder={placeholder?.password} />
+          <Input.Password />
         </Form.Item>
 
-        {/* <Form.Item label="权限" name="permission">
-            // TODO add PermissionTree
-          </Form.Item> */}
+        {<Form.Item label="权限" name="permission"></Form.Item>}
         <div style={{ textAlign: "right" }}>
           <Space>
             <Button onClick={handleCancel}>取消</Button>

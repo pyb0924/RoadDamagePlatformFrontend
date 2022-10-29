@@ -16,13 +16,17 @@ import {
   useLazyGetAllUsersQuery,
   useDeleteUserMutation,
   useLazyGetUserByIdQuery,
-} from "../../app/api/userApi";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { HTTP_OK } from "../../app/types/base";
-import { User, UserModalStateType } from "../../app/types/user";
-import { setUserModalState } from "../../app/slices/userModalSlice";
+} from "../../../app/api/userApi";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { HTTP_OK } from "../../../app/types/base";
+import { User, UserModalStateType } from "../../../app/types/user";
+import {
+  setUserModalState,
+  setUserModalData,
+  cleanUserModalData,
+} from "../../../app/slices/userModalSlice";
 
-import UserModal from "../userModal";
+import UserModal from "../../../components/userModal";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -31,7 +35,7 @@ interface TableParams {
   filters?: Record<string, FilterValue>;
 }
 
-export default function UserList() {
+export default function UserPage() {
   const [getUserList, { data: userList, isSuccess: isGetAllUsersSuccess }] =
     useLazyGetAllUsersQuery();
   const [getUserById] = useLazyGetUserByIdQuery();
@@ -39,13 +43,7 @@ export default function UserList() {
 
   const token = useAppSelector((state) => state.user.token);
   const dispatch = useAppDispatch();
-
-  const [userEditPlaceholder, setUserEditPlaceholder] = useState({
-    username: "",
-    password: "",
-    permissions: [] as string[],
-  });
-
+  
   const [tableParams, setTableParams] = useState<TableParams>({
     // TODO fix bug: data lost after change page
     pagination: {
@@ -84,11 +82,11 @@ export default function UserList() {
 
   // handle add: open add modal
   const handleUserAdd = () => {
+    dispatch(cleanUserModalData());
     dispatch(setUserModalState(UserModalStateType.USER_ADD));
   };
 
   const handleUserEdit = async (record: User) => {
-    
     try {
       const user = await getUserById({
         id: record.user_id,
@@ -98,11 +96,13 @@ export default function UserList() {
       }).unwrap();
       console.log(user);
       if ("username" in user && "permissions" in user) {
-        setUserEditPlaceholder({
-          username: user.username,
-          password: "",
-          permissions: user.permissions,
-        });
+        dispatch(
+          setUserModalData({
+            username: user.username,
+            password: "",
+            permissions: user.permissions,
+          })
+        );
         dispatch(setUserModalState(UserModalStateType.USER_EDIT));
       }
     } catch (err) {
@@ -147,7 +147,7 @@ export default function UserList() {
         新增用户
       </Button>
 
-      <UserModal placeholder={userEditPlaceholder} />
+      <UserModal />
 
       <Table<User>
         dataSource={userList}

@@ -48,8 +48,7 @@ export const userApi = createApi({
         url: `/${request.id}`,
         headers: request.headers,
       }),
-      // transformResponse: (response: UserResponse) =>
-      //   lookupPermissionType(response.data),
+      transformResponse: (response: UserResponse) => response.data,
     }),
     addUser: builder.mutation<BaseResponse, AddUserRequest>({
       query: (request: AddUserRequest) => ({
