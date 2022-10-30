@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
+import { MenuItemType } from "antd/lib/menu/hooks/useItems";
 import {
   FileAddOutlined,
   GlobalOutlined,
@@ -12,7 +13,6 @@ import {
 } from "@ant-design/icons";
 
 import "./index.css";
-import { MenuItemType } from "rc-menu/lib/interface";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -94,7 +94,7 @@ const AppLayOut: React.FC = () => {
           <Outlet />
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Ant Design ©2018 Created by Ant UED
+          智慧公路信息管理平台 by EI6705 Group9
         </Footer>
       </Layout>
     </Layout>
