@@ -19,7 +19,10 @@ import {
 } from "../../../app/api/userApi";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { HTTP_OK } from "../../../app/types/base";
-import { User, UserModalStateType } from "../../../app/types/user";
+import {
+  User,
+  UserModalStateType,
+} from "../../../app/types/user";
 import {
   setUserModalState,
   setUserModalData,
@@ -36,17 +39,19 @@ interface TableParams {
 }
 
 export default function UserPage() {
-  const [getUserList, { data: userList, isSuccess: isGetAllUsersSuccess }] =
+  const [getUserList, { isSuccess: isGetAllUsersSuccess }] =
     useLazyGetAllUsersQuery();
   const [getUserById] = useLazyGetUserByIdQuery();
   const [deleteUser] = useDeleteUserMutation();
 
   const token = useAppSelector((state) => state.user.token);
   const dispatch = useAppDispatch();
-  
+
+  const [userList, setuserList] = useState([] as User[]);
+
   const [tableParams, setTableParams] = useState<TableParams>({
-    // TODO fix bug: data lost after change page
     pagination: {
+      total: 1,
       current: 1,
       pageSize: 5,
     },
@@ -62,23 +67,43 @@ export default function UserPage() {
 
   // request by page
   useEffect(() => {
+    // TODO fix bug: recursive query
     console.log(tableParams.pagination);
+    const fetchAndUpdateData = async () => {
+      try {
+        const response = await getUserList({
+          headers: {
+            Authorization: token,
+          },
+          params: {
+            offset: tableParams.pagination.current as number,
+            limit: tableParams.pagination.pageSize as number,
+          },
+        }).unwrap();
+
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            total: response.total,
+            current: tableParams.pagination.current,
+            pageSize: tableParams.pagination.pageSize,
+          },
+        });
+        setuserList(response.user_list);
+      } catch (err) {
+        console.log(err);
+      }
+    };
     if (
       token !== undefined &&
       tableParams.pagination.current !== undefined &&
       tableParams.pagination.pageSize !== undefined
     ) {
-      getUserList({
-        headers: {
-          Authorization: token,
-        },
-        params: {
-          offset: tableParams.pagination.current as number,
-          limit: tableParams.pagination.pageSize as number,
-        },
-      });
+      fetchAndUpdateData();
     }
-  }, [getUserList, tableParams.pagination, token]);
+  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getUserList,tableParams.pagination.current, token]);
 
   // handle add: open add modal
   const handleUserAdd = () => {
@@ -111,6 +136,7 @@ export default function UserPage() {
   };
 
   // handle delete
+  // TODO render after delete
   const handleUserDelete = (record: User) => {
     console.log(record);
     Modal.confirm({
@@ -155,12 +181,17 @@ export default function UserPage() {
         rowKey={(record) => record.user_id}
         loading={!isGetAllUsersSuccess}
         onChange={handleTableChange}
-      >
+      > 
         <Column
           title="用户名"
           dataIndex="username"
           key="username"
           sorter={true}
+        />
+        <Column
+          title="激活状态"
+          dataIndex="is_active"
+          key="is_active"
         />
         <Column
           title="创建时间"
@@ -185,11 +216,12 @@ export default function UserPage() {
                 icon={<EditOutlined />}
                 onClick={() => handleUserEdit(record as User)}
               >
-                权限更改
+                编辑用户
               </Button>
               <Button
                 key="delete"
                 size="small"
+                type="primary"
                 icon={<DeleteOutlined />}
                 onClick={() => handleUserDelete(record as User)}
                 danger

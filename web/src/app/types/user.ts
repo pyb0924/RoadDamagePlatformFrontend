@@ -24,8 +24,13 @@ export interface UserModalData {
   permissions: string[];
 }
 
+export interface UsersListResponseData {
+  total: number;
+  user_list: User[];
+}
+
 export interface UsersListResponse extends BaseResponse {
-  data: User[];
+  data: UsersListResponseData;
 }
 
 export interface UserResponse extends BaseResponse {

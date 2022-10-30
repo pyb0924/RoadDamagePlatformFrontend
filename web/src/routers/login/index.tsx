@@ -5,7 +5,7 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Modal, Typography } from "antd";
 
 import { useLoginMutation } from "../../app/api/loginApi";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch } from "../../app/hooks";
 import { setToken, setUser } from "../../app/slices/userSlice";
 import { HTTP_OK } from "../../app/types/base";
 import { LoginRequest, TokenDataWithId } from "../../app/types/login";

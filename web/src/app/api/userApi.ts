@@ -10,22 +10,23 @@ import {
   AddUserRequest,
   UpdatePwdRequest,
   User,
+  UsersListResponseData,
 } from "../types/user";
 
-function lookupPermissionType(user: User) {
-  if (user.permissions !== undefined) {
-    return {
-      ...user,
-      permissions: user.permissions.map((permission) =>
-        typeof permission === "number"
-          ? permissionTypeList[permission]
-          : permission
-      ),
-    };
-  } else {
-    return user;
-  }
-}
+// function lookupPermissionType(user: User) {
+//   if (user.permissions !== undefined) {
+//     return {
+//       ...user,
+//       permissions: user.permissions.map((permission) =>
+//         typeof permission === "number"
+//           ? permissionTypeList[permission]
+//           : permission
+//       ),
+//     };
+//   } else {
+//     return user;
+//   }
+// }
 
 export const userApi = createApi({
   reducerPath: "userApi",
@@ -34,14 +35,14 @@ export const userApi = createApi({
     baseUrl: process.env.REACT_APP_BASEURL + "user",
   }),
   endpoints: (builder) => ({
-    getAllUsers: builder.query<User[], UsersListRequest>({
+    getAllUsers: builder.query<UsersListResponseData, UsersListRequest>({
       query: (request: UsersListRequest) => ({
         url: "",
         params: request.params,
         headers: request.headers,
       }),
       transformResponse: (response: UsersListResponse) => response.data,
-      providesTags: ["User"],
+      providesTags: ["User"]
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
