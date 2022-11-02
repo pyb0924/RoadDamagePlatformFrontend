@@ -1,36 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { UserModalStateType, UserModalData } from "../types/user";
+import { UserModalType } from "../types/user";
 
 const initialState = {
-  modalState: UserModalStateType.DEFAULT,
-  modalData: {
-    username: "",
-    password: "",
-    permissions: [] as string[],
-  },
+  modalType: UserModalType.DEFAULT,
+  id: "",
+  
 };
 const UserModalSlice = createSlice({
   name: "userModel",
   initialState,
   reducers: {
-    setUserModalState(state, action: PayloadAction<UserModalStateType>) {
-      state.modalState = action.payload;
+    setUserModalType(state, action: PayloadAction<UserModalType>) {
+      state.modalType = action.payload;
     },
-    setUserModalData(state, action: PayloadAction<UserModalData>) {
-      state.modalData = action.payload;
-    },
-    cleanUserModalData(state) {
-      state.modalData = {
-        username: "",
-        password: "",
-        permissions: [] as string[],
-      };
+    setUserModalId(state, action: PayloadAction<string>) {
+      state.id = action.payload;
     },
   },
 });
 
-export const { setUserModalState, setUserModalData, cleanUserModalData } =
+export const { setUserModalType, setUserModalId } =
   UserModalSlice.actions;
 
 export default UserModalSlice.reducer;

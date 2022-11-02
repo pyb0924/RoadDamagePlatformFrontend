@@ -1,18 +1,23 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import { BaseRequestWithToken } from "../types/base";
-import { Permission } from "../types/permission";
+import { PermissionNode, PermissionTreeResponse } from "../types/permission";
 
 export const permissionApi = createApi({
   reducerPath: "permissionApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL + "perm",
+    baseUrl: process.env.REACT_APP_BASEURL + "permission",
   }),
   endpoints: (builder) => ({
-    getPermissionTree: builder.query<Permission[], BaseRequestWithToken>({
+    getPermissionTree: builder.query<PermissionNode[], BaseRequestWithToken>({
       query: (request: BaseRequestWithToken) => ({
         url: "",
         headers: request.headers,
       }),
+      transformResponse: (response: PermissionTreeResponse) => response.data,
+      keepUnusedDataFor: 3600 * 7,
     }),
   }),
 });
+
+export const { useGetPermissionTreeQuery } = permissionApi;

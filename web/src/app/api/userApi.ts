@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { BaseResponse } from "../types/base";
-import { permissionTypeList } from "../types/permission";
 import {
   UserByIdRequest,
   UserResponse,
@@ -42,7 +41,7 @@ export const userApi = createApi({
         headers: request.headers,
       }),
       transformResponse: (response: UsersListResponse) => response.data,
-      providesTags: ["User"]
+      providesTags: ["User"],
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({

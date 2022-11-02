@@ -15,18 +15,13 @@ import {
 import {
   useLazyGetAllUsersQuery,
   useDeleteUserMutation,
-  useLazyGetUserByIdQuery,
 } from "../../../app/api/userApi";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { HTTP_OK } from "../../../app/types/base";
+import { User, UserModalType } from "../../../app/types/user";
 import {
-  User,
-  UserModalStateType,
-} from "../../../app/types/user";
-import {
-  setUserModalState,
-  setUserModalData,
-  cleanUserModalData,
+  setUserModalId,
+  setUserModalType,
 } from "../../../app/slices/userModalSlice";
 
 import UserModal from "../../../components/userModal";
@@ -41,7 +36,7 @@ interface TableParams {
 export default function UserPage() {
   const [getUserList, { isSuccess: isGetAllUsersSuccess }] =
     useLazyGetAllUsersQuery();
-  const [getUserById] = useLazyGetUserByIdQuery();
+
   const [deleteUser] = useDeleteUserMutation();
 
   const token = useAppSelector((state) => state.user.token);
@@ -65,74 +60,53 @@ export default function UserPage() {
     });
   };
 
+  const fetchAndUpdateData = async () => {
+    try {
+      const response = await getUserList({
+        headers: {
+          Authorization: token,
+        },
+        params: {
+          offset: tableParams.pagination.current as number,
+          limit: tableParams.pagination.pageSize as number,
+        },
+      }).unwrap();
+
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          total: response.total,
+          current: tableParams.pagination.current,
+          pageSize: tableParams.pagination.pageSize,
+        },
+      });
+      setuserList(response.user_list);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   // request by page
   useEffect(() => {
-    // TODO fix bug: recursive query
-    console.log(tableParams.pagination);
-    const fetchAndUpdateData = async () => {
-      try {
-        const response = await getUserList({
-          headers: {
-            Authorization: token,
-          },
-          params: {
-            offset: tableParams.pagination.current as number,
-            limit: tableParams.pagination.pageSize as number,
-          },
-        }).unwrap();
-
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            total: response.total,
-            current: tableParams.pagination.current,
-            pageSize: tableParams.pagination.pageSize,
-          },
-        });
-        setuserList(response.user_list);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     if (
-      token !== undefined &&
+      
       tableParams.pagination.current !== undefined &&
       tableParams.pagination.pageSize !== undefined
     ) {
       fetchAndUpdateData();
     }
-  
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getUserList,tableParams.pagination.current, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getUserList, tableParams.pagination.current, token]);
 
   // handle add: open add modal
   const handleUserAdd = () => {
-    dispatch(cleanUserModalData());
-    dispatch(setUserModalState(UserModalStateType.USER_ADD));
+    dispatch(setUserModalId(""));
+    dispatch(setUserModalType(UserModalType.USER_ADD));
   };
 
-  const handleUserEdit = async (record: User) => {
-    try {
-      const user = await getUserById({
-        id: record.user_id,
-        headers: {
-          Authorization: token,
-        },
-      }).unwrap();
-      console.log(user);
-      if ("username" in user && "permissions" in user) {
-        dispatch(
-          setUserModalData({
-            username: user.username,
-            password: "",
-            permissions: user.permissions,
-          })
-        );
-        dispatch(setUserModalState(UserModalStateType.USER_EDIT));
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const handleUserEdit = (record: User) => {
+    dispatch(setUserModalId(record.user_id));
+    dispatch(setUserModalType(UserModalType.USER_EDIT));
   };
 
   // handle delete
@@ -164,6 +138,7 @@ export default function UserPage() {
 
   return (
     <div>
+      
       <Button
         type="primary"
         style={{ marginTop: 16, marginBottom: 16, float: "right" }}
@@ -181,18 +156,14 @@ export default function UserPage() {
         rowKey={(record) => record.user_id}
         loading={!isGetAllUsersSuccess}
         onChange={handleTableChange}
-      > 
+      >
         <Column
           title="用户名"
           dataIndex="username"
           key="username"
           sorter={true}
         />
-        <Column
-          title="激活状态"
-          dataIndex="is_active"
-          key="is_active"
-        />
+        <Column title="激活状态" dataIndex="is_active" key="is_active" />
         <Column
           title="创建时间"
           dataIndex="create_time"

@@ -1,15 +1,23 @@
-export interface Permission {
-  id: string;
-  name: string;
-  children: Permission[];
+import { BaseResponse } from "./base";
+
+export interface PermissionNode {
+  key: string;
+  title: string;
+  children?: PermissionNode[];
 }
 
-export enum PermissionType {
-  User_Add = "添加用户",
-  User_Delete = "删除用户",
+export enum Permission {
+  SYSTEM = "system",
+  USER = "user",
+  USER_ADD = "user:add",
+  USER_EDIT = "user:edit",
+  USER_DELETE = "user:delete",
+  PERM = "perm",
+  PERM_ADD = "perm:add",
+  PERM_EDIT = "perm:edit",
+  PERM_DELETE = "perm:delete",
 }
 
-export const permissionTypeList = [
-  PermissionType.User_Add,
-  PermissionType.User_Delete,
-];
+export interface PermissionTreeResponse extends BaseResponse {
+  data: PermissionNode[];
+}
