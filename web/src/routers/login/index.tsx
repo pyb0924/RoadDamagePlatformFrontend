@@ -8,12 +8,18 @@ import { useLoginMutation } from "../../app/api/loginApi";
 import { useAppDispatch } from "../../app/hooks";
 import { setToken, setUser } from "../../app/slices/userSlice";
 import { HTTP_OK } from "../../app/types/base";
-import { LoginRequest, TokenDataWithId } from "../../app/types/login";
+import { TokenDataWithId } from "../../app/types/login";
 
 import "./index.css";
 import { useLazyGetUserByIdQuery } from "../../app/api/userApi";
 
 const { Text } = Typography;
+
+interface LoginFormData {
+  username: string;
+  password: string;
+  remember: boolean;
+}
 
 const Login: React.FC = () => {
   const [login] = useLoginMutation();
@@ -23,22 +29,16 @@ const Login: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const onFinish = async (values: {
-    username: string;
-    password: string;
-    remember: boolean;
-  }) => {
-    const loginRequest: LoginRequest = {
-      body: {
-        username: values.username,
-        password: values.password,
-      },
-      headers: {},
-    };
-
+  const onFinish = async (values: LoginFormData) => {
     try {
-      const loginResponse = await login(loginRequest).unwrap();
-      
+      const loginResponse = await login({
+        body: {
+          username: values.username,
+          password: values.password,
+        },
+        headers: {},
+      }).unwrap();
+
       if (loginResponse.code === HTTP_OK) {
         navigate("/main");
         const newToken =

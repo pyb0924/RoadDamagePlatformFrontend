@@ -18,6 +18,7 @@ export enum UserModalType {
 
 export interface UserFormData {
   username: string;
+  password?: string;
   is_active: number;
   permissions: string[];
 }
@@ -44,6 +45,7 @@ export interface UserByIdRequest extends BaseRequestWithToken {
 export interface AddUserRequest extends BaseRequestWithToken {
   body: {
     username: string;
+    password: string;
     permissions: string[];
   };
 }

@@ -30,6 +30,7 @@ export default function UserForm() {
 
   const [userFormData, setuserFormData] = useState<UserFormData>({
     username: "",
+    password: "",
     is_active: 1,
     permissions: [],
   });
@@ -54,6 +55,7 @@ export default function UserForm() {
     } else {
       setuserFormData({
         username: "",
+        password: "",
         is_active: 1,
         permissions: [],
       });
@@ -71,6 +73,10 @@ export default function UserForm() {
   };
 
   const handleUserAddOk = async (values: UserFormData) => {
+    if (values.password === undefined) {
+      return;
+    }
+
     try {
       const addUserResponse = await addUser({
         headers: {
@@ -78,16 +84,19 @@ export default function UserForm() {
         },
         body: {
           username: values.username,
+          password: values.password,
           permissions: values.permissions,
         },
       }).unwrap();
+      console.log(addUserResponse)
       if (addUserResponse.code === HTTP_OK) {
         Modal.success({
           title: "用户添加成功！",
-          content: `用户名：${values.username}，初始密码：123456`,
+          content: `用户名：${values.username}，密码：${values.password}`,
         });
         dispatch(setUserModalType(UserModalType.DEFAULT));
       } else {
+        //console.log(addUserResponse);
         Modal.error({
           title: "用户添加失败！",
           content: addUserResponse.message,
@@ -96,7 +105,7 @@ export default function UserForm() {
     } catch (err: any) {
       Modal.error({
         title: "用户添加失败！",
-        content: err.toString(),
+        content: err,
       });
     }
   };
@@ -106,7 +115,6 @@ export default function UserForm() {
   };
 
   const handleOk = async (values: UserFormData) => {
-    console.log(values);
     switch (userModalState.modalType) {
       case UserModalType.USER_ADD:
         handleUserAddOk(values);
@@ -167,6 +175,16 @@ export default function UserForm() {
       >
         <Input />
       </Form.Item>
+
+      {userModalState.modalType === UserModalType.USER_ADD && (
+        <Form.Item
+          label="密码"
+          name="password"
+          rules={[{ required: true, message: "请输入密码" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+      )}
 
       <Form.Item label="激活状态" name="is_active" valuePropName="checked">
         <Switch
