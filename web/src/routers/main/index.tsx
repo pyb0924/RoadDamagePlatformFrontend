@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
-import type { MenuProps } from "antd";
-import { Layout, Menu } from "antd";
+import {
+  Layout,
+  Menu,
+  Image,
+  MenuProps,
+  Typography,
+  Row,
+  Col,
+  Space,
+  Avatar,
+  Dropdown,
+} from "antd";
 import { MenuItemType } from "antd/lib/menu/hooks/useItems";
 import {
   GlobalOutlined,
@@ -15,6 +25,8 @@ import "./index.css";
 import ToolBar from "../../components/toolBar";
 import { useAppSelector } from "../../app/hooks";
 import { PermissionType } from "../../app/types/permission";
+
+const { Text } = Typography;
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -52,6 +64,7 @@ const MainPage: React.FC = () => {
     ) {
       items.push(getItem("用户管理", "user", <UserOutlined />));
     }
+    console.log(items);
     return items;
   };
   const [menuItems] = useState(getMenuItems());
@@ -82,8 +95,27 @@ const MainPage: React.FC = () => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header className="header">
-        <div className="logo" />
-        <ToolBar />
+        <Row justify="space-around" align="middle">
+          <Col span={6}>
+            <Space>
+              <Image
+                height={24}
+                width={24}
+                preview={false}
+                src="/logo512.png"
+              />
+              <Text style={{ color: "#fff", fontSize: 18 }}>
+                智慧公路信息管理平台
+              </Text>
+            </Space>
+          </Col>
+          <Col span={16}></Col>
+          <Col span={2}>
+            {/* <Dropdown.Button menu={menuProps} placement="bottom" icon={<UserOutlined />}>
+              Dropdown
+            </Dropdown.Button> */}
+          </Col>
+        </Row>
       </Header>
       <Layout>
         <Sider

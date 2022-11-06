@@ -202,6 +202,7 @@ export default function UserPage() {
                 {permissions.includes(PermissionType.USER_EDIT) && (
                   <Button
                     key="edit"
+                    size="small"
                     icon={<EditOutlined />}
                     onClick={() => handleUserEdit(record as User)}
                   >
@@ -213,6 +214,7 @@ export default function UserPage() {
                   <Button
                     key="delete"
                     type="primary"
+                    size="small"
                     icon={<DeleteOutlined />}
                     onClick={() => handleUserDelete(record as User)}
                     danger
