@@ -83,7 +83,7 @@ export const userApi = createApi({
 });
 
 export const {
-  useLazyGetAllUsersQuery,
+  useGetAllUsersQuery,
   useGetUserByIdQuery,
   useLazyGetUserByIdQuery,
   useAddUserMutation,

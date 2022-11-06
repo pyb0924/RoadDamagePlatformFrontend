@@ -14,9 +14,10 @@ import { Button } from "antd";
 export default function MapPage() {
   const [isShowMarker, setIsShowMarker] = useState(true);
   const [isShowInfoWindow, setIsShowInfoWindow] = useState(false);
-  // const [infoWindowPosition, setInfoWindowPosition] = useState(
-  //   new AMap.LngLat(121.437, 31.026)
-  // );
+
+  const [infoWindowPosition, setInfoWindowPosition] = useState(
+    new AMap.LngLat(121.437, 31.026)
+  );
 
   return (
     <>
@@ -29,15 +30,19 @@ export default function MapPage() {
             <ScaleControl offset={[16, 30]} position="LB" />
             <ToolBarControl offset={[16, 10]} position="RB" />
             <ControlBarControl offset={[16, 180]} position="RB" />
-            {/* <Marker
+            <Marker
               title="北京市"
               position={new AMap.LngLat(116.415285, 39.905589)}
               onClick={(evn) => {
                 if (!isShowInfoWindow) {
-                  setInfoWindowPosition(new AMap.LngLat(116.415285, 39.905589));
+                  setInfoWindowPosition(
+                    new AMap.LngLat(116.415285, 39.905589)
+                  );
                   setIsShowInfoWindow(true);
                 } else {
-                  setInfoWindowPosition(new AMap.LngLat(116.415285, 39.905589));
+                  setInfoWindowPosition(
+                    new AMap.LngLat(116.415285, 39.905589)
+                  );
                 }
               }}
             />
@@ -45,13 +50,13 @@ export default function MapPage() {
               <InfoWindow
                 visiable={isShowInfoWindow}
                 position={infoWindowPosition}
-                offset={new AMap.Pixel(0, -10)}
+                offset={new window.AMap.Pixel(0, -10)}
                 content={"<div>高德软件</div>"}
                 onClose={(evn) => {
                   // console.log('evn2', evn, show);
                 }}
               />
-            )} */}
+            )}
           </>
         </Map>
       </APILoader>

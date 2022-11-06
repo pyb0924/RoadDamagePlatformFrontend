@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Space, Modal, Table } from "antd";
+import { Button, Space, Modal, Table, Tag } from "antd";
 import type { TablePaginationConfig } from "antd/es/table";
 import Column from "antd/lib/table/Column";
 import { FilterValue } from "antd/lib/table/interface";
 
 import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
@@ -13,7 +15,7 @@ import {
 } from "@ant-design/icons";
 
 import {
-  useLazyGetAllUsersQuery,
+  useGetAllUsersQuery,
   useDeleteUserMutation,
 } from "../../../app/api/userApi";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
@@ -35,22 +37,31 @@ interface TableParams {
 }
 
 export default function UserPage() {
-  const [getUserList, { isSuccess: isGetAllUsersSuccess }] =
-    useLazyGetAllUsersQuery();
-
   const [deleteUser] = useDeleteUserMutation();
 
   const token = useAppSelector((state) => state.user.token);
   const permissions = useAppSelector((state) => state.user.permissions);
   const dispatch = useAppDispatch();
 
-  const [userList, setuserList] = useState([] as User[]);
-
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       total: 1,
       current: 1,
       pageSize: 5,
+    },
+  });
+
+  const {
+    data: userList,
+    refetch,
+    isSuccess: isGetAllUsersSuccess,
+  } = useGetAllUsersQuery({
+    headers: {
+      Authorization: token,
+    },
+    params: {
+      offset: tableParams.pagination.current as number,
+      limit: tableParams.pagination.pageSize as number,
     },
   });
 
@@ -62,42 +73,32 @@ export default function UserPage() {
     });
   };
 
-  const fetchAndUpdateData = async () => {
-    try {
-      const response = await getUserList({
-        headers: {
-          Authorization: token,
-        },
-        params: {
-          offset: tableParams.pagination.current as number,
-          limit: tableParams.pagination.pageSize as number,
-        },
-      }).unwrap();
-
-      setTableParams({
-        ...tableParams,
-        pagination: {
-          total: response.total,
-          current: tableParams.pagination.current,
-          pageSize: tableParams.pagination.pageSize,
-        },
-      });
-      setuserList(response.user_list);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   // request by page
   useEffect(() => {
     if (
-      tableParams.pagination.current !== undefined &&
-      tableParams.pagination.pageSize !== undefined
+      tableParams.pagination.current === undefined ||
+      tableParams.pagination.pageSize === undefined
     ) {
-      fetchAndUpdateData();
+      return;
+    }
+    try {
+      refetch();
+    } catch (err) {
+      console.log(err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getUserList, tableParams.pagination.current, token]);
+  }, [tableParams.pagination.current, token]);
+
+  useEffect(() => {
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        total: userList?.total,
+        current: tableParams.pagination.current,
+        pageSize: tableParams.pagination.pageSize,
+      },
+    });
+  }, [tableParams, userList]);
 
   // handle add: open add modal
   const handleUserAdd = () => {
@@ -111,9 +112,7 @@ export default function UserPage() {
   };
 
   // handle delete
-  // TODO render after delete
   const handleUserDelete = (record: User) => {
-    console.log(record);
     Modal.confirm({
       title: "删除用户",
       icon: <ExclamationCircleOutlined />,
@@ -153,7 +152,7 @@ export default function UserPage() {
       <UserModal />
 
       <Table<User>
-        dataSource={userList}
+        dataSource={userList?.user_list}
         pagination={tableParams.pagination}
         rowKey={(record) => record.user_id}
         loading={!isGetAllUsersSuccess}
@@ -165,7 +164,22 @@ export default function UserPage() {
           key="username"
           sorter={true}
         />
-        <Column title="激活状态" dataIndex="is_active" key="is_active" />
+        <Column
+          title="激活状态"
+          dataIndex="is_active"
+          key="is_active"
+          render={(is_active) =>
+            is_active ? (
+              <Tag icon={<CheckCircleOutlined />} color="success">
+                已激活
+              </Tag>
+            ) : (
+              <Tag icon={<CloseCircleOutlined />} color="error">
+                未激活
+              </Tag>
+            )
+          }
+        />
         <Column
           title="创建时间"
           dataIndex="create_time"
@@ -180,36 +194,36 @@ export default function UserPage() {
         />
         {(permissions.includes(PermissionType.USER_EDIT) ||
           permissions.includes(PermissionType.USER_DELETE)) && (
-            <Column
-              title="操作"
-              key="action"
-              render={(_text, record) => (
-                <Space>
-                  {permissions.includes(PermissionType.USER_EDIT) && (
-                    <Button
-                      key="edit"
-                      icon={<EditOutlined />}
-                      onClick={() => handleUserEdit(record as User)}
-                    >
-                      编辑用户
-                    </Button>
-                  )}
+          <Column
+            title="操作"
+            key="action"
+            render={(_text, record) => (
+              <Space>
+                {permissions.includes(PermissionType.USER_EDIT) && (
+                  <Button
+                    key="edit"
+                    icon={<EditOutlined />}
+                    onClick={() => handleUserEdit(record as User)}
+                  >
+                    编辑用户
+                  </Button>
+                )}
 
-                  {permissions.includes(PermissionType.USER_DELETE) && (
-                    <Button
-                      key="delete"
-                      type="primary"
-                      icon={<DeleteOutlined />}
-                      onClick={() => handleUserDelete(record as User)}
-                      danger
-                    >
-                      删除用户
-                    </Button>
-                  )}
-                </Space>
-              )}
-            />
-          )}
+                {permissions.includes(PermissionType.USER_DELETE) && (
+                  <Button
+                    key="delete"
+                    type="primary"
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleUserDelete(record as User)}
+                    danger
+                  >
+                    删除用户
+                  </Button>
+                )}
+              </Space>
+            )}
+          />
+        )}
       </Table>
     </div>
   );
