@@ -50,9 +50,23 @@ export interface AddUserRequest extends BaseRequestWithToken {
   };
 }
 
-export interface UpdatePwdRequest extends BaseRequestWithToken {
+export interface EditUserRequest extends BaseRequestWithToken {
+  id: string;
+  body: { is_active: number; permission_ids: string[] };
+}
+
+export interface EditCurrentUserRequest extends BaseRequestWithToken {
+  id: string;
   body: {
-    user_id: string;
+    avatar: string;
+    email: string;
+    phone: string;
+  };
+}
+
+export interface UpdatePwdRequest extends BaseRequestWithToken {
+  id: string;
+  body: {
     old_password: string;
     password: string;
   };

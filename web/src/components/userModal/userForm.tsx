@@ -7,6 +7,7 @@ import { setUserModalType } from "../../app/slices/userModalSlice";
 import { UserFormData, UserModalType } from "../../app/types/user";
 import {
   useAddUserMutation,
+  useEditUserMutation,
   useLazyGetUserByIdQuery,
 } from "../../app/api/userApi";
 
@@ -25,10 +26,11 @@ export default function UserForm() {
   });
   const [addUser] = useAddUserMutation();
   const [getUser] = useLazyGetUserByIdQuery();
+  const [editUser] = useEditUserMutation();
 
   const [form] = Form.useForm();
 
-  const [userFormData, setuserFormData] = useState<UserFormData>({
+  const [userFormDefaultData, setuserFormData] = useState<UserFormData>({
     username: "",
     password: "",
     is_active: 1,
@@ -60,13 +62,14 @@ export default function UserForm() {
         permissions: [],
       });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userModalState.id]);
+  }, [userModalState.modalType, userModalState.id]);
 
   useEffect(() => {
     form.resetFields();
-    console.log(userFormData);
-  }, [form, userFormData]);
+    console.log(userFormDefaultData);
+  }, [form, userFormDefaultData]);
 
   const handleCancel = () => {
     dispatch(setUserModalType(UserModalType.DEFAULT));
@@ -76,6 +79,7 @@ export default function UserForm() {
     if (values.password === undefined) {
       return;
     }
+    // TODO error handler
 
     try {
       const addUserResponse = await addUser({
@@ -88,7 +92,7 @@ export default function UserForm() {
           permissions: values.permissions,
         },
       }).unwrap();
-      console.log(addUserResponse)
+      console.log(addUserResponse);
       if (addUserResponse.code === HTTP_OK) {
         Modal.success({
           title: "用户添加成功！",
@@ -96,7 +100,6 @@ export default function UserForm() {
         });
         dispatch(setUserModalType(UserModalType.DEFAULT));
       } else {
-        //console.log(addUserResponse);
         Modal.error({
           title: "用户添加失败！",
           content: addUserResponse.message,
@@ -111,10 +114,35 @@ export default function UserForm() {
   };
 
   const handleUserEditOk = async (values: UserFormData) => {
-    // TODO handle edit user
+    try {
+      const editUserResponse = await editUser({
+        id: userModalState.id,
+        headers: {
+          Authorization: token,
+        },
+        body: {
+          is_active: values.is_active,
+          permission_ids: values.permissions,
+        },
+      }).unwrap();
+      console.log(editUserResponse);
+      if (editUserResponse.code === HTTP_OK) {
+        Modal.success({
+          title: "用户信息修改成功！",
+          content: `用户名：${values.username}，${editUserResponse.message}`,
+        });
+        dispatch(setUserModalType(UserModalType.DEFAULT));
+      } else {
+        Modal.error({
+          title: "用户信息修改失败！",
+          content: editUserResponse.message,
+        });
+      }
+    } catch (err: any) {}
   };
 
   const handleOk = async (values: UserFormData) => {
+    console.log(values);
     switch (userModalState.modalType) {
       case UserModalType.USER_ADD:
         handleUserAddOk(values);
@@ -141,15 +169,9 @@ export default function UserForm() {
   ) => {
     console.log("onCheck", checkedKeysValue);
     if ("checked" in checkedKeysValue) {
-      setuserFormData({
-        ...userFormData,
-        permissions: checkedKeysValue.checked as string[],
-      });
+      form.setFieldValue("permissions", checkedKeysValue.checked as string[]);
     } else {
-      setuserFormData({
-        ...userFormData,
-        permissions: checkedKeysValue as string[],
-      });
+      form.setFieldValue("permissions", checkedKeysValue as string[]);
     }
   };
 
@@ -161,11 +183,12 @@ export default function UserForm() {
       labelCol={{ span: 4 }}
       preserve={false}
       initialValues={{
-        username: userFormData.username,
+        username: userFormDefaultData.username,
+        password: userFormDefaultData.password,
         is_active:
           userModalState.modalType === UserModalType.USER_ADD ||
-          userFormData.is_active === 1,
-        permissions: userFormData.permissions,
+          userFormDefaultData.is_active === 1,
+        permissions: userFormDefaultData.permissions,
       }}
     >
       <Form.Item

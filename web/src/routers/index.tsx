@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./login";
-import AppLayOut from "./main";
+import MainPage from "./main";
 import DashBoard from "./main/dashboard";
-import MapPage from "./main/mapPage";
-import UserPage from "./main/userPage";
+import MapPage from "./main/map";
+import UserPage from "./main/user";
 
 // TODO change router file's path
 export const router = createBrowserRouter([
@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
   {
     path: "/main",
     // TODO change main element
-    element: <AppLayOut />,
+    element: <MainPage />,
     children: [
       {
         // TODO set dashboard as index page

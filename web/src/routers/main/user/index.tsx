@@ -19,7 +19,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { HTTP_OK } from "../../../app/types/base";
 import { User, UserModalType } from "../../../app/types/user";
-import { Permission } from "../../../app/types/permission";
+import { PermissionType } from "../../../app/types/permission";
 import {
   setUserModalId,
   setUserModalType,
@@ -139,7 +139,7 @@ export default function UserPage() {
 
   return (
     <div>
-      {permissions.includes(Permission.USER_ADD) && (
+      {permissions.includes(PermissionType.USER_ADD) && (
         <Button
           type="primary"
           style={{ marginTop: 16, marginBottom: 16, float: "right" }}
@@ -178,35 +178,38 @@ export default function UserPage() {
           key="updateTime"
           render={(date) => new Date(date).toLocaleDateString()}
         />
-        <Column
-          title="操作"
-          key="action"
-          render={(_text, record) => (
-            <Space>
-              {permissions.includes(Permission.USER_EDIT) && (
-                <Button
-                  key="edit"
-                  icon={<EditOutlined />}
-                  onClick={() => handleUserEdit(record as User)}
-                >
-                  编辑用户
-                </Button>
-              )}
+        {(permissions.includes(PermissionType.USER_EDIT) ||
+          permissions.includes(PermissionType.USER_DELETE)) && (
+            <Column
+              title="操作"
+              key="action"
+              render={(_text, record) => (
+                <Space>
+                  {permissions.includes(PermissionType.USER_EDIT) && (
+                    <Button
+                      key="edit"
+                      icon={<EditOutlined />}
+                      onClick={() => handleUserEdit(record as User)}
+                    >
+                      编辑用户
+                    </Button>
+                  )}
 
-              {permissions.includes(Permission.USER_DELETE) && (
-                <Button
-                  key="delete"
-                  type="primary"
-                  icon={<DeleteOutlined />}
-                  onClick={() => handleUserDelete(record as User)}
-                  danger
-                >
-                  删除用户
-                </Button>
+                  {permissions.includes(PermissionType.USER_DELETE) && (
+                    <Button
+                      key="delete"
+                      type="primary"
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleUserDelete(record as User)}
+                      danger
+                    >
+                      删除用户
+                    </Button>
+                  )}
+                </Space>
               )}
-            </Space>
+            />
           )}
-        />
       </Table>
     </div>
   );

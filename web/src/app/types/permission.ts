@@ -6,7 +6,7 @@ export interface PermissionNode {
   children?: PermissionNode[];
 }
 
-export enum Permission {
+export enum PermissionType {
   SYSTEM = "system",
   USER = "user",
   USER_ADD = "user:add",

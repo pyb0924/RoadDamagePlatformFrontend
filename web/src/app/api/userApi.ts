@@ -10,28 +10,15 @@ import {
   UpdatePwdRequest,
   User,
   UsersListResponseData,
+  EditUserRequest,
+  EditCurrentUserRequest,
 } from "../types/user";
-
-// function lookupPermissionType(user: User) {
-//   if (user.permissions !== undefined) {
-//     return {
-//       ...user,
-//       permissions: user.permissions.map((permission) =>
-//         typeof permission === "number"
-//           ? permissionTypeList[permission]
-//           : permission
-//       ),
-//     };
-//   } else {
-//     return user;
-//   }
-// }
 
 export const userApi = createApi({
   reducerPath: "userApi",
   tagTypes: ["User"],
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL + "user",
+    baseUrl: process.env.REACT_APP_BASEURL + "user/",
   }),
   endpoints: (builder) => ({
     getAllUsers: builder.query<UsersListResponseData, UsersListRequest>({
@@ -45,7 +32,7 @@ export const userApi = createApi({
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
-        url: `/${request.id}`,
+        url: `${request.id}`,
         headers: request.headers,
       }),
       transformResponse: (response: UserResponse) => response.data,
@@ -59,9 +46,26 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    editUser: builder.mutation<BaseResponse, EditUserRequest>({
+      query: (request: EditUserRequest) => ({
+        url: `updateinfo/${request.id}`,
+        method: "PUT",
+        body: request.body,
+        headers: request.headers,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    editCurrentUser: builder.mutation<BaseResponse, EditCurrentUserRequest>({
+      query: (request: EditCurrentUserRequest) => ({
+        url: `${request.id}`,
+        method: "PUT",
+        body: request.body,
+        headers: request.headers,
+      }),
+    }),
     updatePwd: builder.mutation<BaseResponse, UpdatePwdRequest>({
       query: (request: UpdatePwdRequest) => ({
-        url: "/updatepwd",
+        url: `updatepwd/${request.id}`,
         method: "PUT",
         body: request.body,
         headers: request.headers,
@@ -69,7 +73,7 @@ export const userApi = createApi({
     }),
     deleteUser: builder.mutation<BaseResponse, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
-        url: `/${request.id}`,
+        url: `${request.id}`,
         method: "DELETE",
         headers: request.headers,
       }),
@@ -83,6 +87,7 @@ export const {
   useGetUserByIdQuery,
   useLazyGetUserByIdQuery,
   useAddUserMutation,
+  useEditUserMutation,
   useUpdatePwdMutation,
   useDeleteUserMutation,
 } = userApi;
