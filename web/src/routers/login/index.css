@@ -1,0 +1,50 @@
+.bg {
+  height: 1161px;
+  background: linear-gradient(180deg, #a0d7e7, #6c5dd3);
+  margin: auto;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.heard {
+  position: absolute;
+  display: flex;
+  top: 350px;
+}
+
+.title {
+  width: 520px;
+  font-size: 30px;
+  font-family: Arial;
+  font-weight: bold;
+  color: #151830;
+}
+
+.login-card {
+  width: 520px;
+  height: 350px;
+  background: #f2f3f7;
+  border-radius: 20px;
+  margin: auto;
+  text-align: center;
+  justify-content: center;
+  padding: 60px 110px ;
+}
+
+.login-form {
+  max-width: 300px;
+}
+
+.login-form-forgot {
+  float: right;
+}
+
+.ant-col-rtl .login-form-forgot {
+  float: left;
+}
+
+.login-form-button {
+  width: 100%;
+}
