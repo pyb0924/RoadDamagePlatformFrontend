@@ -5,6 +5,8 @@ import DashBoard from "./main/dashboard";
 import MapPage from "./main/map";
 import UserPage from "./main/user";
 
+
+// TODO fix bug: change menu select with url change
 // TODO change router file's path
 export const router = createBrowserRouter([
   {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Space, Modal, Table, Tag } from "antd";
+import { Button, Space, Modal, Table, Tag, Layout } from "antd";
 import type { TablePaginationConfig } from "antd/es/table";
 import Column from "antd/lib/table/Column";
 import { FilterValue } from "antd/lib/table/interface";
@@ -28,6 +28,8 @@ import {
 } from "../../../app/slices/userModalSlice";
 
 import UserModal from "../../../components/userModal";
+
+const { Content } = Layout;
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -137,7 +139,14 @@ export default function UserPage() {
   };
 
   return (
-    <div>
+    <Content
+      className="site-layout-background"
+      style={{
+        padding: 24,
+        margin: 24,
+        minHeight: 280,
+      }}
+    >
       {permissions.includes(PermissionType.USER_ADD) && (
         <Button
           type="primary"
@@ -227,6 +236,6 @@ export default function UserPage() {
           />
         )}
       </Table>
-    </div>
+    </Content>
   );
 }

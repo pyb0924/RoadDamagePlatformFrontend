@@ -133,23 +133,16 @@ const MainPage: React.FC = () => {
             onClick={handleMenuNavigation}
           />
         </Sider>
-        <Layout style={{ padding: "24px 24px 0 24px" }}>
-          {/* <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-            <Breadcrumb.Item>App</Breadcrumb.Item>
-          </Breadcrumb> */}
-          <Content
-            className="site-layout-background"
+        <Layout>
+          <Outlet />
+          <Footer
             style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 280,
+              textAlign: "center",
+              padding: "13px",
+              background: "#092040",
+              color: "white",
             }}
           >
-            <Outlet />
-          </Content>
-          <Footer style={{ textAlign: "center", padding: "13px" }}>
             智慧公路信息管理平台 by EI6705 Group9
           </Footer>
         </Layout>
