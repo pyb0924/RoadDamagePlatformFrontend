@@ -19,7 +19,6 @@ import {
   useDeleteUserMutation,
 } from "../../../app/api/userApi";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { HTTP_OK } from "../../../app/types/base";
 import { User, UserModalType } from "../../../app/types/user";
 import { PermissionType } from "../../../app/types/permission";
 import {
@@ -127,10 +126,9 @@ export default function UserPage() {
               Authorization: token,
             },
           }).unwrap();
-          if (deleteUserResponse.code === HTTP_OK) {
-          }
+         
           return console.log(deleteUserResponse.message);
-        } catch {
+        } catch (err){
           return console.log("删除用户错误");
         }
       },

@@ -25,17 +25,13 @@ export interface LoginRequest extends BaseRequest {
   body: LoginBody;
 }
 
-export interface LoginSuccessResponse extends BaseResponse {
+export interface LoginResponse extends BaseResponse {
   data: TokenDataWithId;
 }
-
-export type LoginResponse = LoginSuccessResponse | FailResponse;
 
 // refresh
 export type RefreshRequest = BaseRequestWithToken;
 
-interface RefreshSuccessResponse extends BaseResponse {
+export interface RefreshResponse extends BaseResponse {
   data: TokenData;
 }
-
-export type RefreshResponse = RefreshSuccessResponse | FailResponse;

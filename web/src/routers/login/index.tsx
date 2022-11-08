@@ -7,8 +7,6 @@ import { Button, Checkbox, Form, Input, Modal, Typography } from "antd";
 import { useLoginMutation } from "../../app/api/loginApi";
 import { useAppDispatch } from "../../app/hooks";
 import { setToken, setUser } from "../../app/slices/userSlice";
-import { HTTP_OK } from "../../app/types/base";
-import { TokenDataWithId } from "../../app/types/login";
 
 import "./index.css";
 import { useLazyGetUserByIdQuery } from "../../app/api/userApi";
@@ -39,33 +37,24 @@ const Login: React.FC = () => {
         headers: {},
       }).unwrap();
 
-      if (loginResponse.code === HTTP_OK) {
-        navigate("/main");
-        const newToken =
-          (loginResponse.data as TokenDataWithId).token_type +
-          " " +
-          (loginResponse.data as TokenDataWithId).access_token;
+      navigate("/main");
+      const newToken =
+        loginResponse.token_type + " " + loginResponse.access_token;
 
-        dispatch(setToken(newToken));
+      dispatch(setToken(newToken));
 
-        const userResponse = await getUser({
-          id: (loginResponse.data as TokenDataWithId).user_id,
-          headers: {
-            Authorization: newToken,
-          },
-        }).unwrap();
-        dispatch(setUser(userResponse));
-        console.log(loginResponse.message);
-      } else {
-        Modal.error({
-          title: "用户登录失败",
-          content: loginResponse.message,
-        });
-      }
-    } catch (err) {
+      const userResponse = await getUser({
+        id: loginResponse.user_id,
+        headers: {
+          Authorization: newToken,
+        },
+      }).unwrap();
+      dispatch(setUser(userResponse));
+      //console.log(loginResponse.message);
+    } catch (err: any) {
       Modal.error({
         title: "用户登录失败",
-        content: "网络错误",
+        content: err.data.message,
       });
     }
   };

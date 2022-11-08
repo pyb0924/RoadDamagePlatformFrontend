@@ -10,10 +10,9 @@ import {
   useEditUserMutation,
   useLazyGetUserByIdQuery,
 } from "../../app/api/userApi";
-
-import { HTTP_OK } from "../../app/types/base";
 import { useGetPermissionTreeQuery } from "../../app/api/permissionApi";
 
+// TODO fix bug: flash after cancel
 export default function UserForm() {
   const userModalState = useAppSelector((state) => state.userModal);
   const token = useAppSelector((state) => state.user.token);
@@ -38,17 +37,24 @@ export default function UserForm() {
   });
 
   const fetchAndSetUser = async (id: string) => {
-    const user = await getUser({
-      id: id,
-      headers: {
-        Authorization: token,
-      },
-    }).unwrap();
-    setuserFormData({
-      username: user.username,
-      is_active: user.is_active,
-      permissions: user.permission_ids,
-    });
+    try {
+      const user = await getUser({
+        id: id,
+        headers: {
+          Authorization: token,
+        },
+      }).unwrap();
+      setuserFormData({
+        username: user.username,
+        is_active: user.is_active,
+        permissions: user.permission_ids,
+      });
+    } catch (err: any) {
+      Modal.error({
+        title: "用户登录失败",
+        content: err.data.message,
+      });
+    }
   };
 
   useEffect(() => {
@@ -79,7 +85,6 @@ export default function UserForm() {
     if (values.password === undefined) {
       return;
     }
-    // TODO error handler
 
     try {
       const addUserResponse = await addUser({
@@ -93,22 +98,16 @@ export default function UserForm() {
         },
       }).unwrap();
       console.log(addUserResponse);
-      if (addUserResponse.code === HTTP_OK) {
-        Modal.success({
-          title: "用户添加成功！",
-          content: `用户名：${values.username}，密码：${values.password}`,
-        });
-        dispatch(setUserModalType(UserModalType.DEFAULT));
-      } else {
-        Modal.error({
-          title: "用户添加失败！",
-          content: addUserResponse.message,
-        });
-      }
+
+      Modal.success({
+        title: "用户添加成功！",
+        content: `用户名：${values.username}，密码：${values.password}`,
+      });
+      dispatch(setUserModalType(UserModalType.DEFAULT));
     } catch (err: any) {
       Modal.error({
         title: "用户添加失败！",
-        content: err,
+        content: err.data.message,
       });
     }
   };
@@ -126,19 +125,18 @@ export default function UserForm() {
         },
       }).unwrap();
       console.log(editUserResponse);
-      if (editUserResponse.code === HTTP_OK) {
-        Modal.success({
-          title: "用户信息修改成功！",
-          content: `用户名：${values.username}，${editUserResponse.message}`,
-        });
-        dispatch(setUserModalType(UserModalType.DEFAULT));
-      } else {
-        Modal.error({
-          title: "用户信息修改失败！",
-          content: editUserResponse.message,
-        });
-      }
-    } catch (err: any) {}
+
+      Modal.success({
+        title: "用户信息修改成功！",
+        content: `用户名：${values.username}  ${editUserResponse.message}`,
+      });
+      dispatch(setUserModalType(UserModalType.DEFAULT));
+    } catch (err: any) {
+      Modal.error({
+        title: "用户信息修改失败！",
+        content: err.data.message,
+      });
+    }
   };
 
   const handleOk = async (values: UserFormData) => {

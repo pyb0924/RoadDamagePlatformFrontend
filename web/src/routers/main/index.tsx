@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import {
@@ -21,14 +21,15 @@ import {
   ReconciliationOutlined,
 } from "@ant-design/icons";
 
-import "./index.css";
-import ToolBar from "../../components/toolBar";
 import { useAppSelector } from "../../app/hooks";
 import { PermissionType } from "../../app/types/permission";
+import ToolBar from "../../components/toolBar";
+
+import "./index.css";
 
 const { Text } = Typography;
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -64,10 +65,14 @@ const MainPage: React.FC = () => {
     ) {
       items.push(getItem("用户管理", "user", <UserOutlined />));
     }
-    console.log(items);
     return items;
   };
-  const [menuItems] = useState(getMenuItems());
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  useEffect(() => {
+    setMenuItems(getMenuItems());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permissions]);
+
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
@@ -96,7 +101,7 @@ const MainPage: React.FC = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Header className="header">
         <Row justify="space-around" align="middle">
-          <Col span={6}>
+          <Col flex="250px">
             <Space>
               <Image
                 height={24}
@@ -109,8 +114,10 @@ const MainPage: React.FC = () => {
               </Text>
             </Space>
           </Col>
-          <Col span={16}></Col>
-          <Col span={2}>
+          <Col flex="auto">
+            <ToolBar />
+          </Col>
+          <Col flex="70px">
             {/* <Dropdown.Button menu={menuProps} placement="bottom" icon={<UserOutlined />}>
               Dropdown
             </Dropdown.Button> */}

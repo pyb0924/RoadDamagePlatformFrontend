@@ -6,13 +6,14 @@ import {
   LoginRequest,
   RefreshRequest,
   LoginResponse,
+  TokenDataWithId,
 } from "../types/login";
 
 export const loginApi = createApi({
   reducerPath: "loginApi",
   baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASEURL }),
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginRequest>({
+    login: builder.mutation<TokenDataWithId, LoginRequest>({
       query: (request: LoginRequest) => ({
         url: "login",
         method: "POST",
@@ -21,6 +22,7 @@ export const loginApi = createApi({
           "content-type": "application/x-www-form-urlencoded",
         },
       }),
+      transformResponse: (response: LoginResponse) => response.data,
     }),
     refresh: builder.mutation<RefreshResponse, RefreshRequest>({
       query: (request: RefreshRequest) => ({

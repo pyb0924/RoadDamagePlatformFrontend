@@ -1,5 +1,4 @@
 // base data
-export const HTTP_OK = 200;
 
 export enum TokenType {
   "Bearer",

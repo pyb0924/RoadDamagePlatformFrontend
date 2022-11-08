@@ -17,10 +17,7 @@ export function UserModal() {
           ? "添加用户"
           : "编辑用户"
       }
-      open={
-        userModalState.modalType === UserModalType.USER_ADD ||
-        userModalState.modalType === UserModalType.USER_EDIT
-      }
+      open={userModalState.modalType !== UserModalType.DEFAULT}
       footer={[]}
       closable={false}
     >
