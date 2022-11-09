@@ -1,4 +1,4 @@
-import {BaseResponse} from './base';
+import { BaseResponse } from "./base";
 
 export interface PermissionNode {
   key: string;
@@ -7,11 +7,11 @@ export interface PermissionNode {
 }
 
 export enum PermissionType {
-  SYSTEM = 'system',
-  USER = 'user',
-  USER_ADD = 'user:add',
-  USER_EDIT = 'user:edit',
-  USER_DELETE = 'user:delete',
+  SYSTEM = "system",
+  USER = "user",
+  USER_ADD = "user:add",
+  USER_EDIT = "user:edit",
+  USER_DELETE = "user:delete",
 }
 
 export interface PermissionTreeResponse extends BaseResponse {

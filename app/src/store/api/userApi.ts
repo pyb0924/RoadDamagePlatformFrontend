@@ -1,6 +1,6 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import {BaseResponse} from '../types/base';
+import { BaseResponse } from "../types/base";
 import {
   UserByIdRequest,
   UserResponse,
@@ -12,23 +12,23 @@ import {
   UsersListResponseData,
   EditUserRequest,
   EditCurrentUserRequest,
-} from '../types/user';
+} from "../types/user";
 
 export const userApi = createApi({
-  reducerPath: 'userApi',
-  tagTypes: ['User'],
+  reducerPath: "userApi",
+  tagTypes: ["User"],
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL + 'user/',
+    baseUrl: process.env.REACT_APP_BASEURL + "user/",
   }),
-  endpoints: builder => ({
+  endpoints: (builder) => ({
     getAllUsers: builder.query<UsersListResponseData, UsersListRequest>({
       query: (request: UsersListRequest) => ({
-        url: '',
+        url: "",
         params: request.params,
         headers: request.headers,
       }),
       transformResponse: (response: UsersListResponse) => response.data,
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
@@ -39,26 +39,26 @@ export const userApi = createApi({
     }),
     addUser: builder.mutation<BaseResponse, AddUserRequest>({
       query: (request: AddUserRequest) => ({
-        url: '',
-        method: 'POST',
+        url: "",
+        method: "POST",
         body: request.body,
         headers: request.headers,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
     editUser: builder.mutation<BaseResponse, EditUserRequest>({
       query: (request: EditUserRequest) => ({
         url: `updateinfo/${request.id}`,
-        method: 'PUT',
+        method: "PUT",
         body: request.body,
         headers: request.headers,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
     editCurrentUser: builder.mutation<BaseResponse, EditCurrentUserRequest>({
       query: (request: EditCurrentUserRequest) => ({
         url: `${request.id}`,
-        method: 'PUT',
+        method: "PUT",
         body: request.body,
         headers: request.headers,
       }),
@@ -66,7 +66,7 @@ export const userApi = createApi({
     updatePwd: builder.mutation<BaseResponse, UpdatePwdRequest>({
       query: (request: UpdatePwdRequest) => ({
         url: `updatepwd/${request.id}`,
-        method: 'PUT',
+        method: "PUT",
         body: request.body,
         headers: request.headers,
       }),
@@ -74,10 +74,10 @@ export const userApi = createApi({
     deleteUser: builder.mutation<BaseResponse, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
         url: `${request.id}`,
-        method: 'DELETE',
+        method: "DELETE",
         headers: request.headers,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
   }),
 });

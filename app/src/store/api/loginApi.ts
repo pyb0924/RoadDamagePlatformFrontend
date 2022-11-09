@@ -1,5 +1,4 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/dist/query/react';
-import qs from 'qs';
 
 import {
   RefreshResponse,
@@ -9,15 +8,17 @@ import {
   TokenDataWithId,
 } from '../types/login';
 
+import Config from 'react-native-config';
+
 export const loginApi = createApi({
   reducerPath: 'loginApi',
-  baseQuery: fetchBaseQuery({baseUrl: process.env.REACT_APP_BASEURL}),
+  baseQuery: fetchBaseQuery({baseUrl: Config.REACT_APP_BASEURL}),
   endpoints: builder => ({
     login: builder.mutation<TokenDataWithId, LoginRequest>({
       query: (request: LoginRequest) => ({
         url: 'login',
         method: 'POST',
-        body: qs.stringify(request.body),
+        body: request.body,
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
         },

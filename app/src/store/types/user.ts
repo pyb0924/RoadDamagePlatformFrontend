@@ -1,4 +1,4 @@
-import {BaseRequestByPage, BaseRequestWithToken, BaseResponse} from './base';
+import { BaseRequestByPage, BaseRequestWithToken, BaseResponse } from "./base";
 
 export interface User {
   user_id: string;
@@ -52,7 +52,7 @@ export interface AddUserRequest extends BaseRequestWithToken {
 
 export interface EditUserRequest extends BaseRequestWithToken {
   id: string;
-  body: {is_active: number; permission_ids: string[]};
+  body: { is_active: number; permission_ids: string[] };
 }
 
 export interface EditCurrentUserRequest extends BaseRequestWithToken {

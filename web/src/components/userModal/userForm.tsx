@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from 'react';
 
-import { Button, Form, Input, Modal, Space, Switch, Tree } from "antd";
+import {Button, Form, Input, Modal, Space, Switch, Tree} from 'antd';
 
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { setUserModalType } from "../../app/slices/userModalSlice";
-import { UserFormData, UserModalType } from "../../app/types/user";
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {setUserModalType} from '../../app/slices/userModalSlice';
+import {UserFormData, UserModalType} from '../../app/types/user';
 import {
   useAddUserMutation,
   useEditUserMutation,
   useLazyGetUserByIdQuery,
-} from "../../app/api/userApi";
-import { useGetPermissionTreeQuery } from "../../app/api/permissionApi";
+} from '../../app/api/userApi';
+import {useGetPermissionTreeQuery} from '../../app/api/permissionApi';
 
 // TODO fix bug: flash after cancel
 export default function UserForm() {
-  const userModalState = useAppSelector((state) => state.userModal);
-  const token = useAppSelector((state) => state.user.token);
+  const userModalState = useAppSelector(state => state.userModal);
+  const token = useAppSelector(state => state.user.token);
   const dispatch = useAppDispatch();
 
-  const { data: treeData } = useGetPermissionTreeQuery({
+  const {data: treeData} = useGetPermissionTreeQuery({
     headers: {
       Authorization: token,
     },
@@ -30,8 +30,8 @@ export default function UserForm() {
   const [form] = Form.useForm();
 
   const [userFormDefaultData, setuserFormData] = useState<UserFormData>({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
     is_active: 1,
     permissions: [],
   });
@@ -51,19 +51,19 @@ export default function UserForm() {
       });
     } catch (err: any) {
       Modal.error({
-        title: "用户登录失败",
+        title: '用户登录失败',
         content: err.data.message,
       });
     }
   };
 
   useEffect(() => {
-    if (userModalState.id !== "") {
+    if (userModalState.id !== '') {
       fetchAndSetUser(userModalState.id);
     } else {
       setuserFormData({
-        username: "",
-        password: "",
+        username: '',
+        password: '',
         is_active: 1,
         permissions: [],
       });
@@ -100,13 +100,13 @@ export default function UserForm() {
       console.log(addUserResponse);
 
       Modal.success({
-        title: "用户添加成功！",
+        title: '用户添加成功！',
         content: `用户名：${values.username}，密码：${values.password}`,
       });
       dispatch(setUserModalType(UserModalType.DEFAULT));
     } catch (err: any) {
       Modal.error({
-        title: "用户添加失败！",
+        title: '用户添加失败！',
         content: err.data.message,
       });
     }
@@ -127,13 +127,13 @@ export default function UserForm() {
       console.log(editUserResponse);
 
       Modal.success({
-        title: "用户信息修改成功！",
+        title: '用户信息修改成功！',
         content: `用户名：${values.username}  ${editUserResponse.message}`,
       });
       dispatch(setUserModalType(UserModalType.DEFAULT));
     } catch (err: any) {
       Modal.error({
-        title: "用户信息修改失败！",
+        title: '用户信息修改失败！',
         content: err.data.message,
       });
     }
@@ -163,13 +163,13 @@ export default function UserForm() {
       | {
           checked: React.Key[];
           halfChecked: React.Key[];
-        }
+        },
   ) => {
-    console.log("onCheck", checkedKeysValue);
-    if ("checked" in checkedKeysValue) {
-      form.setFieldValue("permissions", checkedKeysValue.checked as string[]);
+    console.log('onCheck', checkedKeysValue);
+    if ('checked' in checkedKeysValue) {
+      form.setFieldValue('permissions', checkedKeysValue.checked as string[]);
     } else {
-      form.setFieldValue("permissions", checkedKeysValue as string[]);
+      form.setFieldValue('permissions', checkedKeysValue as string[]);
     }
   };
 
@@ -178,7 +178,7 @@ export default function UserForm() {
       form={form}
       onFinish={handleOk}
       onFinishFailed={handleOKFailed}
-      labelCol={{ span: 4 }}
+      labelCol={{span: 4}}
       preserve={false}
       initialValues={{
         username: userFormDefaultData.username,
@@ -187,13 +187,11 @@ export default function UserForm() {
           userModalState.modalType === UserModalType.USER_ADD ||
           userFormDefaultData.is_active === 1,
         permissions: userFormDefaultData.permissions,
-      }}
-    >
+      }}>
       <Form.Item
         label="用户名"
         name="username"
-        rules={[{ required: true, message: "请输入用户名" }]}
-      >
+        rules={[{required: true, message: '请输入用户名'}]}>
         <Input />
       </Form.Item>
 
@@ -201,8 +199,7 @@ export default function UserForm() {
         <Form.Item
           label="密码"
           name="password"
-          rules={[{ required: true, message: "请输入密码" }]}
-        >
+          rules={[{required: true, message: '请输入密码'}]}>
           <Input.Password />
         </Form.Item>
       )}
@@ -216,8 +213,7 @@ export default function UserForm() {
       <Form.Item
         label="权限选择"
         name="permissions"
-        valuePropName="checkedKeys"
-      >
+        valuePropName="checkedKeys">
         <Tree
           checkable
           onCheck={handlePermissionCheck}
@@ -226,7 +222,7 @@ export default function UserForm() {
         />
       </Form.Item>
 
-      <div style={{ textAlign: "right" }}>
+      <div style={{textAlign: 'right'}}>
         <Space>
           <Button onClick={handleCancel}>取消</Button>
           <Button type="primary" htmlType="submit">

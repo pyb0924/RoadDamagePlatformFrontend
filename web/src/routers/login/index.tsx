@@ -1,17 +1,17 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import {useNavigate} from 'react-router-dom';
 
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Modal, Typography } from "antd";
+import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import {Button, Checkbox, Form, Input, Modal, Typography} from 'antd';
 
-import { useLoginMutation } from "../../app/api/loginApi";
-import { useAppDispatch } from "../../app/hooks";
-import { setToken, setUser } from "../../app/slices/userSlice";
+import {useLoginMutation} from '../../app/api/loginApi';
+import {useLazyGetUserByIdQuery} from '../../app/api/userApi';
+import {useAppDispatch} from '../../app/hooks';
+import {setToken, setUser} from '../../app/slices/userSlice';
 
-import "./index.css";
-import { useLazyGetUserByIdQuery } from "../../app/api/userApi";
+import './index.css';
 
-const { Text } = Typography;
+const {Text} = Typography;
 
 interface LoginFormData {
   username: string;
@@ -37,9 +37,9 @@ const Login: React.FC = () => {
         headers: {},
       }).unwrap();
 
-      navigate("/main");
+      navigate('/main');
       const newToken =
-        loginResponse.token_type + " " + loginResponse.access_token;
+        loginResponse.token_type + ' ' + loginResponse.access_token;
 
       dispatch(setToken(newToken));
 
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
       //console.log(loginResponse.message);
     } catch (err: any) {
       Modal.error({
-        title: "用户登录失败",
+        title: '用户登录失败',
         content: err.data.message,
       });
     }
@@ -70,13 +70,11 @@ const Login: React.FC = () => {
           <Form
             name="normal_login"
             className="login-form"
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-          >
+            initialValues={{remember: true}}
+            onFinish={onFinish}>
             <Form.Item
               name="username"
-              rules={[{ required: true, message: "请输入用户名" }]}
-            >
+              rules={[{required: true, message: '请输入用户名'}]}>
               <Input
                 prefix={<UserOutlined className="site-form-item-icon" />}
                 placeholder="用户名"
@@ -84,8 +82,7 @@ const Login: React.FC = () => {
             </Form.Item>
             <Form.Item
               name="password"
-              rules={[{ required: true, message: "请输入密码" }]}
-            >
+              rules={[{required: true, message: '请输入密码'}]}>
               <Input.Password
                 prefix={<LockOutlined className="site-form-item-icon" />}
                 type="password"
@@ -106,8 +103,7 @@ const Login: React.FC = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                className="login-form-button"
-              >
+                className="login-form-button">
                 Log in
               </Button>
               {/* Or <a href="">register now!</a> */}
