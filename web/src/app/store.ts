@@ -3,9 +3,9 @@ import {
   ThunkAction,
   Action,
   combineReducers,
-} from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/dist/query";
-import storage from "redux-persist/lib/storage";
+} from '@reduxjs/toolkit';
+import {setupListeners} from '@reduxjs/toolkit/dist/query';
+import storage from 'redux-persist/lib/storage';
 import {
   persistStore,
   persistReducer,
@@ -15,13 +15,13 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from "redux-persist";
+} from 'redux-persist';
 
-import { loginApi } from "./api/loginApi";
-import { userApi } from "./api/userApi";
-import userReducer from "./slices/userSlice";
-import userModalReducer from "./slices/userModalSlice";
-import { permissionApi } from "./api/permissionApi";
+import {loginApi} from './api/loginApi';
+import {userApi} from './api/userApi';
+import userReducer from './slices/userSlice';
+import userModalReducer from './slices/userModalSlice';
+import {permissionApi} from './api/permissionApi';
 
 const reducers = {
   [loginApi.reducerPath]: loginApi.reducer,
@@ -32,25 +32,25 @@ const reducers = {
 };
 
 const persistConfig = {
-  key: "root",
+  key: 'root',
   version: 1,
   storage,
   blacklist: [
     loginApi.reducerPath,
     userApi.reducerPath,
     permissionApi.reducerPath,
-    "userModal",
+    'userModal',
   ],
 };
 
 const persistedReducer = persistReducer(
   persistConfig,
-  combineReducers(reducers)
+  combineReducers(reducers),
 );
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
@@ -58,7 +58,7 @@ export const store = configureStore({
     }).concat(
       loginApi.middleware,
       userApi.middleware,
-      permissionApi.middleware
+      permissionApi.middleware,
     ),
 });
 

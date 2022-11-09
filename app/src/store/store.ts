@@ -1,23 +1,77 @@
-import {configureStore} from '@reduxjs/toolkit';
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  combineReducers,
+} from '@reduxjs/toolkit';
 import {setupListeners} from '@reduxjs/toolkit/dist/query';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {loginApi} from 'road-damage-platform-utils/api/loginApi';
-import loginReducer from 'road-damage-platform-utils/slices/loginReducer';
-import tokenReducer from 'road-damage-platform-utils/slices/tokenReducer';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 
-export const rootStore = configureStore({
-  reducer: {
-    [loginApi.reducerPath]: loginApi.reducer,
-    login: loginReducer,
-    token: tokenReducer,
-  },
+import {loginApi} from './api/loginApi';
+import {userApi} from './api/userApi';
+import {permissionApi} from './api/permissionApi';
+import userReducer from './slices/userSlice';
+import userModalReducer from './slices/userModalSlice';
+
+const reducers = {
+  [loginApi.reducerPath]: loginApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
+  [permissionApi.reducerPath]: permissionApi.reducer,
+  user: userReducer,
+  userModal: userModalReducer,
+};
+
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage: AsyncStorage,
+  blacklist: [
+    loginApi.reducerPath,
+    userApi.reducerPath,
+    permissionApi.reducerPath,
+    'userModal',
+  ],
+};
+
+const persistedReducer = persistReducer(
+  persistConfig,
+  combineReducers(reducers),
+);
+
+export const store = configureStore({
+  reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().concat(loginApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(
+      loginApi.middleware,
+      userApi.middleware,
+      permissionApi.middleware,
+    ),
 });
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootStore.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof rootStore.dispatch;
+export let persistor = persistStore(store);
 
-setupListeners(rootStore.dispatch);
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;
+
+setupListeners(store.dispatch);
