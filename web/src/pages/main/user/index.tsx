@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from 'react';
 
-import { Button, Space, Modal, Table, Tag, Layout } from "antd";
-import type { TablePaginationConfig } from "antd/es/table";
-import Column from "antd/lib/table/Column";
-import { FilterValue } from "antd/lib/table/interface";
+import {Button, Space, Modal, Table, Tag, Layout} from 'antd';
+import type {TablePaginationConfig} from 'antd/es/table';
+import Column from 'antd/lib/table/Column';
+import {FilterValue} from 'antd/lib/table/interface';
 
 import {
   CheckCircleOutlined,
@@ -12,23 +12,23 @@ import {
   EditOutlined,
   PlusOutlined,
   ExclamationCircleOutlined,
-} from "@ant-design/icons";
+} from '@ant-design/icons';
 
 import {
   useGetAllUsersQuery,
   useDeleteUserMutation,
-} from "../../../app/api/userApi";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { User, UserModalType } from "../../../app/types/user";
-import { PermissionType } from "../../../app/types/permission";
+} from '../../../app/api/userApi';
+import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {User, UserModalType} from '../../../app/types/user';
+import {PermissionType} from '../../../app/types/permission';
 import {
   setUserModalId,
   setUserModalType,
-} from "../../../app/slices/userModalSlice";
+} from '../../../app/slices/userModalSlice';
 
-import UserModal from "../../../components/userModal";
+import UserModal from '../../../components/userModal';
 
-const { Content } = Layout;
+const {Content} = Layout;
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -40,8 +40,8 @@ interface TableParams {
 export default function UserPage() {
   const [deleteUser] = useDeleteUserMutation();
 
-  const token = useAppSelector((state) => state.user.token);
-  const permissions = useAppSelector((state) => state.user.permissions);
+  const token = useAppSelector(state => state.user.token);
+  const permissions = useAppSelector(state => state.user.permissions);
   const dispatch = useAppDispatch();
 
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -87,7 +87,6 @@ export default function UserPage() {
     } catch (err) {
       console.log(err);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableParams.pagination.current, token]);
 
   useEffect(() => {
@@ -103,7 +102,7 @@ export default function UserPage() {
 
   // handle add: open add modal
   const handleUserAdd = () => {
-    dispatch(setUserModalId(""));
+    dispatch(setUserModalId(''));
     dispatch(setUserModalType(UserModalType.USER_ADD));
   };
 
@@ -115,7 +114,7 @@ export default function UserPage() {
   // handle delete
   const handleUserDelete = (record: User) => {
     Modal.confirm({
-      title: "删除用户",
+      title: '删除用户',
       icon: <ExclamationCircleOutlined />,
       content: `确定要删除用户${record.username}吗`,
       async onOk() {
@@ -126,13 +125,12 @@ export default function UserPage() {
               Authorization: token,
             },
           }).unwrap();
-         
+
           return console.log(deleteUserResponse.message);
-        } catch (err){
-          return console.log("删除用户错误");
+        } catch (err) {
+          return console.log('删除用户错误');
         }
       },
-      onCancel() {},
     });
   };
 
@@ -143,15 +141,13 @@ export default function UserPage() {
         padding: 24,
         margin: 24,
         minHeight: 280,
-      }}
-    >
+      }}>
       {permissions.includes(PermissionType.USER_ADD) && (
         <Button
           type="primary"
-          style={{ marginTop: 16, marginBottom: 16, float: "right" }}
+          style={{marginTop: 16, marginBottom: 16, float: 'right'}}
           icon={<PlusOutlined />}
-          onClick={handleUserAdd}
-        >
+          onClick={handleUserAdd}>
           新增用户
         </Button>
       )}
@@ -161,10 +157,9 @@ export default function UserPage() {
       <Table<User>
         dataSource={userList?.user_list}
         pagination={tableParams.pagination}
-        rowKey={(record) => record.user_id}
+        rowKey={record => record.user_id}
         loading={!isGetAllUsersSuccess}
-        onChange={handleTableChange}
-      >
+        onChange={handleTableChange}>
         <Column
           title="用户名"
           dataIndex="username"
@@ -175,7 +170,7 @@ export default function UserPage() {
           title="激活状态"
           dataIndex="is_active"
           key="is_active"
-          render={(is_active) =>
+          render={is_active =>
             is_active ? (
               <Tag icon={<CheckCircleOutlined />} color="success">
                 已激活
@@ -191,13 +186,13 @@ export default function UserPage() {
           title="创建时间"
           dataIndex="create_time"
           key="createTime"
-          render={(date) => new Date(date).toLocaleDateString()}
+          render={date => new Date(date).toLocaleDateString()}
         />
         <Column
           title="修改时间"
           dataIndex="update_time"
           key="updateTime"
-          render={(date) => new Date(date).toLocaleDateString()}
+          render={date => new Date(date).toLocaleDateString()}
         />
         {(permissions.includes(PermissionType.USER_EDIT) ||
           permissions.includes(PermissionType.USER_DELETE)) && (
@@ -211,8 +206,7 @@ export default function UserPage() {
                     key="edit"
                     size="small"
                     icon={<EditOutlined />}
-                    onClick={() => handleUserEdit(record as User)}
-                  >
+                    onClick={() => handleUserEdit(record as User)}>
                     编辑用户
                   </Button>
                 )}
@@ -224,8 +218,7 @@ export default function UserPage() {
                     size="small"
                     icon={<DeleteOutlined />}
                     onClick={() => handleUserDelete(record as User)}
-                    danger
-                  >
+                    danger>
                     删除用户
                   </Button>
                 )}

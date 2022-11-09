@@ -11,6 +11,7 @@ import {
   useLazyGetUserByIdQuery,
 } from '../../app/api/userApi';
 import {useGetPermissionTreeQuery} from '../../app/api/permissionApi';
+import {showErrorModal} from '../../utils';
 
 // TODO fix bug: flash after cancel
 export default function UserForm() {
@@ -49,11 +50,8 @@ export default function UserForm() {
         is_active: user.is_active,
         permissions: user.permission_ids,
       });
-    } catch (err: any) {
-      Modal.error({
-        title: '用户登录失败',
-        content: err.data.message,
-      });
+    } catch (err) {
+      showErrorModal(err, '用户信息获取失败');
     }
   };
 
@@ -68,8 +66,6 @@ export default function UserForm() {
         permissions: [],
       });
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userModalState.modalType, userModalState.id]);
 
   useEffect(() => {
@@ -104,11 +100,8 @@ export default function UserForm() {
         content: `用户名：${values.username}，密码：${values.password}`,
       });
       dispatch(setUserModalType(UserModalType.DEFAULT));
-    } catch (err: any) {
-      Modal.error({
-        title: '用户添加失败！',
-        content: err.data.message,
-      });
+    } catch (err) {
+      showErrorModal(err, '用户添加失败！');
     }
   };
 
@@ -131,11 +124,8 @@ export default function UserForm() {
         content: `用户名：${values.username}  ${editUserResponse.message}`,
       });
       dispatch(setUserModalType(UserModalType.DEFAULT));
-    } catch (err: any) {
-      Modal.error({
-        title: '用户信息修改失败！',
-        content: err.data.message,
-      });
+    } catch (err) {
+      showErrorModal(err, '用户信息修改失败！');
     }
   };
 

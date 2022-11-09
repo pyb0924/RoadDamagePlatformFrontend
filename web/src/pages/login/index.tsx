@@ -2,7 +2,7 @@ import React from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {Button, Checkbox, Form, Input, Modal, Typography} from 'antd';
+import {Button, Checkbox, Form, Input, Typography} from 'antd';
 
 import {useLoginMutation} from '../../app/api/loginApi';
 import {useLazyGetUserByIdQuery} from '../../app/api/userApi';
@@ -10,6 +10,7 @@ import {useAppDispatch} from '../../app/hooks';
 import {setToken, setUser} from '../../app/slices/userSlice';
 
 import './index.css';
+import {showErrorModal} from '../../utils';
 
 const {Text} = Typography;
 
@@ -24,7 +25,6 @@ const Login: React.FC = () => {
   const [getUser] = useLazyGetUserByIdQuery();
 
   const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
 
   const onFinish = async (values: LoginFormData) => {
@@ -50,12 +50,8 @@ const Login: React.FC = () => {
         },
       }).unwrap();
       dispatch(setUser(userResponse));
-      //console.log(loginResponse.message);
-    } catch (err: any) {
-      Modal.error({
-        title: '用户登录失败',
-        content: err.data.message,
-      });
+    } catch (err) {
+      showErrorModal(err, '用户登录失败');
     }
   };
 

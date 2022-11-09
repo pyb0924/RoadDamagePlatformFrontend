@@ -40,8 +40,9 @@ export default function LoginPage() {
       dispatch(setUser(userResponse));
       setloginState('登陆成功');
     } catch (err: any) {
+      console.log(err);
       setloginState('登陆失败');
-      console.log(err.data.message);
+      //console.log(err.data.message);
     }
   };
 
