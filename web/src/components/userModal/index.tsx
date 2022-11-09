@@ -2,8 +2,8 @@ import React from 'react';
 
 import {Modal} from 'antd';
 
-import {useAppSelector} from '../../app/hooks';
-import {UserModalType} from '../../app/types/user';
+import {useAppSelector} from '../../store/hooks';
+import {UserModalType} from '../../store/types/user';
 
 import UserForm from './userForm';
 

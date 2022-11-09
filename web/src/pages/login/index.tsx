@@ -4,10 +4,10 @@ import {useNavigate} from 'react-router-dom';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import {Button, Checkbox, Form, Input, Typography} from 'antd';
 
-import {useLoginMutation} from '../../app/api/loginApi';
-import {useLazyGetUserByIdQuery} from '../../app/api/userApi';
-import {useAppDispatch} from '../../app/hooks';
-import {setToken, setUser} from '../../app/slices/userSlice';
+import {useLoginMutation} from '../../store/api/loginApi';
+import {useLazyGetUserByIdQuery} from '../../store/api/userApi';
+import {useAppDispatch} from '../../store/hooks';
+import {setToken, setUser} from '../../store/slices/userSlice';
 
 import './index.css';
 import {showErrorModal} from '../../utils';

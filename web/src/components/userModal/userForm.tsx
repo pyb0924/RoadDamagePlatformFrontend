@@ -2,15 +2,15 @@ import React, {useEffect, useState} from 'react';
 
 import {Button, Form, Input, Modal, Space, Switch, Tree} from 'antd';
 
-import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {setUserModalType} from '../../app/slices/userModalSlice';
-import {UserFormData, UserModalType} from '../../app/types/user';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {setUserModalType} from '../../store/slices/userModalSlice';
+import {UserFormData, UserModalType} from '../../store/types/user';
 import {
   useAddUserMutation,
   useEditUserMutation,
   useLazyGetUserByIdQuery,
-} from '../../app/api/userApi';
-import {useGetPermissionTreeQuery} from '../../app/api/permissionApi';
+} from '../../store/api/userApi';
+import {useGetPermissionTreeQuery} from '../../store/api/permissionApi';
 import {showErrorModal} from '../../utils';
 
 // TODO fix bug: flash after cancel

@@ -19,8 +19,8 @@ import {
   ReconciliationOutlined,
 } from '@ant-design/icons';
 
-import {useAppSelector} from '../../app/hooks';
-import {PermissionType} from '../../app/types/permission';
+import {useAppSelector} from '../../store/hooks';
+import {PermissionType} from '../../store/types/permission';
 
 import './index.css';
 

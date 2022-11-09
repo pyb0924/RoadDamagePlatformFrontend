@@ -17,14 +17,14 @@ import {
 import {
   useGetAllUsersQuery,
   useDeleteUserMutation,
-} from '../../../app/api/userApi';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
-import {User, UserModalType} from '../../../app/types/user';
-import {PermissionType} from '../../../app/types/permission';
+} from '../../../store/api/userApi';
+import {useAppDispatch, useAppSelector} from '../../../store/hooks';
+import {User, UserModalType} from '../../../store/types/user';
+import {PermissionType} from '../../../store/types/permission';
 import {
   setUserModalId,
   setUserModalType,
-} from '../../../app/slices/userModalSlice';
+} from '../../../store/slices/userModalSlice';
 
 import UserModal from '../../../components/userModal';
 
