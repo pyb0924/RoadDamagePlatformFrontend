@@ -1,17 +1,18 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import Config from 'react-native-config';
 
-import { BaseRequestWithToken } from "../types/base";
-import { PermissionNode, PermissionTreeResponse } from "../types/permission";
+import {BaseRequestWithToken} from '../types/base';
+import {PermissionNode, PermissionTreeResponse} from '../types/permission';
 
 export const permissionApi = createApi({
-  reducerPath: "permissionApi",
+  reducerPath: 'permissionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_BASEURL + "permission",
+    baseUrl: Config.API_BASEURL + 'permission',
   }),
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getPermissionTree: builder.query<PermissionNode[], BaseRequestWithToken>({
       query: (request: BaseRequestWithToken) => ({
-        url: "",
+        url: '',
         headers: request.headers,
       }),
       transformResponse: (response: PermissionTreeResponse) => response.data,
@@ -20,4 +21,4 @@ export const permissionApi = createApi({
   }),
 });
 
-export const { useGetPermissionTreeQuery } = permissionApi;
+export const {useGetPermissionTreeQuery} = permissionApi;

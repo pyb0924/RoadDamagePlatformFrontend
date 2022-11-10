@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
-import {Text, Button, Input, Header} from '@rneui/themed';
+import {Text, Button, Input, Divider} from '@rneui/themed';
 
-import {useLoginMutation} from '../store/api/loginApi';
-import {useLazyGetUserByIdQuery} from '../store/api/userApi';
-import {setToken, setUser} from '../store/slices/userSlice';
-import {useAppDispatch} from '../store/hooks';
+import {useLoginMutation} from '../../../store/api/loginApi';
+import {useLazyGetUserByIdQuery} from '../../../store/api/userApi';
+import {setToken, setUser} from '../../../store/slices/userSlice';
+import {useAppDispatch} from '../../../store/hooks';
 
-export default function LoginPage() {
+export default function LoginScreen() {
   const [login] = useLoginMutation();
   const [getUser] = useLazyGetUserByIdQuery();
   const dispatch = useAppDispatch();
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [userInput, setUserInput] = useState({username: '', password: ''});
 
   const onLoginHandler = async () => {
-    console.log('login button pressed');
+    console.log(userInput);
     try {
       const loginResponse = await login({
         body: {
@@ -47,25 +47,9 @@ export default function LoginPage() {
   };
 
   return (
-    <View>
-      <Header
-        backgroundImageStyle={{}}
-        barStyle="default"
-        centerComponent={{
-          text: 'MY TITLE',
-          style: {color: '#fff'},
-        }}
-        centerContainerStyle={{}}
-        containerStyle={{}}
-        leftComponent={{icon: 'menu', color: '#fff'}}
-        leftContainerStyle={{}}
-        linearGradientProps={{}}
-        placement="center"
-        rightComponent={{icon: 'home', color: '#fff'}}
-        rightContainerStyle={{}}
-        statusBarProps={{}}
-      />
-      <Text>智慧公路管理平台登陆</Text>
+    <View style={styles.container}>
+      <Text h3>智慧公路管理平台登陆</Text>
+      <Divider />
       <Input
         onChangeText={text => setUserInput({...userInput, username: text})}
         placeholder="用户名"
@@ -77,12 +61,13 @@ export default function LoginPage() {
         value={userInput.password}
         secureTextEntry={true}
       />
-      <Button title="登陆" color="#f194ff" onPress={onLoginHandler} />
+      <Button title="登陆" onPress={onLoginHandler} />
       <Text>{loginState}</Text>
     </View>
   );
 }
 
-// const styles = StyleSheet.create({
-//   textInput: {height: 40, borderColor: 'gray', borderWidth: 1},
-// });
+const styles = StyleSheet.create({
+  container: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  textInput: {height: 40, borderColor: 'gray', borderWidth: 1},
+});

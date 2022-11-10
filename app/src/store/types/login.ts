@@ -1,5 +1,9 @@
-import {TokenData} from './base';
-import {BaseRequest, BaseRequestWithToken, BaseResponse} from './base';
+import {
+  BaseRequest,
+  BaseRequestWithToken,
+  BaseResponse,
+  TokenData,
+} from './base';
 
 // data
 export interface LoginBody {
