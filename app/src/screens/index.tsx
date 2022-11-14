@@ -1,11 +1,10 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Text} from '@rneui/themed';
 
 import MapScreen from './map';
-import EventScreen from './event';
+import EventStackScreen from './event';
 import UserStackScreen from './user';
 
 const Tab = createBottomTabNavigator();
@@ -20,7 +19,7 @@ export default function MainScreen() {
             case 'Map':
               iconName = focused ? 'earth' : 'earth-outline';
               break;
-            case 'Event':
+            case 'EventStack':
               iconName = focused ? 'list' : 'list-outline';
               break;
             case 'UserStack':
@@ -46,7 +45,7 @@ export default function MainScreen() {
             case 'Map':
               tabName = '地图';
               break;
-            case 'Event':
+            case 'EventStack':
               tabName = '事件';
               break;
             case 'UserStack':
@@ -62,11 +61,10 @@ export default function MainScreen() {
             </Text>
           );
         },
-
         headerShown: false,
       })}>
       <Tab.Screen name="Map" component={MapScreen} />
-      <Tab.Screen name="Event" component={EventScreen} />
+      <Tab.Screen name="EventStack" component={EventStackScreen} />
       <Tab.Screen name="UserStack" component={UserStackScreen} />
     </Tab.Navigator>
   );

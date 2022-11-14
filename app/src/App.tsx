@@ -1,18 +1,14 @@
 import React from 'react';
 import {Provider} from 'react-redux';
-import {Platform} from 'react-native';
-import {AMapSdk} from 'react-native-amap3d';
-
 import {NavigationContainer} from '@react-navigation/native';
 import {PersistGate} from 'redux-persist/integration/react';
 
-import {persistor, store} from './store/store';
-import MainScreen from './screens';
 import {ThemeProvider} from '@rneui/themed';
 
+import {persistor, store} from './store/store';
+import MainScreen from './screens';
 
-
-const App = () => {
+export default function App() {
   return (
     <ThemeProvider>
       <Provider store={store}>
@@ -24,6 +20,4 @@ const App = () => {
       </Provider>
     </ThemeProvider>
   );
-};
-
-export default App;
+}

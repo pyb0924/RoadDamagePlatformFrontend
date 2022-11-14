@@ -1,10 +1,10 @@
 import {View, Text} from 'react-native';
 import React from 'react';
 
-export default function UploadScreen() {
+export default function UserInfoScreen() {
   return (
     <View>
-      <Text>UploadPage</Text>
+      <Text>UserInfoScreen</Text>
     </View>
   );
 }

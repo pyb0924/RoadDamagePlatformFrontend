@@ -33,9 +33,19 @@ const userSlice = createSlice({
       state.create_time = action.payload.create_time;
       state.update_time = action.payload.update_time;
     },
+    clearUser: state => {
+      state.user_id = '';
+      state.username = '';
+      state.is_active = 0;
+      state.permissions = [];
+      state.permission_ids = [];
+      state.create_time = '';
+      state.update_time = '';
+      state.token = '';
+    },
   },
 });
 
-export const {setToken, setUser} = userSlice.actions;
+export const {setToken, setUser, clearUser} = userSlice.actions;
 
 export default userSlice.reducer;

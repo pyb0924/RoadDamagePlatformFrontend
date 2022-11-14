@@ -1,20 +1,28 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {View} from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import {Text, Button, Input, Divider} from '@rneui/themed';
+import {Text, Button, Input, Divider, makeStyles} from '@rneui/themed';
 
-import {useLoginMutation} from '../../../store/api/loginApi';
-import {useLazyGetUserByIdQuery} from '../../../store/api/userApi';
-import {setToken, setUser} from '../../../store/slices/userSlice';
-import {useAppDispatch} from '../../../store/hooks';
+import {useLoginMutation} from '../../store/api/loginApi';
+import {useLazyGetUserByIdQuery} from '../../store/api/userApi';
+import {setToken, setUser} from '../../store/slices/userSlice';
+import {useAppDispatch} from '../../store/hooks';
 
-export default function LoginScreen() {
+import ErrorDialog from '../../components/dialog/error';
+import {UserStackParams} from '.';
+
+type LoginScreenProps = NativeStackScreenProps<UserStackParams, 'Login'>;
+
+export default function LoginScreen({navigation}: LoginScreenProps) {
   const [login] = useLoginMutation();
   const [getUser] = useLazyGetUserByIdQuery();
   const dispatch = useAppDispatch();
 
-  const [loginState, setloginState] = useState('未登录');
+  const [isErrorDialogVisible, setIsErrorDialogVisible] = useState(false);
+  const [errorDialogMessage, setErrorDialogMessage] = useState('');
   const [userInput, setUserInput] = useState({username: '', password: ''});
+  const styles = useStyles();
 
   const onLoginHandler = async () => {
     console.log(userInput);
@@ -38,11 +46,11 @@ export default function LoginScreen() {
         },
       }).unwrap();
       dispatch(setUser(userResponse));
-      setloginState('登陆成功');
+      navigation.navigate('User');
     } catch (err: any) {
+      setErrorDialogMessage(err.data.message);
+      setIsErrorDialogVisible(true);
       console.log(err);
-      setloginState('登陆失败');
-      //console.log(err.data.message);
     }
   };
 
@@ -62,12 +70,16 @@ export default function LoginScreen() {
         secureTextEntry={true}
       />
       <Button title="登陆" onPress={onLoginHandler} />
-      <Text>{loginState}</Text>
+      <ErrorDialog
+        isVisible={isErrorDialogVisible}
+        title="登录失败"
+        message={errorDialogMessage}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   container: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   textInput: {height: 40, borderColor: 'gray', borderWidth: 1},
-});
+}));
