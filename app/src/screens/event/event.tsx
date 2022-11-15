@@ -8,33 +8,30 @@ import {EventStackParams} from '.';
 
 type DataType = {name: string; avatar_url: string; subtitle: string};
 
-const list: DataType[] = [
-  {
-    name: 'Amy Farha',
-    avatar_url:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    subtitle: 'Vice President',
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    subtitle: 'Vice Chairman',
-  },
-];
-
-const keyExtractor = (_item: DataType, index: number): string =>
-  index.toString();
-
 type EventScreenProps = NativeStackScreenProps<EventStackParams, 'Event'>;
 
 export function EventScreen({navigation}: EventScreenProps) {
   const styles = useStyles();
+
+  const list: DataType[] = [
+    {
+      name: 'Amy Farha',
+      avatar_url:
+        'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+      subtitle: 'Vice President',
+    },
+    {
+      name: 'Chris Jackson',
+      avatar_url:
+        'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+      subtitle: 'Vice Chairman',
+    },
+  ];
+
   return (
     <View>
       <FlatList
         style={styles.eventList}
-        keyExtractor={keyExtractor}
         data={list}
         renderItem={({item}) => (
           <ListItem bottomDivider>

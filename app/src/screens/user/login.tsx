@@ -2,14 +2,13 @@ import React, {useState} from 'react';
 import {View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import {Text, Button, Input, Divider, makeStyles} from '@rneui/themed';
+import {Text, Button, Input, Divider, makeStyles, Dialog} from '@rneui/themed';
 
 import {useLoginMutation} from '../../store/api/loginApi';
 import {useLazyGetUserByIdQuery} from '../../store/api/userApi';
 import {setToken, setUser} from '../../store/slices/userSlice';
 import {useAppDispatch} from '../../store/hooks';
 
-import ErrorDialog from '../../components/dialog/error';
 import {UserStackParams} from '.';
 
 type LoginScreenProps = NativeStackScreenProps<UserStackParams, 'Login'>;
@@ -20,6 +19,9 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
   const dispatch = useAppDispatch();
 
   const [isErrorDialogVisible, setIsErrorDialogVisible] = useState(false);
+  const toggleDialog = () => {
+    setIsErrorDialogVisible(!isErrorDialogVisible);
+  };
   const [errorDialogMessage, setErrorDialogMessage] = useState('');
   const [userInput, setUserInput] = useState({username: '', password: ''});
   const styles = useStyles();
@@ -70,11 +72,14 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
         secureTextEntry={true}
       />
       <Button title="登陆" onPress={onLoginHandler} />
-      <ErrorDialog
-        isVisible={isErrorDialogVisible}
-        title="登录失败"
-        message={errorDialogMessage}
-      />
+
+      <Dialog isVisible={isErrorDialogVisible} onBackdropPress={toggleDialog}>
+        <Dialog.Title title="登录失败" />
+        <Text>{errorDialogMessage}</Text>
+        <Dialog.Actions>
+          <Dialog.Button title="确认" onPress={() => toggleDialog()} />
+        </Dialog.Actions>
+      </Dialog>
     </View>
   );
 }

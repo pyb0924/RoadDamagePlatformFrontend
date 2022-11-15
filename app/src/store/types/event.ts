@@ -1,8 +1,12 @@
+import {BaseRequestWithToken} from './base';
+
 export interface EventBase {
   type: EventType;
   longitude: number;
   latitude: number;
   position: string;
+  user: string;
+  notes?: string;
 }
 
 export interface Event extends EventBase {
@@ -19,4 +23,9 @@ export enum EventStatus {
 
 export enum EventType {
   HOLE,
+}
+
+export interface AddEventRequest extends BaseRequestWithToken {
+  params: EventBase;
+  body: FormData;
 }

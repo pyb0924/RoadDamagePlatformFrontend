@@ -11,14 +11,6 @@ import {UserStackParams} from '.';
 
 type UserScreenProps = NativeStackScreenProps<UserStackParams, 'User'>;
 
-type UserOptionType = {
-  title: string;
-  onPress: () => void;
-};
-
-const keyExtractor = (_item: UserOptionType, index: number): string =>
-  index.toString();
-
 export default function UserScreen({navigation}: UserScreenProps) {
   const unLoginOptionList = [
     {title: '登录', onPress: () => navigation.navigate('Login')},
@@ -62,7 +54,6 @@ export default function UserScreen({navigation}: UserScreenProps) {
 
       <FlatList
         style={styles.optionList}
-        keyExtractor={keyExtractor}
         data={user.user_id ? loginOptionList : unLoginOptionList}
         renderItem={({item}) => (
           <ListItem bottomDivider onPress={item.onPress}>

@@ -22,14 +22,14 @@ import {loginApi} from './api/loginApi';
 import {userApi} from './api/userApi';
 import {permissionApi} from './api/permissionApi';
 import userReducer from './slices/userSlice';
-import userModalReducer from './slices/userModalSlice';
+import {eventApi} from './api/eventApi';
 
 const reducers = {
   [loginApi.reducerPath]: loginApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [permissionApi.reducerPath]: permissionApi.reducer,
+  [eventApi.reducerPath]: eventApi.reducer,
   user: userReducer,
-  userModal: userModalReducer,
 };
 
 const persistConfig = {
@@ -40,7 +40,7 @@ const persistConfig = {
     loginApi.reducerPath,
     userApi.reducerPath,
     permissionApi.reducerPath,
-    'userModal',
+    eventApi.reducerPath,
   ],
 };
 
@@ -60,6 +60,7 @@ export const store = configureStore({
       loginApi.middleware,
       userApi.middleware,
       permissionApi.middleware,
+      eventApi.middleware,
     ),
 });
 
