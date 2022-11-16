@@ -44,7 +44,7 @@ function getItem(
   } as MenuItem;
 }
 
-// TODO name change DashBoard => LayOut
+
 const MainPage: React.FC = () => {
   const permissions = useAppSelector(state => state.user.permissions);
 

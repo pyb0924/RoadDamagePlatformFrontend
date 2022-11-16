@@ -1,5 +1,7 @@
 .bg {
-  height: 1161px;
+  height: 100%;
+  width: 100%;
+  position: absolute;
   background: linear-gradient(180deg, #a0d7e7, #6c5dd3);
   margin: auto;
   text-align: center;
