@@ -105,7 +105,7 @@ const Login: React.FC = () => {
               {/* Or <a href="">register now!</a> */}
             </Form.Item>
           </Form>
-          <Text>BaseUrl:{process.env.REACT_APP_BASEURL}</Text>
+          
         </div>
       </div>
     </>

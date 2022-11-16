@@ -13,11 +13,13 @@
 .heard {
   position: absolute;
   display: flex;
-  top: 350px;
+  top: 35%;
+  width: 30%;
+  padding-top: 0.6%;
 }
 
 .title {
-  width: 520px;
+  width: 100%;
   font-size: 30px;
   font-family: Arial;
   font-weight: bold;
@@ -25,18 +27,20 @@
 }
 
 .login-card {
-  width: 520px;
-  height: 350px;
+  width: 30%;
+  height: 35%;
   background: #f2f3f7;
   border-radius: 20px;
   margin: auto;
   text-align: center;
   justify-content: center;
-  padding: 60px 110px;
+  display: flex;
+  align-items: center;
+  padding-top: 5%;
 }
 
 .login-form {
-  max-width: 300px;
+  width: 50%;
 }
 
 .login-form-forgot {
