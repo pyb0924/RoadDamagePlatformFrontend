@@ -16,6 +16,8 @@
   top: 35%;
   width: 30%;
   padding-top: 0.6%;
+  min-width: 500px;
+  min-height: 500px;
 }
 
 .title {
@@ -37,6 +39,8 @@
   display: flex;
   align-items: center;
   padding-top: 5%;
+  min-width: 500px;
+  min-height: 300px;
 }
 
 .login-form {
