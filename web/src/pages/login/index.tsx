@@ -12,8 +12,6 @@ import {setToken, setUser} from '../../store/slices/userSlice';
 import './index.css';
 import {showErrorModal} from '../../utils';
 
-const {Text} = Typography;
-
 interface LoginFormData {
   username: string;
   password: string;
@@ -105,7 +103,6 @@ const Login: React.FC = () => {
               {/* Or <a href="">register now!</a> */}
             </Form.Item>
           </Form>
-          
         </div>
       </div>
     </>
