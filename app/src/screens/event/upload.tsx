@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
-import {ActivityIndicator, FlatList, TextInput, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, FlatList, View} from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Controller, useForm} from 'react-hook-form';
 import {
   Asset,
@@ -9,11 +10,17 @@ import {
   launchImageLibrary,
 } from 'react-native-image-picker';
 
+import {Geolocation} from 'react-native-amap-geolocation';
+import {MapView, Marker} from 'react-native-amap3d';
+
 import {
   BottomSheet,
   Button,
+  Card,
   Dialog,
+  Icon,
   Image,
+  Input,
   ListItem,
   makeStyles,
   Text,
@@ -21,26 +28,60 @@ import {
 
 import {useAddEventMutation} from '../../store/api/eventApi';
 import {useAppSelector} from '../../store/hooks';
-import {EventType} from '../../store/types/event';
 
-export default function UploadScreen() {
+import {positionToString} from '../../utils';
+import {EventStackParams} from '.';
+
+type UploadScreenProps = NativeStackScreenProps<EventStackParams, 'Upload'>;
+
+type UploadFormData = {
+  uploadUser: string;
+  eventName: string;
+  eventPosition: string;
+  eventAddress: string;
+};
+
+// TODO fix bug: return to EventScreen
+export default function UploadScreen({navigation}: UploadScreenProps) {
+  const user = useAppSelector(state => state.user);
+
   const {
     control,
     handleSubmit,
+    setValue,
     formState: {errors},
   } = useForm({
     defaultValues: {
+      uploadUser: user.username,
       eventName: '',
-      lastName: '',
+      eventPosition: '',
+      eventAddress: '',
     },
   });
-  const user = useAppSelector(state => state.user);
+
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [deleteImageDialogVisible, setDeleteImageDialogVisible] =
     useState(false);
-
   const [assetList, setAssetList] = useState<Asset[]>([]);
+  const [onDeleteAsset, setOnDeleteAsset] = useState<Asset>();
+
   const [addEvent] = useAddEventMutation();
+
+  const [position, setPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+    address: '地址信息未获取',
+  });
+
+  useEffect(() => {
+    console.log(positionToString(position));
+    if (position.latitude === 0 && position.longitude === 0) {
+      setValue('eventPosition', '请点击图标获取当前位置信息');
+    } else {
+      setValue('eventPosition', positionToString(position));
+    }
+    setValue('eventAddress', position.address);
+  }, [setValue, position]);
 
   const styles = useStyles();
 
@@ -65,8 +106,8 @@ export default function UploadScreen() {
     },
   ];
 
-  const onSubmit = () => {
-    uploadEvent();
+  const onSubmit = (formData: UploadFormData) => {
+    uploadEvent(formData);
   };
 
   const getImagePickerResponse = async (
@@ -74,42 +115,43 @@ export default function UploadScreen() {
   ) => {
     try {
       const result = await launchImagePicker({mediaType: 'photo'});
-      if (result.assets === undefined) {
+      if (result.assets === undefined || result.assets[0] === undefined) {
         throw new TypeError('response type error');
       }
       const curImagePickerList = assetList;
       curImagePickerList.push(result.assets[0]);
-      console.log(curImagePickerList);
+      //console.log(curImagePickerList);
       setAssetList(curImagePickerList);
     } catch (error) {
-      console.log('ImagePicker Error: ', error);
+      console.log(error);
     }
   };
 
-  const uploadEvent = () => {
-    const data = new FormData();
+  const uploadEvent = (formData: UploadFormData) => {
+    const assets = new FormData();
     assetList.forEach(asset => {
-      data.append('file', {
+      assets.append('file', {
         uri: asset.uri,
         name: asset.fileName,
         type: 'image/jpeg',
       });
     });
-    console.log(data);
+    console.log(assets);
     try {
       addEvent({
         params: {
-          type: EventType.HOLE,
-          longitude: 120.0,
-          latitude: 30.0,
-          position: 'SJTU',
+          name: formData.eventName,
+          longitude: position.longitude,
+          latitude: position.latitude,
+          address: formData.eventAddress,
           user: user.user_id,
         },
-        body: data,
+        body: assets,
         headers: {
           Authorization: user.token,
         },
       }).unwrap();
+      navigation.navigate('Event');
     } catch (error) {
       console.log(error);
     }
@@ -117,68 +159,185 @@ export default function UploadScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>养护事件名称</Text>
-      <Controller
-        control={control}
-        rules={{
-          required: true,
-        }}
-        render={({field: {onChange, onBlur, value}}) => (
-          <TextInput onBlur={onBlur} onChangeText={onChange} value={value} />
-        )}
-        name="eventName"
-      />
-      {errors.eventName && <Text>This is required.</Text>}
-
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={({field: {onChange, onBlur, value}}) => (
-          <TextInput onBlur={onBlur} onChangeText={onChange} value={value} />
-        )}
-        name="lastName"
-      />
-
-      <FlatList
-        numColumns={3}
-        style={styles.imageList}
-        data={assetList.concat([
-          {
-            id: 'add_blank',
-            uri: 'asset:/add_blank.jpg',
+      <MapView
+        style={styles.mapView}
+        initialCameraPosition={{
+          target: {
+            latitude: 39.91095,
+            longitude: 116.37296,
           },
-        ])}
-        renderItem={({item}) => (
-          <Image
-            source={{uri: item.uri}}
-            containerStyle={styles.imageItem}
-            PlaceholderContent={<ActivityIndicator />}
-            onPress={
-              item.id === 'add_blank'
-                ? () => {
-                    setBottomSheetVisible(true);
-                  }
-                : () => {}
-            }
-            onLongPress={() => {
-              //TODO confirm dialog
-              //setDeleteImageDialogVisible(true);
-              const position = assetList.findIndex(
-                asset => asset.id === item.id,
-              );
-              let curAssetList = assetList;
-              curAssetList = curAssetList.splice(position, 1);
-              setAssetList(curAssetList);
+          zoom: 8,
+        }}>
+        <Marker
+          position={{latitude: 39.806901, longitude: 116.297972}}
+          icon={{
+            uri: 'https://reactnative.dev/img/pwa/manifest-icon-512.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+      </MapView>
+      <Card containerStyle={styles.formView}>
+        <View>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
             }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <Input
+                disabled={true}
+                label="上传人"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                leftIcon={<Icon name="person" size={24} />}
+                rightIcon={
+                  <Icon
+                    name="close"
+                    size={24}
+                    onPress={() => setValue('uploadUser', '')}
+                  />
+                }
+              />
+            )}
+            name="uploadUser"
           />
-        )}
+
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <Input
+                label="事件名称"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                rightIcon={
+                  <Icon
+                    name="close"
+                    size={24}
+                    onPress={() => setValue('eventName', '')}
+                  />
+                }
+              />
+            )}
+            name="eventName"
+          />
+          {errors.eventName && <Text>请输入事件名称</Text>}
+
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({field: {onChange, value}}) => (
+              <Input
+                disabled={true}
+                label="事件地点"
+                onChangeText={onChange}
+                value={value}
+                leftIcon={
+                  <Icon
+                    name="location-on"
+                    size={24}
+                    onPress={async () => {
+                      Geolocation.getCurrentPosition(
+                        ({coords, location}) => {
+                          setPosition({
+                            latitude: coords.latitude,
+                            longitude: coords.longitude,
+                            address: location.address,
+                          });
+                        },
+                        error => {
+                          console.log(error);
+                        },
+                      );
+                    }}
+                  />
+                }
+                rightIcon={
+                  <Icon
+                    name="close"
+                    size={24}
+                    onPress={() => {
+                      setPosition({
+                        latitude: 0,
+                        longitude: 0,
+                        address: '地址信息未获取',
+                      });
+                    }}
+                  />
+                }
+              />
+            )}
+            name="eventPosition"
+          />
+          {errors.eventPosition && <Text>未获取到事件位置</Text>}
+
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({field: {value}}) => (
+              <Text style={styles.textItem}>{value}</Text>
+            )}
+            name="eventAddress"
+          />
+        </View>
+
+        <FlatList
+          numColumns={3}
+          style={styles.imageList}
+          data={
+            assetList.length === 6
+              ? assetList
+              : assetList.concat([
+                  {
+                    id: 'add_blank',
+                    uri: 'asset:/add_blank.jpg',
+                  },
+                ])
+          }
+          renderItem={({item}) => (
+            <Image
+              source={{uri: item.uri}}
+              containerStyle={styles.imageItem}
+              PlaceholderContent={<ActivityIndicator />}
+              onPress={
+                item.id === 'add_blank'
+                  ? () => {
+                      setBottomSheetVisible(true);
+                    }
+                  : () => {}
+              }
+              onLongPress={() => {
+                setDeleteImageDialogVisible(true);
+                setOnDeleteAsset(item);
+                console.log(item);
+              }}
+            />
+          )}
+        />
+      </Card>
+      <Button
+        icon={<Icon name="done" size={18} color="white" />}
+        buttonStyle={styles.submitBotton}
+        size="lg"
+        title="提交"
+        titleStyle={styles.submitBottonTitle}
+        onPress={handleSubmit(onSubmit)}
       />
 
-      <Button title="提交" onPress={handleSubmit(onSubmit)} />
-      <Button title="选择照片" onPress={() => setBottomSheetVisible(true)} />
-
+      <Button
+        title="返回"
+        titleStyle={styles.submitBottonTitle}
+        onPress={() => navigation.navigate('Event')}
+      />
       <Dialog
         isVisible={deleteImageDialogVisible}
         onBackdropPress={() => setDeleteImageDialogVisible(false)}>
@@ -187,6 +346,12 @@ export default function UploadScreen() {
           <Dialog.Button
             title="确认"
             onPress={() => {
+              if (onDeleteAsset !== undefined) {
+                const index = assetList.indexOf(onDeleteAsset);
+                const curAssetList = [...assetList];
+                curAssetList.splice(index, 1);
+                setAssetList(curAssetList);
+              }
               setDeleteImageDialogVisible(false);
             }}
           />
@@ -198,7 +363,6 @@ export default function UploadScreen() {
           />
         </Dialog.Actions>
       </Dialog>
-
       <BottomSheet modalProps={{}} isVisible={bottomSheetVisible}>
         {bottomSheetList.map((item, index) => (
           <ListItem key={index} onPress={item.onPress}>
@@ -213,7 +377,17 @@ export default function UploadScreen() {
 }
 
 const useStyles = makeStyles(theme => ({
-  container: {backgroundColor: theme.colors.background},
+  container: {flex: 1, alignItems: 'center'},
+  mapView: {height: '12%'},
+  formView: {
+    backgroundColor: theme.colors.background,
+    width: '90%',
+    borderRadius: 10,
+  },
+  textItem: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
   bottemSheetItem: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   imageList: {
     width: '100%',
@@ -225,5 +399,12 @@ const useStyles = makeStyles(theme => ({
     aspectRatio: 1,
     maxWidth: '30%',
     flex: 1,
+  },
+  submitBotton: {
+    width: 100,
+    marginTop: 15,
+  },
+  submitBottonTitle: {
+    fontSize: 20,
   },
 }));

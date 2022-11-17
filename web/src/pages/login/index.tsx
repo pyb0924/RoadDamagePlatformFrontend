@@ -9,8 +9,10 @@ import {useLazyGetUserByIdQuery} from '../../store/api/userApi';
 import {useAppDispatch} from '../../store/hooks';
 import {setToken, setUser} from '../../store/slices/userSlice';
 
-import './index.css';
 import {showErrorModal} from '../../utils';
+
+import './index.css';
+
 
 interface LoginFormData {
   username: string;
