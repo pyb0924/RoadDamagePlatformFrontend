@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+
 import {Controller, useForm} from 'react-hook-form';
 import {
   Asset,
