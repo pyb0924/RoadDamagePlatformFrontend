@@ -1,7 +1,6 @@
 import {BaseRequestWithToken} from './base';
 
 export interface EventBase {
-  name: string;
   longitude: number;
   latitude: number;
   address: string;

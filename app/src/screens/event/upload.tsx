@@ -36,9 +36,9 @@ type UploadScreenProps = NativeStackScreenProps<EventStackParams, 'Upload'>;
 
 type UploadFormData = {
   uploadUser: string;
-  eventName: string;
   eventPosition: string;
   eventAddress: string;
+  notes: string;
 };
 
 // TODO fix bug: return to EventScreen
@@ -53,9 +53,9 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   } = useForm({
     defaultValues: {
       uploadUser: user.username,
-      eventName: '',
       eventPosition: '',
       eventAddress: '',
+      notes: '',
     },
   });
 
@@ -74,7 +74,6 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   });
 
   useEffect(() => {
-    console.log(positionToString(position));
     if (position.latitude === 0 && position.longitude === 0) {
       setValue('eventPosition', '请点击图标获取当前位置信息');
     } else {
@@ -140,11 +139,11 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
     try {
       addEvent({
         params: {
-          name: formData.eventName,
           longitude: position.longitude,
           latitude: position.latitude,
           address: formData.eventAddress,
           user: user.user_id,
+          notes: formData.notes,
         },
         body: assets,
         headers: {
@@ -207,30 +206,6 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
           <Controller
             control={control}
             rules={{
-              required: true,
-            }}
-            render={({field: {onChange, onBlur, value}}) => (
-              <Input
-                label="事件名称"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                rightIcon={
-                  <Icon
-                    name="close"
-                    size={24}
-                    onPress={() => setValue('eventName', '')}
-                  />
-                }
-              />
-            )}
-            name="eventName"
-          />
-          {errors.eventName && <Text>请输入事件名称</Text>}
-
-          <Controller
-            control={control}
-            rules={{
               maxLength: 100,
             }}
             render={({field: {onChange, value}}) => (
@@ -289,6 +264,32 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
             name="eventAddress"
           />
         </View>
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <Input
+              label="备注"
+              multiline={true}
+              numberOfLines={3}
+              textAlignVertical="top"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              rightIcon={
+                <Icon
+                  name="close"
+                  size={24}
+                  onPress={() => setValue('notes', '')}
+                />
+              }
+            />
+          )}
+          name="notes"
+        />
 
         <FlatList
           numColumns={3}
@@ -401,6 +402,7 @@ const useStyles = makeStyles(theme => ({
     flex: 1,
   },
   submitBotton: {
+    borderRadius: 5,
     width: 100,
     marginTop: 15,
   },
