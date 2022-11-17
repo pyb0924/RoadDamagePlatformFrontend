@@ -2,7 +2,7 @@ import React from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {Button, Checkbox, Form, Input, Typography} from 'antd';
+import {Button, Checkbox, Form, Input} from 'antd';
 
 import {useLoginMutation} from '../../store/api/loginApi';
 import {useLazyGetUserByIdQuery} from '../../store/api/userApi';
@@ -35,7 +35,7 @@ const Login: React.FC = () => {
         headers: {},
       }).unwrap();
 
-      navigate('/main');
+      navigate('/main/dashboard');
       const newToken =
         loginResponse.token_type + ' ' + loginResponse.access_token;
 

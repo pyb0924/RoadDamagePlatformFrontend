@@ -20,9 +20,7 @@ export const router = createBrowserRouter([
     element: <MainPage />,
     children: [
       {
-        // TODO set dashboard as index page
         path: 'dashboard',
-        index: true,
         element: <DashBoard />,
       },
       {
