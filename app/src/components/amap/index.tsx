@@ -4,6 +4,7 @@ import {Platform} from 'react-native';
 import {AMapSdk, MapView, Marker} from 'react-native-amap3d';
 import Config from 'react-native-config';
 
+//TODO mapView display
 export default function AMapView() {
   useEffect(() => {
     AMapSdk.init(
@@ -12,6 +13,7 @@ export default function AMapView() {
       }),
     );
   }, []);
+
   return (
     <MapView
       initialCameraPosition={{

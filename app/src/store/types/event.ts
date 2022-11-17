@@ -1,15 +1,16 @@
 import {BaseRequestWithToken} from './base';
 
 export interface EventBase {
-  type: EventType;
+  name: string;
   longitude: number;
   latitude: number;
-  position: string;
+  address: string;
   user: string;
   notes?: string;
 }
 
 export interface Event extends EventBase {
+  type: EventType;
   event_id: string;
   status: EventStatus;
 }

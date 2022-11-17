@@ -21,7 +21,11 @@ export default function EventStackScreen() {
         component={EventScreen}
         options={{headerTitle: '养护事件列表'}}
       />
-      <EventStack.Screen name="Upload" component={UploadScreen} />
+      <EventStack.Screen
+        name="Upload"
+        component={UploadScreen}
+        options={{headerTitle: '上传新养护事件'}}
+      />
       <EventStack.Screen name="EventDetail" component={EventDetailScreen} />
     </EventStack.Navigator>
   );
