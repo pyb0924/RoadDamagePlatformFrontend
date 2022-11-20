@@ -10,7 +10,7 @@ import {
   CloseCircleOutlined,
   DeleteOutlined,
   EditOutlined,
-  PlusOutlined,
+  UserAddOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 
@@ -106,17 +106,20 @@ export default function UserPage() {
     dispatch(setUserModalType(UserModalType.USER_ADD));
   };
 
+  // handle edit: open edit modal
   const handleUserEdit = (record: User) => {
     dispatch(setUserModalId(record.user_id));
     dispatch(setUserModalType(UserModalType.USER_EDIT));
   };
 
-  // handle delete
+  // handle delete: open delete modal
   const handleUserDelete = (record: User) => {
     Modal.confirm({
       title: '删除用户',
       icon: <ExclamationCircleOutlined />,
       content: `确定要删除用户${record.username}吗`,
+      cancelText: '取消',
+      okText: '确定',
       async onOk() {
         try {
           const deleteUserResponse = await deleteUser({
@@ -146,7 +149,7 @@ export default function UserPage() {
         <Button
           type="primary"
           style={{marginTop: 16, marginBottom: 16, float: 'right'}}
-          icon={<PlusOutlined />}
+          icon={<UserAddOutlined />}
           onClick={handleUserAdd}>
           新增用户
         </Button>
@@ -164,12 +167,14 @@ export default function UserPage() {
           title="用户名"
           dataIndex="username"
           key="username"
+          width={'20%'}
           sorter={true}
         />
         <Column
           title="激活状态"
           dataIndex="is_active"
           key="is_active"
+          width={'20%'}
           render={is_active =>
             is_active ? (
               <Tag icon={<CheckCircleOutlined />} color="success">
@@ -186,12 +191,14 @@ export default function UserPage() {
           title="创建时间"
           dataIndex="create_time"
           key="createTime"
+          width={'20%'}
           render={date => new Date(date).toLocaleDateString()}
         />
         <Column
           title="修改时间"
           dataIndex="update_time"
           key="updateTime"
+          width={'20%'}
           render={date => new Date(date).toLocaleDateString()}
         />
         {(permissions.includes(PermissionType.USER_EDIT) ||
@@ -199,6 +206,7 @@ export default function UserPage() {
           <Column
             title="操作"
             key="action"
+            width={'20%'}
             render={(_text, record) => (
               <Space>
                 {permissions.includes(PermissionType.USER_EDIT) && (

@@ -5,10 +5,10 @@ import Login from '../pages/login';
 import MainPage from '../pages/main';
 import DashBoard from '../pages/main/dashboard';
 import MapPage from '../pages/main/map';
+import EventPage from '../pages/main/event';
 import UserPage from '../pages/main/user';
 
-// TODO fix bug: change menu select with url change
-// TODO change router file's path
+// TODO fix bug: change menu select when directly changing url
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -16,7 +16,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '/main',
-    // TODO change main element
     element: <MainPage />,
     children: [
       {
@@ -26,6 +25,10 @@ export const router = createBrowserRouter([
       {
         path: 'map',
         element: <MapPage />,
+      },
+      {
+        path: 'event',
+        element: <EventPage/>,
       },
       {
         path: 'user',

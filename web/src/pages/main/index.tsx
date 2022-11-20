@@ -52,7 +52,7 @@ const MainPage: React.FC = () => {
     const items: MenuItem[] = [
       getItem('工作台', 'dashboard', <PieChartOutlined />),
       getItem('数据地图', 'map', <GlobalOutlined />),
-      getItem('待办流程', 'todo', <ReconciliationOutlined />),
+      getItem('养护工作', 'event', <ReconciliationOutlined />),
     ];
 
     if (
@@ -81,9 +81,8 @@ const MainPage: React.FC = () => {
       case 'map':
         navigate('/main/map');
         break;
-      case 'upload':
-        break;
-      case '9':
+      case 'event':
+        navigate('/main/event');
         break;
       case 'user':
         navigate('/main/user');
