@@ -11,8 +11,10 @@ export interface Event extends EventBase {
 }
 
 export enum EventStatus {
-  ONCONFIRM = 0,
+  WITHDRAW = 0,
+  ONCONFIRM,
   ONCONSERVE,
+  CONSERVING,
   ONCHECK,
   CHECKED,
 }
