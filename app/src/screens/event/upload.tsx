@@ -107,27 +107,6 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   ];
 
   const onSubmit = (formData: UploadFormData) => {
-    uploadEvent(formData);
-  };
-
-  const getImagePickerResponse = async (
-    launchImagePicker: (arg0: CameraOptions) => Promise<ImagePickerResponse>,
-  ) => {
-    try {
-      const result = await launchImagePicker({mediaType: 'photo'});
-      if (result.assets === undefined || result.assets[0] === undefined) {
-        throw new TypeError('response type error');
-      }
-      const curImagePickerList = assetList;
-      curImagePickerList.push(result.assets[0]);
-      //console.log(curImagePickerList);
-      setAssetList(curImagePickerList);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const uploadEvent = (formData: UploadFormData) => {
     const assets = new FormData();
     assetList.forEach(asset => {
       assets.append('file', {
@@ -157,6 +136,23 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
     }
   };
 
+  const getImagePickerResponse = async (
+    launchImagePicker: (arg0: CameraOptions) => Promise<ImagePickerResponse>,
+  ) => {
+    try {
+      const result = await launchImagePicker({mediaType: 'photo'});
+      if (result.assets === undefined || result.assets[0] === undefined) {
+        throw new TypeError('response type error');
+      }
+      const curImagePickerList = assetList;
+      curImagePickerList.push(result.assets[0]);
+      //console.log(curImagePickerList);
+      setAssetList(curImagePickerList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -177,94 +173,93 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
           }}
         />
       </MapView>
+
       <Card containerStyle={styles.formView}>
-        <View>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({field: {onChange, onBlur, value}}) => (
-              <Input
-                disabled={true}
-                label="上传人"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                leftIcon={<Icon name="person" size={24} />}
-                rightIcon={
-                  <Icon
-                    name="close"
-                    size={24}
-                    onPress={() => setValue('uploadUser', '')}
-                  />
-                }
-              />
-            )}
-            name="uploadUser"
-          />
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <Input
+              disabled={true}
+              label="上传人"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              leftIcon={<Icon name="person" size={24} />}
+              rightIcon={
+                <Icon
+                  name="close"
+                  size={24}
+                  onPress={() => setValue('uploadUser', '')}
+                />
+              }
+            />
+          )}
+          name="uploadUser"
+        />
 
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({field: {onChange, value}}) => (
-              <Input
-                disabled={true}
-                label="事件地点"
-                onChangeText={onChange}
-                value={value}
-                leftIcon={
-                  <Icon
-                    name="location-on"
-                    size={24}
-                    onPress={async () => {
-                      Geolocation.getCurrentPosition(
-                        ({coords, location}) => {
-                          setPosition({
-                            latitude: coords.latitude,
-                            longitude: coords.longitude,
-                            address: location.address,
-                          });
-                        },
-                        error => {
-                          console.log(error);
-                        },
-                      );
-                    }}
-                  />
-                }
-                rightIcon={
-                  <Icon
-                    name="close"
-                    size={24}
-                    onPress={() => {
-                      setPosition({
-                        latitude: 0,
-                        longitude: 0,
-                        address: '地址信息未获取',
-                      });
-                    }}
-                  />
-                }
-              />
-            )}
-            name="eventPosition"
-          />
-          {errors.eventPosition && <Text>未获取到事件位置</Text>}
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({field: {onChange, value}}) => (
+            <Input
+              disabled={true}
+              label="事件地点"
+              onChangeText={onChange}
+              value={value}
+              leftIcon={
+                <Icon
+                  name="location-on"
+                  size={24}
+                  onPress={async () => {
+                    Geolocation.getCurrentPosition(
+                      ({coords, location}) => {
+                        setPosition({
+                          latitude: coords.latitude,
+                          longitude: coords.longitude,
+                          address: location.address,
+                        });
+                      },
+                      error => {
+                        console.log(error);
+                      },
+                    );
+                  }}
+                />
+              }
+              rightIcon={
+                <Icon
+                  name="close"
+                  size={24}
+                  onPress={() => {
+                    setPosition({
+                      latitude: 0,
+                      longitude: 0,
+                      address: '地址信息未获取',
+                    });
+                  }}
+                />
+              }
+            />
+          )}
+          name="eventPosition"
+        />
+        {errors.eventPosition && <Text>未获取到事件位置</Text>}
 
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({field: {value}}) => (
-              <Text style={styles.textItem}>{value}</Text>
-            )}
-            name="eventAddress"
-          />
-        </View>
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({field: {value}}) => (
+            <Text style={styles.textItem}>{value}</Text>
+          )}
+          name="eventAddress"
+        />
 
         <Controller
           control={control}
@@ -273,27 +268,24 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
           }}
           render={({field: {onChange, onBlur, value}}) => (
             <Input
+              inputContainerStyle={styles.multilineInput}
               label="备注"
               multiline={true}
-              numberOfLines={3}
+              numberOfLines={2}
               textAlignVertical="top"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              rightIcon={
-                <Icon
-                  name="close"
-                  size={24}
-                  onPress={() => setValue('notes', '')}
-                />
-              }
             />
           )}
           name="notes"
         />
+      </Card>
 
+      <Card containerStyle={styles.formView}>
+        <Text style={styles.titleItem}>上传现场图片</Text>
         <FlatList
-          numColumns={3}
+          numColumns={4}
           style={styles.imageList}
           data={
             assetList.length === 6
@@ -326,20 +318,15 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
           )}
         />
       </Card>
+
       <Button
-        icon={<Icon name="done" size={18} color="white" />}
+        icon={<Icon name="done" size={24} color="white" />}
         buttonStyle={styles.submitBotton}
-        size="lg"
         title="提交"
         titleStyle={styles.submitBottonTitle}
         onPress={handleSubmit(onSubmit)}
       />
 
-      <Button
-        title="返回"
-        titleStyle={styles.submitBottonTitle}
-        onPress={() => navigation.navigate('Event')}
-      />
       <Dialog
         isVisible={deleteImageDialogVisible}
         onBackdropPress={() => setDeleteImageDialogVisible(false)}>
@@ -365,6 +352,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
           />
         </Dialog.Actions>
       </Dialog>
+
       <BottomSheet modalProps={{}} isVisible={bottomSheetVisible}>
         {bottomSheetList.map((item, index) => (
           <ListItem key={index} onPress={item.onPress}>
@@ -385,10 +373,22 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.background,
     width: '90%',
     borderRadius: 10,
+    margin: 5,
   },
   textItem: {
     marginLeft: 10,
     marginRight: 10,
+  },
+  multilineInput: {
+    borderWidth: 1,
+    borderColor: theme.colors.greyOutline,
+  },
+  titleItem: {
+    marginLeft: 10,
+    marginRight: 10,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: theme.colors.grey3,
   },
   bottemSheetItem: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   imageList: {
@@ -397,15 +397,17 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.background,
   },
   imageItem: {
-    margin: '1%',
+    height: 100,
+    marginLeft: '1%',
+    marginRight: '1%',
     aspectRatio: 1,
-    maxWidth: '30%',
+    maxWidth: '22.5%',
     flex: 1,
   },
   submitBotton: {
     borderRadius: 5,
     width: 100,
-    marginTop: 15,
+    marginTop: 10,
   },
   submitBottonTitle: {
     fontSize: 20,

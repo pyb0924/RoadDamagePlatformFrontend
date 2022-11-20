@@ -18,7 +18,7 @@ const UserStack = createNativeStackNavigator<UserStackParams>();
 
 export default function UserStackScreen() {
   return (
-    <UserStack.Navigator>
+    <UserStack.Navigator id="UserStack">
       <UserStack.Screen
         name="User"
         component={UserScreen}

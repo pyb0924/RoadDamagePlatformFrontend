@@ -1,8 +1,11 @@
 import {View} from 'react-native';
 import React from 'react';
-import {Icon, makeStyles, Text} from '@rneui/themed';
+import {Button, Icon, makeStyles, Text} from '@rneui/themed';
+import {UserStackParams} from '.';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-export default function AboutScreen() {
+type AboutScreenProps = NativeStackScreenProps<UserStackParams, 'About'>;
+export default function AboutScreen({navigation}: AboutScreenProps) {
   const styles = useStyles();
   return (
     <View style={styles.container}>
@@ -11,6 +14,7 @@ export default function AboutScreen() {
         智慧公路管理平台V1.0
       </Text>
       <Text style={styles.text}>By EI6705 Group9</Text>
+      <Button onPress={() => navigation.goBack()} title="返回" />
     </View>
   );
 }

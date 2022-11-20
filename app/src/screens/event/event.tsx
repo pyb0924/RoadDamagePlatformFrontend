@@ -5,12 +5,14 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Avatar, FAB, ListItem, makeStyles} from '@rneui/themed';
 
 import {EventStackParams} from '.';
+import {useAppSelector} from '../../store/hooks';
 
 type DataType = {name: string; avatar_url: string; subtitle: string};
 
 type EventScreenProps = NativeStackScreenProps<EventStackParams, 'Event'>;
 
 export function EventScreen({navigation}: EventScreenProps) {
+  const user = useAppSelector(state => state.user);
   const styles = useStyles();
 
   const list: DataType[] = [
@@ -48,7 +50,14 @@ export function EventScreen({navigation}: EventScreenProps) {
         icon={{name: 'add', color: 'white'}}
         color="#4186dd"
         placement="right"
-        onPress={() => navigation.navigate('Upload')}
+        onPress={() => {
+          console.log(user);
+          if (user.user_id === '' || user.token === '') {
+            navigation.getParent()?.navigate('UserStack');
+          } else {
+            navigation.navigate('Upload');
+          }
+        }}
       />
     </View>
   );
