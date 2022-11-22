@@ -16,8 +16,6 @@ export interface BaseResponse {
   data: {};
 }
 
-export type FailResponse = BaseResponse;
-
 export interface BaseRequest {
   headers?: {};
   params?: {};
