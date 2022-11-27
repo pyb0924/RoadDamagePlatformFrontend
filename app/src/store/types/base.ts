@@ -17,6 +17,7 @@ export interface BaseResponse {
 }
 
 export interface BaseRequest {
+  path?: string;
   headers?: {};
   params?: {};
   body?: {};

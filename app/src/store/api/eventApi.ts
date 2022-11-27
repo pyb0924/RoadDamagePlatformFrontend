@@ -45,13 +45,13 @@ export const eventApi = createApi({
     }),
     getEventById: builder.query<GetEventByIdResponse, GetEventByIdRequest>({
       query: (request: GetEventByIdRequest) => ({
-        url: request.id,
+        url: request.path,
         headers: request.headers,
       }),
     }),
     editEvent: builder.mutation<BaseResponse, EditEventRequest>({
       query: (request: EditEventRequest) => ({
-        url: request.id,
+        url: request.path,
         method: 'PUT',
         params: request.params,
         body: request.body,
@@ -60,7 +60,7 @@ export const eventApi = createApi({
     }),
     getLogById: builder.query<GetLogByIdResponse, GetLogByIdRequest>({
       query: (request: GetLogByIdRequest) => ({
-        url: `log/${request.id}`,
+        url: `log/${request.path}`,
         headers: request.headers,
       }),
     }),
@@ -69,7 +69,7 @@ export const eventApi = createApi({
       GetImageByLogIdRequest
     >({
       query: (request: GetImageByLogIdRequest) => ({
-        url: `image/${request.id}`,
+        url: `image/${request.path}`,
         headers: request.headers,
       }),
     }),

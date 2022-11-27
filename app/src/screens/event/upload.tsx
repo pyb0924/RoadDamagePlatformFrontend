@@ -30,7 +30,7 @@ import {
 import {useAddEventMutation} from '../../store/api/eventApi';
 import {useAppSelector} from '../../store/hooks';
 
-import {positionToString} from '../../utils';
+import {buildRequestWithToken, positionToString} from '../../utils/utils';
 import {EventStackParams} from '.';
 
 type UploadScreenProps = NativeStackScreenProps<EventStackParams, 'Upload'>;
@@ -117,19 +117,21 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
     });
     console.log(assets);
     try {
-      addEvent({
-        params: {
-          longitude: position.longitude,
-          latitude: position.latitude,
-          address: formData.eventAddress,
-          user: user.user_id,
-          notes: formData.notes,
-        },
-        body: assets,
-        headers: {
-          Authorization: user.token,
-        },
-      }).unwrap();
+      addEvent(
+        buildRequestWithToken(
+          {
+            params: {
+              longitude: position.longitude,
+              latitude: position.latitude,
+              address: formData.eventAddress,
+              user_id: user.user_id,
+              notes: formData.notes,
+            },
+            body: assets,
+          },
+          user.token,
+        ),
+      ).unwrap();
       navigation.navigate('Event');
     } catch (error) {
       console.log(error);

@@ -1,4 +1,4 @@
-import { BaseRequestByPage, BaseRequestWithToken, BaseResponse } from "./base";
+import {BaseRequestByPage, BaseRequestWithToken, BaseResponse} from './base';
 
 export interface User {
   user_id: string;
@@ -39,7 +39,7 @@ export interface UserResponse extends BaseResponse {
 export type UsersListRequest = BaseRequestByPage;
 
 export interface UserByIdRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
 }
 
 export interface AddUserRequest extends BaseRequestWithToken {
@@ -51,12 +51,12 @@ export interface AddUserRequest extends BaseRequestWithToken {
 }
 
 export interface EditUserRequest extends BaseRequestWithToken {
-  id: string;
-  body: { is_active: number; permission_ids: string[] };
+  path: string;
+  body: {is_active: number; permission_ids: string[]};
 }
 
 export interface EditCurrentUserRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
   body: {
     avatar: string;
     email: string;
@@ -65,7 +65,7 @@ export interface EditCurrentUserRequest extends BaseRequestWithToken {
 }
 
 export interface UpdatePwdRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
   body: {
     old_password: string;
     password: string;

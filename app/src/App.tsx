@@ -11,7 +11,7 @@ import {ThemeProvider} from '@rneui/themed';
 
 import {persistor, store} from './store/store';
 import MainScreen from './screens';
-import {initAmap, initAmapGeolocation} from './utils';
+import {initAmap, initAmapGeolocation} from './utils/init';
 
 export default function App() {
   const navigationRef = useNavigationContainerRef();

@@ -10,6 +10,7 @@ import {setToken, setUser} from '../../store/slices/userSlice';
 import {useAppDispatch} from '../../store/hooks';
 
 import {UserStackParams} from '.';
+import {buildRequestWithToken} from '../../utils/utils';
 
 type LoginScreenProps = NativeStackScreenProps<UserStackParams, 'Login'>;
 
@@ -41,12 +42,9 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
 
       dispatch(setToken(newToken));
 
-      const userResponse = await getUser({
-        id: loginResponse.user_id,
-        headers: {
-          Authorization: newToken,
-        },
-      }).unwrap();
+      const userResponse = await getUser(
+        buildRequestWithToken({path: loginResponse.user_id}, newToken),
+      ).unwrap();
       dispatch(setUser(userResponse));
       navigation.navigate('User');
     } catch (err: any) {

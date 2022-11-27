@@ -7,27 +7,13 @@ import {
   setLocatingWithReGeocode,
 } from 'react-native-amap-geolocation';
 import {AMapSdk} from 'react-native-amap3d';
-import {BaseRequest} from './store/types/base';
 
-export const positionToString = (position: {
-  latitude: number;
-  longitude: number;
-}) => {
-  return (
-    `${Math.abs(position.longitude).toFixed(2)}°${
-      position.longitude > 0 ? 'N' : 'S'
-    }` +
-    ' ' +
-    `${Math.abs(position.latitude).toFixed(2)}°${
-      position.latitude > 0 ? 'E' : 'W'
-    }`
-  );
-};
-
+//TODO ios support
 export const initAmap = () => {
   AMapSdk.init(
     Platform.select({
       android: Config.AMAPKEY_ANDROID,
+      ios: '',
     }),
   );
 };
@@ -45,14 +31,9 @@ export const initAmapGeolocation = async () => {
   } else {
     throw new TypeError('Amap API key not found');
   }
-
   // android
   setNeedAddress(true);
 
   // ios
   setLocatingWithReGeocode(true);
-};
-
-export const buildRequestWithToken = (request: BaseRequest, token: string) => {
-  return {...request, headers: {Authorization: token}};
 };

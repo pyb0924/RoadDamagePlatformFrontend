@@ -4,7 +4,7 @@ export interface EventBase {
   longitude: number;
   latitude: number;
   address: string;
-  user: string;
+  user_id: string;
   notes?: string;
 }
 
@@ -23,36 +23,9 @@ export enum EventStatus {
   CHECKED,
 }
 
-export const eventStatusList = [
-  {
-    status: EventStatus.WITHDRAW,
-    name: 'withdraw',
-    title: '已完成',
-  },
-  {
-    status: EventStatus.ONCONFIRM,
-    name: 'onconfirm',
-    title: '待确认',
-  },
-  {
-    status: EventStatus.ONCHECK,
-    name: 'oncheck',
-    title: '待验收',
-  },
-  {
-    status: EventStatus.ONCONSERVE,
-    name: 'onconserve',
-    title: '待养护',
-  },
-  {
-    status: EventStatus.CONSERVING,
-    name: 'conserving',
-    title: '养护中',
-  },
-];
-
 export enum EventType {
   HOLE,
+  CRACK,
 }
 
 export interface AddEventRequest extends BaseRequestWithToken {
@@ -83,7 +56,7 @@ export interface GetEventsResponse extends BaseResponse {
 }
 
 export interface GetEventByIdRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
 }
 
 export interface GetEventByIdResponse extends BaseResponse {
@@ -91,14 +64,14 @@ export interface GetEventByIdResponse extends BaseResponse {
 }
 
 export interface GetLogByIdRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
 }
 
 // TODO fill GetEventLogResponse
 export interface GetLogByIdResponse extends BaseResponse {}
 
 export interface GetImageByLogIdRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
 }
 
 export interface GetImageByLogIdResponse extends BaseResponse {
@@ -106,7 +79,7 @@ export interface GetImageByLogIdResponse extends BaseResponse {
 }
 
 export interface EditEventRequest extends BaseRequestWithToken {
-  id: string;
+  path: string;
   params: {
     status: EventStatus;
     user_id: string;

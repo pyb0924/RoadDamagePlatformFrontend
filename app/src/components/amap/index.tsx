@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Cluster, MapView, Marker} from 'react-native-amap3d';
 import {useGetAllEventsQuery} from '../../store/api/eventApi';
 import {useAppSelector} from '../../store/hooks';
-import {buildRequestWithToken} from '../../utils';
+import {buildRequestWithToken} from '../../utils/utils';
 
 import {makeStyles} from '@rneui/themed';
 
