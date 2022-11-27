@@ -11,7 +11,7 @@ import {ThemeProvider} from '@rneui/themed';
 
 import {persistor, store} from './store/store';
 import MainScreen from './screens';
-import {initAmapGeolocation} from './utils';
+import {initAmap, initAmapGeolocation} from './utils';
 
 export default function App() {
   const navigationRef = useNavigationContainerRef();
@@ -19,6 +19,7 @@ export default function App() {
   useFlipper(navigationRef);
 
   useEffect(() => {
+    initAmap();
     initAmapGeolocation();
   }, []);
 

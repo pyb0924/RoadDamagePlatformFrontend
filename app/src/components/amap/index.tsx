@@ -1,36 +1,64 @@
-import React, {useEffect} from 'react';
-import {Platform} from 'react-native';
+import React, {useEffect, useState} from 'react';
 
-import {AMapSdk, MapView, Marker} from 'react-native-amap3d';
-import Config from 'react-native-config';
+import {Cluster, MapView, Marker} from 'react-native-amap3d';
+import {useGetAllEventsQuery} from '../../store/api/eventApi';
+import {useAppSelector} from '../../store/hooks';
+import {buildRequestWithToken} from '../../utils';
 
-//TODO mapView display
+import {makeStyles} from '@rneui/themed';
+
+interface ClusterPoint {
+  position: {latitude: number; longitude: number};
+  properties: {key: string};
+}
+
 export default function AMapView() {
-  useEffect(() => {
-    AMapSdk.init(
-      Platform.select({
-        android: Config.AMAPKEY_ANDROID,
-      }),
-    );
-  }, []);
+  const token = useAppSelector(state => state.user.token);
+  const {data} = useGetAllEventsQuery(buildRequestWithToken({}, token));
 
+  const [clusterPoints, setClusterPoints] = useState<ClusterPoint[]>([]);
+  useEffect(() => {
+    if (data === undefined) {
+      return;
+    }
+    const newClusterPoints: ClusterPoint[] = [];
+    data.forEach(item => {
+      newClusterPoints.push({
+        position: {latitude: item.latitude, longitude: item.longitude},
+        properties: {key: item.event_id},
+      });
+    });
+
+    setClusterPoints(newClusterPoints);
+  }, [data]);
+
+  const styles = useStyles();
   return (
     <MapView
+      style={styles.container}
       initialCameraPosition={{
         target: {
-          latitude: 39.91095,
-          longitude: 116.37296,
+          latitude: 31.18259,
+          longitude: 121.46038,
         },
         zoom: 8,
       }}>
-      <Marker
-        position={{latitude: 39.806901, longitude: 116.297972}}
-        icon={{
-          uri: 'https://reactnative.dev/img/pwa/manifest-icon-512.png',
-          width: 64,
-          height: 64,
-        }}
-      />
+      {data === undefined || (
+        <Cluster
+          points={clusterPoints}
+          renderMarker={item => (
+            <Marker
+              key={item.properties.key}
+              icon={'asset:/point.png'}
+              position={item.position}
+            />
+          )}
+        />
+      )}
     </MapView>
   );
 }
+
+const useStyles = makeStyles(() => ({
+  container: {width: '100%', height: '100%'},
+}));

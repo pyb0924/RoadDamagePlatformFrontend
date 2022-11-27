@@ -1,4 +1,4 @@
-import {PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
 import Config from 'react-native-config';
 
 import {
@@ -6,6 +6,8 @@ import {
   setNeedAddress,
   setLocatingWithReGeocode,
 } from 'react-native-amap-geolocation';
+import {AMapSdk} from 'react-native-amap3d';
+import {BaseRequest} from './store/types/base';
 
 export const positionToString = (position: {
   latitude: number;
@@ -19,6 +21,14 @@ export const positionToString = (position: {
     `${Math.abs(position.latitude).toFixed(2)}°${
       position.latitude > 0 ? 'E' : 'W'
     }`
+  );
+};
+
+export const initAmap = () => {
+  AMapSdk.init(
+    Platform.select({
+      android: Config.AMAPKEY_ANDROID,
+    }),
   );
 };
 
@@ -41,4 +51,8 @@ export const initAmapGeolocation = async () => {
 
   // ios
   setLocatingWithReGeocode(true);
+};
+
+export const buildRequestWithToken = (request: BaseRequest, token: string) => {
+  return {...request, headers: {Authorization: token}};
 };

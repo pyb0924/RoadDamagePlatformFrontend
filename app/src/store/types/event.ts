@@ -1,4 +1,4 @@
-import {BaseRequestWithToken, BaseRequestByPage, BaseResponse} from './base';
+import {BaseRequestWithToken, BaseResponse} from './base';
 
 export interface EventBase {
   longitude: number;
@@ -23,6 +23,34 @@ export enum EventStatus {
   CHECKED,
 }
 
+export const eventStatusList = [
+  {
+    status: EventStatus.WITHDRAW,
+    name: 'withdraw',
+    title: '已完成',
+  },
+  {
+    status: EventStatus.ONCONFIRM,
+    name: 'onconfirm',
+    title: '待确认',
+  },
+  {
+    status: EventStatus.ONCHECK,
+    name: 'oncheck',
+    title: '待验收',
+  },
+  {
+    status: EventStatus.ONCONSERVE,
+    name: 'onconserve',
+    title: '待养护',
+  },
+  {
+    status: EventStatus.CONSERVING,
+    name: 'conserving',
+    title: '养护中',
+  },
+];
+
 export enum EventType {
   HOLE,
 }
@@ -32,18 +60,18 @@ export interface AddEventRequest extends BaseRequestWithToken {
   body: FormData;
 }
 
-export interface GetEventsRequest extends BaseRequestByPage {
-  params: {
-    type: EventType[];
-    min_longitude: number;
-    max_longitude: number;
-    min_latitude: number;
-    max_latitude: number;
-    address: string;
-    status: EventStatus[];
-    user_id: string;
-    offset: number;
-    limit: number;
+export interface GetEventsRequest extends BaseRequestWithToken {
+  params?: {
+    type?: EventType[];
+    min_longitude?: number;
+    max_longitude?: number;
+    min_latitude?: number;
+    max_latitude?: number;
+    address?: string;
+    status?: EventStatus[];
+    user_id?: string;
+    offset?: number;
+    limit?: number;
   };
 }
 
