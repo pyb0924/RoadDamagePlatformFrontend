@@ -1,5 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/dist/query/react';
 import Config from 'react-native-config';
+import qs from 'qs';
 
 import {
   RefreshResponse,
@@ -17,7 +18,7 @@ export const loginApi = createApi({
       query: (request: LoginRequest) => ({
         url: 'login',
         method: 'POST',
-        body: `username=${request.body.username}&password=${request.body.password}`,
+        body: qs.stringify(request.body),
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
         },

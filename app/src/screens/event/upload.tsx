@@ -107,6 +107,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   ];
 
   const onSubmit = (formData: UploadFormData) => {
+    console.log(formData);
     const assets = new FormData();
     assetList.forEach(asset => {
       assets.append('file', {
@@ -115,7 +116,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
         type: 'image/jpeg',
       });
     });
-    console.log(assets);
+    //console.log(assets);
     try {
       addEvent(
         buildRequestWithToken(
@@ -158,6 +159,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   return (
     <View style={styles.container}>
       <MapView
+        
         style={styles.mapView}
         initialCameraPosition={{
           target: {

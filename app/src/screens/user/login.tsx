@@ -28,7 +28,7 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
   const styles = useStyles();
 
   const onLoginHandler = async () => {
-    console.log(userInput);
+    //console.log(userInput);
     try {
       const loginResponse = await login({
         body: {

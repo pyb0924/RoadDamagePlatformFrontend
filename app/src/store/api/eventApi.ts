@@ -1,6 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/dist/query/react';
 import Config from 'react-native-config';
 
+import qs from 'qs';
 import {BaseResponse} from '../types/base';
 import {
   Event,
@@ -24,6 +25,7 @@ export const eventApi = createApi({
       query: (request: AddEventRequest) => ({
         url: '',
         method: 'POST',
+        params: request.params,
         body: request.body,
         headers: {...request.headers, 'Content-Type': 'multipart/form-data'},
       }),

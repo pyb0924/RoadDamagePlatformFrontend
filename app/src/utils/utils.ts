@@ -1,4 +1,4 @@
-import {eventStatusList} from './constants';
+import {eventStatusList, FilterItem} from './constants';
 
 export const positionToString = (position: {
   latitude: number;
@@ -19,20 +19,16 @@ export const buildRequestWithToken = (request: any, token: string) => {
   return {...request, headers: {Authorization: token}};
 };
 
-export const getDefaultFilter = (arr: {key: any; title: string}[]) => {
-  const filter = {};
-  arr.map(item => Reflect.defineProperty(filter, item.key, {value: true}));
-  return filter;
-};
-
-export const buildFilterQueryArray = (obj: {[key: string]: boolean}) => {
+export const buildFilterQueryArray = (
+  obj: {[key: string]: boolean},
+  arr: FilterItem[],
+) => {
   const filterList = [];
   for (const key in obj) {
     if (obj[key]) {
-      filterList.push(
-        eventStatusList.find(item => item.key.toString() === key)?.key,
-      );
+      filterList.push(arr.find(item => item.key === key)?.name);
     }
   }
+  console.log('filter query', filterList);
   return filterList;
 };

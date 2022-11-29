@@ -16,11 +16,7 @@ import {EventStackParams} from '.';
 import {useAppSelector} from '../../store/hooks';
 import {eventStatusList, eventTypeList} from '../../utils/constants';
 import {useGetEventsQuery} from '../../store/api/eventApi';
-import {
-  buildFilterQueryArray,
-  buildRequestWithToken,
-  getDefaultFilter,
-} from '../../utils/utils';
+import {buildFilterQueryArray, buildRequestWithToken} from '../../utils/utils';
 
 type EventScreenProps = NativeStackScreenProps<EventStackParams, 'Event'>;
 
@@ -48,19 +44,24 @@ export function EventScreen({navigation}: EventScreenProps) {
 
   const [isEditDialExpand, setIsEditDialExpand] = useState(false);
   const [isFilterOverlayShow, setIsFilterOverlayShow] = useState(false);
-  const [eventStatusFilter, setEventStatusFilter] = useState(
-    getDefaultFilter(eventStatusList),
-  );
-  const [eventTypeFilter, setEventTypeFilter] = useState(
-    getDefaultFilter(eventTypeList),
-  );
+  const [eventStatusFilter, setEventStatusFilter] = useState({
+    withdraw: true,
+    onconfirm: true,
+    oncheck: true,
+    onconserve: true,
+    conserving: true,
+  });
+  const [eventTypeFilter, setEventTypeFilter] = useState({
+    hole: true,
+    crack: true,
+  });
 
   const {data: eventList, refetch} = useGetEventsQuery(
     buildRequestWithToken(
       {
         params: {
-          status: buildFilterQueryArray(eventStatusFilter),
-          type: buildFilterQueryArray(eventTypeFilter),
+          status: buildFilterQueryArray(eventStatusFilter, eventStatusList),
+          type: buildFilterQueryArray(eventTypeFilter, eventTypeList),
         },
       },
       user.token,
@@ -90,7 +91,11 @@ export function EventScreen({navigation}: EventScreenProps) {
       <Overlay
         style={styles.overlay}
         isVisible={isFilterOverlayShow}
-        onBackdropPress={() => setIsFilterOverlayShow(false)}>
+        onBackdropPress={() => {
+          console.log('filter changed');
+          setIsFilterOverlayShow(false);
+          setIsEditDialExpand(false);
+        }}>
         <Text h4>养护状态</Text>
         {eventStatusList.map(item => (
           <CheckBox
@@ -99,8 +104,10 @@ export function EventScreen({navigation}: EventScreenProps) {
             checked={Reflect.get(eventStatusFilter, item.key)}
             onPress={() => {
               const curStatusFilter = eventStatusFilter;
-              const curChecked = Reflect.get(eventStatusFilter, item.key);
+              const curChecked = Reflect.get(curStatusFilter, item.key);
+              console.log(curChecked, item.key);
               Reflect.set(curStatusFilter, item.key, !curChecked);
+              console.log(eventStatusFilter, curStatusFilter);
               setEventStatusFilter(curStatusFilter);
             }}
           />
@@ -141,7 +148,6 @@ export function EventScreen({navigation}: EventScreenProps) {
           icon={{name: 'add', color: 'white', size: 24}}
           color={theme.colors.primary}
           onPress={() => {
-            console.log(user);
             if (user.user_id === '' || user.token === '') {
               ToastAndroid.show('请先登录再上传', ToastAndroid.SHORT);
             } else {
