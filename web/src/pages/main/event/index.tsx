@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {Space, Table, Tag, Layout, Button, Input, Checkbox} from 'antd';
 import {CheckboxValueType} from 'antd/lib/checkbox/Group';
+import {TablePaginationConfig} from 'antd/es/table';
 import Column from 'antd/es/table/Column';
 
 import {
@@ -12,7 +13,11 @@ import {
   LinkOutlined,
 } from '@ant-design/icons';
 
-import {EventStatus} from '../../../store/types/event';
+import {useAppSelector} from '../../../store/hooks';
+import {useGetEventsQuery} from '../../../store/api/eventApi';
+import {Event, EventStatus, EventType} from '../../../store/types/event';
+import {buildRequestWithToken} from '../../../utils/utils';
+
 
 const {Content} = Layout;
 const {Search} = Input;
@@ -28,58 +33,73 @@ const plainOptions = [
 ];
 
 interface TableParams {
-  name: string;
-  status: number;
-  starttime: string;
-  lastchangetime: string;
+  pagination: TablePaginationConfig;
 }
 
-const data: TableParams[] = [
-  {
-    name: '范德萨2',
-    status: 0,
-    starttime: '2022/01/02',
-    lastchangetime: '2022/01/04',
-  },
-  {
-    name: '范德萨1',
-    status: 1,
-    starttime: '2022/02/04',
-    lastchangetime: '2022/06/04',
-  },
-  {
-    name: '范德萨5',
-    status: 2,
-    starttime: '2022/06/02',
-    lastchangetime: '2022/10/24',
-  },
-  {
-    name: '范德萨4',
-    status: 3,
-    starttime: '1997/02/04',
-    lastchangetime: '2200/06/04',
-  },
-  {
-    name: '范德萨3',
-    status: 4,
-    starttime: '4396/06/02',
-    lastchangetime: '1882/10/24',
-  },
-  {
-    name: '范德萨6',
-    status: 5,
-    starttime: '1996/06/22',
-    lastchangetime: '2034/10/24',
-  },
-];
-
 export default function EventPage() {
-  const [tableData, setTableData] = useState<TableParams[]>(data);
+  const token = useAppSelector(state => state.user.token);
 
-  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setTableData(data.filter(data => checkedValues.includes(data.status)));
-    console.log('checked = ', checkedValues);
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      total: 1,
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  // todo: request events by status
+  // const [eventStatusFilter, setEventStatusFilter] = useState({});
+
+  const {data: eventList, refetch} = useGetEventsQuery(
+    buildRequestWithToken(
+      {
+        params: {
+          offset: tableParams.pagination.current as number,
+          limit: tableParams.pagination.pageSize as number,
+        },
+      },
+      token,
+    ),
+  );
+
+  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {};
+
+  // update pagination
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    console.log(pagination);
+    setTableParams({
+      pagination,
+    });
   };
+
+  // request by page
+  useEffect(() => {
+    if (
+      tableParams.pagination.current === undefined ||
+      tableParams.pagination.pageSize === undefined
+    ) {
+      return;
+    }
+    try {
+      refetch();
+    } catch (err) {
+      console.log(err);
+    }
+  }, [tableParams, token, refetch]);
+
+  useEffect(() => {
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        total: eventList?.data.total,
+        current: tableParams.pagination.current,
+        pageSize: tableParams.pagination.pageSize,
+      },
+    });
+  }, [tableParams, eventList]);
+
+  // todo: handle check details: open a new router
+  const handleCheckDetails = () => {};
 
   return (
     <Content
@@ -105,11 +125,14 @@ export default function EventPage() {
         />
       </div>
 
-      <Table dataSource={tableData}>
+      <Table<Event>
+        dataSource={eventList?.data.event_list}
+        pagination={tableParams.pagination}
+        onChange={handleTableChange}>
         <Column
-          title="养护事件名称"
-          dataIndex="name"
-          key="eventid"
+          title="事件名称"
+          dataIndex="event_id"
+          key="eventID"
           width={'20%'}
           sorter={true}
         />
@@ -117,7 +140,7 @@ export default function EventPage() {
           title="事件状态"
           dataIndex="status"
           key="status"
-          width={'20%'}
+          width={'10%'}
           render={status => {
             let tagIcon;
             let tagColor;
@@ -163,9 +186,49 @@ export default function EventPage() {
             );
           }}
         />
-        <Column title="创建时间" dataIndex="starttime" width={'20%'} />
-        <Column title="上次修改时间" dataIndex="lastchangetime" width={'20%'} />
         <Column
+          title="病害类型"
+          dataIndex="type"
+          key="type"
+          render={status => {
+            let tagColor;
+            let tagText;
+            switch (status) {
+              case EventType.HOLE:
+                tagColor = "#87d068";
+                tagText = '坑洞';
+                break;
+
+              case EventType.CRACK:
+                tagColor = '#108ee9';
+                tagText = '裂缝';
+                break;
+
+              default:
+                break;
+            }
+            return (
+              <Tag color={tagColor}>
+                {tagText}
+              </Tag>
+            )
+          }}
+          width={'10%'}
+        />
+        <Column
+          title="事件创建时间"
+          dataIndex="event_id"
+          key="createTime"
+          width={'20%'}
+        />
+        <Column
+          title="上次修改时间"
+          dataIndex="event_id"
+          key="lastChangeTime"
+          width={'20%'}
+        />
+        <Column
+          title="查看详情"
           key="action"
           render={() => (
             <Space>
@@ -174,8 +237,7 @@ export default function EventPage() {
                 type="primary"
                 size="small"
                 icon={<LinkOutlined />}
-                //onClick={}
-              >
+                onClick={handleCheckDetails}>
                 查看详情
               </Button>
             </Space>
