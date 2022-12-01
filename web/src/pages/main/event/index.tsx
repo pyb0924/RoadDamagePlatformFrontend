@@ -48,12 +48,13 @@ export default function EventPage() {
   });
 
   // todo: request events by status
-  // const [eventStatusFilter, setEventStatusFilter] = useState({});
+  // const [eventStatusFilter, setEventStatusFilter] = useState();
 
   const {data: eventList, refetch} = useGetEventsQuery(
     buildRequestWithToken(
       {
         params: {
+          // status: eventStatusFilter,
           offset: tableParams.pagination.current as number,
           limit: tableParams.pagination.pageSize as number,
         },
@@ -62,7 +63,11 @@ export default function EventPage() {
     ),
   );
 
-  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {};
+  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
+    //  setEventStatusFilter(checkedValues);
+    // console.log(checkedValues);
+    // refetch();
+  };
 
   // update pagination
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -85,7 +90,7 @@ export default function EventPage() {
     } catch (err) {
       console.log(err);
     }
-  }, [tableParams, token, refetch]);
+  }, [tableParams.pagination.current, token]);
 
   useEffect(() => {
     setTableParams({

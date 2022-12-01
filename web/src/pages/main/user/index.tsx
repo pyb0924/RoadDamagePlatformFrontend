@@ -91,7 +91,7 @@ export default function UserPage() {
     } catch (err) {
       console.log(err);
     }
-  }, [tableParams, token, refetch]);
+  }, [tableParams.pagination.current, token]);
 
   useEffect(() => {
     setTableParams({
