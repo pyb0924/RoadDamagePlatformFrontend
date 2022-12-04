@@ -16,7 +16,7 @@ export const loginApi = createApi({
   endpoints: builder => ({
     login: builder.mutation<TokenDataWithId, LoginRequest>({
       query: (request: LoginRequest) => ({
-        url: 'login',
+        url: '/login',
         method: 'POST',
         body: qs.stringify(request.body),
         headers: {
@@ -27,7 +27,7 @@ export const loginApi = createApi({
     }),
     refresh: builder.mutation<RefreshResponse, RefreshRequest>({
       query: (request: RefreshRequest) => ({
-        url: 'refresh',
+        url: '/refresh',
         method: 'POST',
         headers: request.headers,
       }),

@@ -7,7 +7,7 @@ import {PermissionNode, PermissionTreeResponse} from '../types/permission';
 export const permissionApi = createApi({
   reducerPath: 'permissionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: Config.API_BASEURL + 'permission',
+    baseUrl: Config.API_BASEURL + '/permission',
   }),
   endpoints: builder => ({
     getPermissionTree: builder.query<PermissionNode[], BaseRequestWithToken>({

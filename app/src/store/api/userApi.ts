@@ -19,7 +19,7 @@ export const userApi = createApi({
   reducerPath: 'userApi',
   tagTypes: ['User'],
   baseQuery: fetchBaseQuery({
-    baseUrl: Config.API_BASEURL + 'user/',
+    baseUrl: Config.API_BASEURL + '/user',
   }),
   endpoints: builder => ({
     getAllUsers: builder.query<UsersListResponseData, UsersListRequest>({
@@ -33,7 +33,7 @@ export const userApi = createApi({
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
-        url: `${request.path}`,
+        url: `/${request.path}`,
         headers: request.headers,
       }),
       transformResponse: (response: UserResponse) => response.data,
@@ -49,7 +49,7 @@ export const userApi = createApi({
     }),
     editUser: builder.mutation<BaseResponse, EditUserRequest>({
       query: (request: EditUserRequest) => ({
-        url: `updateinfo/${request.path}`,
+        url: `/updateinfo/${request.path}`,
         method: 'PUT',
         body: request.body,
         headers: request.headers,
@@ -58,7 +58,7 @@ export const userApi = createApi({
     }),
     editCurrentUser: builder.mutation<BaseResponse, EditCurrentUserRequest>({
       query: (request: EditCurrentUserRequest) => ({
-        url: `${request.path}`,
+        url: `/${request.path}`,
         method: 'PUT',
         body: request.body,
         headers: request.headers,
@@ -66,7 +66,7 @@ export const userApi = createApi({
     }),
     updatePwd: builder.mutation<BaseResponse, UpdatePwdRequest>({
       query: (request: UpdatePwdRequest) => ({
-        url: `updatepwd/${request.path}`,
+        url: `/updatepwd/${request.path}`,
         method: 'PUT',
         body: request.body,
         headers: request.headers,
@@ -74,7 +74,7 @@ export const userApi = createApi({
     }),
     deleteUser: builder.mutation<BaseResponse, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
-        url: `${request.path}`,
+        url: `/${request.path}`,
         method: 'DELETE',
         headers: request.headers,
       }),

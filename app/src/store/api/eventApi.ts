@@ -19,7 +19,7 @@ import {
 
 export const eventApi = createApi({
   reducerPath: 'eventApi',
-  baseQuery: fetchBaseQuery({baseUrl: Config.API_BASEURL + 'event/'}),
+  baseQuery: fetchBaseQuery({baseUrl: Config.API_BASEURL + 'event'}),
   endpoints: builder => ({
     addEvent: builder.mutation<BaseResponse, AddEventRequest>({
       query: (request: AddEventRequest) => ({
@@ -46,13 +46,13 @@ export const eventApi = createApi({
     }),
     getEventById: builder.query<GetEventByIdResponse, GetEventByIdRequest>({
       query: (request: GetEventByIdRequest) => ({
-        url: request.path,
+        url: `/${request.path}`,
         headers: request.headers,
       }),
     }),
     editEvent: builder.mutation<BaseResponse, EditEventRequest>({
       query: (request: EditEventRequest) => ({
-        url: request.path,
+        url: `/${request.path}`,
         method: 'PUT',
         params: request.params,
         body: request.body,
@@ -61,7 +61,7 @@ export const eventApi = createApi({
     }),
     getLogById: builder.query<GetLogByIdResponse, GetLogByIdRequest>({
       query: (request: GetLogByIdRequest) => ({
-        url: `log/${request.path}`,
+        url: `/log/${request.path}`,
         headers: request.headers,
       }),
     }),
@@ -70,7 +70,7 @@ export const eventApi = createApi({
       GetImageByLogIdRequest
     >({
       query: (request: GetImageByLogIdRequest) => ({
-        url: `image/${request.path}`,
+        url: `/image/${request.path}`,
         headers: request.headers,
       }),
     }),

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
@@ -42,7 +42,7 @@ type UploadFormData = {
   notes: string;
 };
 
-// TODO fix bug: return to EventScreen & submit flash
+//TODO fix bug: return to EventScreen
 export default function UploadScreen({navigation}: UploadScreenProps) {
   const user = useAppSelector(state => state.user);
 
@@ -59,7 +59,6 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
       notes: '',
     },
   });
-  const mapRef = useRef<null>();
 
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [deleteImageDialogVisible, setDeleteImageDialogVisible] =
@@ -128,17 +127,22 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
               latitude: position.latitude,
               address: formData.eventAddress,
               user_id: user.user_id,
-              notes: formData.notes,
+              notes: formData.notes === '' ? '无' : formData.notes,
             },
             body: assets,
           },
           user.token,
         ),
       ).unwrap();
-      navigation.navigate('Event');
+      //navigation.navigate('Event');
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const onFail = (error: any) => {
+    console.log('fail');
+    console.log(error);
   };
 
   const getImagePickerResponse = async (
@@ -276,9 +280,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
 
         <Controller
           control={control}
-          rules={{
-            required: true,
-          }}
+          rules={{required: false}}
           render={({field: {onChange, onBlur, value}}) => (
             <Input
               inputContainerStyle={styles.multilineInput}
@@ -337,7 +339,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
         buttonStyle={styles.submitBotton}
         title="提交"
         titleStyle={styles.submitBottonTitle}
-        onPress={handleSubmit(onSubmit)}
+        onPress={handleSubmit(onSubmit, onFail)}
       />
 
       <Dialog
@@ -386,7 +388,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.background,
     width: '90%',
     borderRadius: 10,
-    margin: 5,
+
+    paddingBottom: 0,
   },
   textItem: {
     marginLeft: 10,
