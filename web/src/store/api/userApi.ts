@@ -32,7 +32,7 @@ export const userApi = createApi({
     }),
     getUserById: builder.query<User, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
-        url: `${request.id}`,
+        url: `${request.path}`,
         headers: request.headers,
       }),
       transformResponse: (response: UserResponse) => response.data,
@@ -48,7 +48,7 @@ export const userApi = createApi({
     }),
     editUser: builder.mutation<BaseResponse, EditUserRequest>({
       query: (request: EditUserRequest) => ({
-        url: `updateinfo/${request.id}`,
+        url: `updateinfo/${request.path}`,
         method: 'PUT',
         body: request.body,
         headers: request.headers,
@@ -57,7 +57,7 @@ export const userApi = createApi({
     }),
     editCurrentUser: builder.mutation<BaseResponse, EditCurrentUserRequest>({
       query: (request: EditCurrentUserRequest) => ({
-        url: `${request.id}`,
+        url: `${request.path}`,
         method: 'PUT',
         body: request.body,
         headers: request.headers,
@@ -65,7 +65,7 @@ export const userApi = createApi({
     }),
     updatePwd: builder.mutation<BaseResponse, UpdatePwdRequest>({
       query: (request: UpdatePwdRequest) => ({
-        url: `updatepwd/${request.id}`,
+        url: `updatepwd/${request.path}`,
         method: 'PUT',
         body: request.body,
         headers: request.headers,
@@ -73,7 +73,7 @@ export const userApi = createApi({
     }),
     deleteUser: builder.mutation<BaseResponse, UserByIdRequest>({
       query: (request: UserByIdRequest) => ({
-        url: `${request.id}`,
+        url: `${request.path}`,
         method: 'DELETE',
         headers: request.headers,
       }),

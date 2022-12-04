@@ -44,7 +44,7 @@ const Login: React.FC = () => {
       dispatch(setToken(newToken));
 
       const userResponse = await getUser({
-        id: loginResponse.user_id,
+        path: loginResponse.user_id,
         headers: {
           Authorization: newToken,
         },

@@ -25,8 +25,10 @@ import {
   setUserModalId,
   setUserModalType,
 } from '../../../store/slices/userModalSlice';
+import {buildRequestWithToken} from '../../../utils/utils';
 
 import UserModal from '../../../components/userModal';
+
 
 const {Content} = Layout;
 
@@ -56,15 +58,17 @@ export default function UserPage() {
     data: userList,
     refetch,
     isSuccess: isGetAllUsersSuccess,
-  } = useGetAllUsersQuery({
-    headers: {
-      Authorization: token,
-    },
-    params: {
-      offset: tableParams.pagination.current as number,
-      limit: tableParams.pagination.pageSize as number,
-    },
-  });
+  } = useGetAllUsersQuery(
+    buildRequestWithToken(
+      {
+        params: {
+          offset: tableParams.pagination.current as number,
+          limit: tableParams.pagination.pageSize as number,
+        },
+      },
+      token,
+    ),
+  );
 
   // update pagination
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -123,7 +127,7 @@ export default function UserPage() {
       async onOk() {
         try {
           const deleteUserResponse = await deleteUser({
-            id: record.user_id,
+            path: record.user_id,
             headers: {
               Authorization: token,
             },

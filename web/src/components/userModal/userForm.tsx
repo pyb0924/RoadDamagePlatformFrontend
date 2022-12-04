@@ -40,7 +40,7 @@ export default function UserForm() {
   const fetchAndSetUser = async (id: string) => {
     try {
       const user = await getUser({
-        id: id,
+        path: id,
         headers: {
           Authorization: token,
         },
@@ -108,7 +108,7 @@ export default function UserForm() {
   const handleUserEditOk = async (values: UserFormData) => {
     try {
       const editUserResponse = await editUser({
-        id: userModalState.id,
+        path: userModalState.id,
         headers: {
           Authorization: token,
         },
