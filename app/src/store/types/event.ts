@@ -1,6 +1,7 @@
 import {BaseRequestWithToken, BaseResponse} from './base';
 
 export interface EventBase {
+  type: EventType;
   longitude: number;
   latitude: number;
   address: string;
@@ -9,7 +10,6 @@ export interface EventBase {
 }
 
 export interface Event extends EventBase {
-  type: EventType;
   event_id: string;
   status: EventStatus;
 }
@@ -24,9 +24,9 @@ export enum EventStatus {
 }
 
 export enum EventType {
+  UNCATELOGUED,
   HOLE,
   CRACK,
-  UNCATELOGUED,
 }
 
 export interface AddEventRequest extends BaseRequestWithToken {

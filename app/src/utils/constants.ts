@@ -15,7 +15,7 @@ export const eventStatusList = [
 ];
 
 export const eventTypeList = [
+  {key: 'uncatelogued', name: EventType.UNCATELOGUED, title: '未分类'},
   {key: 'hole', name: EventType.HOLE, title: '坑洞'},
   {key: 'crack', name: EventType.CRACK, title: '裂痕'},
-  {key: 'uncatelogued', name: EventType.UNCATELOGUED, title: '未分类'},
 ];

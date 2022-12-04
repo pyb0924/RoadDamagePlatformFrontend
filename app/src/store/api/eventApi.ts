@@ -19,7 +19,7 @@ import {
 
 export const eventApi = createApi({
   reducerPath: 'eventApi',
-  baseQuery: fetchBaseQuery({baseUrl: Config.API_BASEURL + 'event'}),
+  baseQuery: fetchBaseQuery({baseUrl: Config.API_BASEURL + '/event'}),
   endpoints: builder => ({
     addEvent: builder.mutation<BaseResponse, AddEventRequest>({
       query: (request: AddEventRequest) => ({

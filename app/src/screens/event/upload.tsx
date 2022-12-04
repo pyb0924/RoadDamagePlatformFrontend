@@ -32,6 +32,7 @@ import {useAppSelector} from '../../store/hooks';
 
 import {buildRequestWithToken, positionToString} from '../../utils/utils';
 import {EventStackParams} from '.';
+import {EventType} from '../../store/types/event';
 
 type UploadScreenProps = NativeStackScreenProps<EventStackParams, 'Upload'>;
 
@@ -127,6 +128,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
               latitude: position.latitude,
               address: formData.eventAddress,
               user_id: user.user_id,
+              type: EventType.UNCATELOGUED,
               notes: formData.notes === '' ? '无' : formData.notes,
             },
             body: assets,
@@ -232,12 +234,14 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
                   onPress={async () => {
                     Geolocation.getCurrentPosition(
                       ({coords, location}) => {
-                        console.log(coords);
+                        console.log(coords, '\n', location);
                         setPosition({
                           latitude: coords.latitude,
                           longitude: coords.longitude,
                           isLocationGet: true,
-                          address: location.address,
+                          address: `${location.province}|${location.city}
+                                   |${location.district}|${location.street}
+                                    ${location.streetNumber}(${location.description})`,
                         });
                       },
                       error => {
