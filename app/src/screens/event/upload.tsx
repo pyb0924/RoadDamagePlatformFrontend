@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, FlatList, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
@@ -42,7 +42,7 @@ type UploadFormData = {
   notes: string;
 };
 
-// TODO fix bug: return to EventScreen
+// TODO fix bug: return to EventScreen & submit flash
 export default function UploadScreen({navigation}: UploadScreenProps) {
   const user = useAppSelector(state => state.user);
 
@@ -59,6 +59,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
       notes: '',
     },
   });
+  const mapRef = useRef<null>();
 
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [deleteImageDialogVisible, setDeleteImageDialogVisible] =
@@ -69,13 +70,14 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   const [addEvent] = useAddEventMutation();
 
   const [position, setPosition] = useState({
-    latitude: 0,
-    longitude: 0,
+    latitude: 31.21,
+    longitude: 121.48,
+    isLocationGet: false,
     address: '地址信息未获取',
   });
 
   useEffect(() => {
-    if (position.latitude === 0 && position.longitude === 0) {
+    if (!position.isLocationGet) {
       setValue('eventPosition', '请点击图标获取当前位置信息');
     } else {
       setValue('eventPosition', positionToString(position));
@@ -159,23 +161,27 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
   return (
     <View style={styles.container}>
       <MapView
-        
         style={styles.mapView}
         initialCameraPosition={{
           target: {
-            latitude: 39.91095,
-            longitude: 116.37296,
+            latitude: position.latitude,
+            longitude: position.longitude,
           },
-          zoom: 8,
+          zoom: 10,
         }}>
-        <Marker
-          position={{latitude: 39.806901, longitude: 116.297972}}
-          icon={{
-            uri: 'https://reactnative.dev/img/pwa/manifest-icon-512.png',
-            width: 64,
-            height: 64,
-          }}
-        />
+        {position.isLocationGet && (
+          <Marker
+            position={{
+              latitude: position.latitude,
+              longitude: position.longitude,
+            }}
+            icon={{
+              uri: 'https://fonts.google.com/icons?selected=Material%20Icons%3Aflag%3A',
+              width: 36,
+              height: 36,
+            }}
+          />
+        )}
       </MapView>
 
       <Card containerStyle={styles.formView}>
@@ -222,9 +228,11 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
                   onPress={async () => {
                     Geolocation.getCurrentPosition(
                       ({coords, location}) => {
+                        console.log(coords);
                         setPosition({
                           latitude: coords.latitude,
                           longitude: coords.longitude,
+                          isLocationGet: true,
                           address: location.address,
                         });
                       },
@@ -243,6 +251,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
                     setPosition({
                       latitude: 0,
                       longitude: 0,
+                      isLocationGet: false,
                       address: '地址信息未获取',
                     });
                   }}
@@ -372,7 +381,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
 
 const useStyles = makeStyles(theme => ({
   container: {flex: 1, alignItems: 'center'},
-  mapView: {height: '12%'},
+  mapView: {height: '15%', width: '100%'},
   formView: {
     backgroundColor: theme.colors.background,
     width: '90%',

@@ -4,6 +4,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {
   CheckBox,
+  Chip,
+  Divider,
   ListItem,
   makeStyles,
   Overlay,
@@ -20,22 +22,6 @@ import {buildFilterQueryArray, buildRequestWithToken} from '../../utils/utils';
 
 type EventScreenProps = NativeStackScreenProps<EventStackParams, 'Event'>;
 
-//type DataType = {name: string; avatar_url: string; subtitle: string};
-// const list: DataType[] = [
-//   {
-//     name: 'Amy Farha',
-//     avatar_url:
-//       'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-//     subtitle: 'Vice President',
-//   },
-//   {
-//     name: 'Chris Jackson',
-//     avatar_url:
-//       'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-//     subtitle: 'Vice Chairman',
-//   },
-// ];
-
 export function EventScreen({navigation}: EventScreenProps) {
   const user = useAppSelector(state => state.user);
 
@@ -44,16 +30,18 @@ export function EventScreen({navigation}: EventScreenProps) {
 
   const [isEditDialExpand, setIsEditDialExpand] = useState(false);
   const [isFilterOverlayShow, setIsFilterOverlayShow] = useState(false);
+
   const [eventStatusFilter, setEventStatusFilter] = useState({
-    withdraw: true,
     onconfirm: true,
     oncheck: true,
     onconserve: true,
     conserving: true,
+    withdraw: true,
   });
   const [eventTypeFilter, setEventTypeFilter] = useState({
     hole: true,
     crack: true,
+    uncatelogued: true,
   });
 
   const {data: eventList, refetch} = useGetEventsQuery(
@@ -78,10 +66,29 @@ export function EventScreen({navigation}: EventScreenProps) {
         style={styles.eventList}
         data={eventList?.data.event_list}
         renderItem={({item}) => (
-          <ListItem bottomDivider>
+          <ListItem
+            bottomDivider
+            onPress={() =>
+              navigation.navigate('EventDetail', {eventId: item.event_id})
+            }>
             <ListItem.Content>
               <ListItem.Title>{item.address}</ListItem.Title>
-              <ListItem.Subtitle>上传人：{item.user_id}</ListItem.Subtitle>
+              <View style={styles.eventTagContainer}>
+                <Chip
+                  title={
+                    eventStatusList.find(value => value.name === item.status)
+                      ?.title
+                  }
+                />
+                <Divider />
+
+                <Chip
+                  title={
+                    eventTypeList.find(value => value.name === item.type)?.title
+                  }
+                  color="#a10e16"
+                />
+              </View>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>
@@ -92,41 +99,93 @@ export function EventScreen({navigation}: EventScreenProps) {
         style={styles.overlay}
         isVisible={isFilterOverlayShow}
         onBackdropPress={() => {
-          console.log('filter changed');
           setIsFilterOverlayShow(false);
           setIsEditDialExpand(false);
         }}>
         <Text h4>养护状态</Text>
-        {eventStatusList.map(item => (
-          <CheckBox
-            key={item.key}
-            title={item.title}
-            checked={Reflect.get(eventStatusFilter, item.key)}
-            onPress={() => {
-              const curStatusFilter = eventStatusFilter;
-              const curChecked = Reflect.get(curStatusFilter, item.key);
-              console.log(curChecked, item.key);
-              Reflect.set(curStatusFilter, item.key, !curChecked);
-              console.log(eventStatusFilter, curStatusFilter);
-              setEventStatusFilter(curStatusFilter);
-            }}
-          />
-        ))}
+
+        <CheckBox
+          title={'待确认'}
+          checked={eventStatusFilter.onconfirm}
+          onIconPress={() => {
+            setEventStatusFilter({
+              ...eventStatusFilter,
+              onconfirm: !eventStatusFilter.onconfirm,
+            });
+          }}
+        />
+        <CheckBox
+          title={'待养护'}
+          checked={eventStatusFilter.onconserve}
+          onIconPress={() => {
+            setEventStatusFilter({
+              ...eventStatusFilter,
+              onconserve: !eventStatusFilter.onconserve,
+            });
+          }}
+        />
+        <CheckBox
+          title={'养护中'}
+          checked={eventStatusFilter.conserving}
+          onIconPress={() => {
+            setEventStatusFilter({
+              ...eventStatusFilter,
+              conserving: !eventStatusFilter.conserving,
+            });
+          }}
+        />
+        <CheckBox
+          title={'待验收'}
+          checked={eventStatusFilter.oncheck}
+          onIconPress={() => {
+            setEventStatusFilter({
+              ...eventStatusFilter,
+              oncheck: !eventStatusFilter.oncheck,
+            });
+          }}
+        />
+        <CheckBox
+          title={'已完成'}
+          checked={eventStatusFilter.withdraw}
+          onIconPress={() => {
+            setEventStatusFilter({
+              ...eventStatusFilter,
+              withdraw: !eventStatusFilter.withdraw,
+            });
+          }}
+        />
 
         <Text h4>养护类型</Text>
-        {eventTypeList.map(item => (
-          <CheckBox
-            key={item.key}
-            title={item.title}
-            checked={Reflect.get(eventTypeFilter, item.key)}
-            onPress={() => {
-              const curTypeFilter = eventTypeFilter;
-              const curChecked = Reflect.get(eventTypeFilter, item.key);
-              Reflect.set(curTypeFilter, item.key, !curChecked);
-              setEventTypeFilter(curTypeFilter);
-            }}
-          />
-        ))}
+        <CheckBox
+          title={'坑洞'}
+          checked={eventTypeFilter.hole}
+          onIconPress={() => {
+            setEventTypeFilter({
+              ...eventTypeFilter,
+              hole: !eventTypeFilter.hole,
+            });
+          }}
+        />
+        <CheckBox
+          title={'裂痕'}
+          checked={eventTypeFilter.crack}
+          onIconPress={() => {
+            setEventTypeFilter({
+              ...eventTypeFilter,
+              crack: !eventTypeFilter.crack,
+            });
+          }}
+        />
+        <CheckBox
+          title={'未分类'}
+          checked={eventTypeFilter.uncatelogued}
+          onIconPress={() => {
+            setEventTypeFilter({
+              ...eventTypeFilter,
+              uncatelogued: !eventTypeFilter.uncatelogued,
+            });
+          }}
+        />
       </Overlay>
 
       <SpeedDial
@@ -167,4 +226,5 @@ const useStyles = makeStyles(() => ({
   overlay: {
     width: '80%',
   },
+  eventTagContainer: {flexDirection: 'row', flex: 1},
 }));

@@ -1,16 +1,16 @@
-import {eventStatusList, FilterItem} from './constants';
+import {FilterItem} from './constants';
 
 export const positionToString = (position: {
   latitude: number;
   longitude: number;
 }) => {
   return (
-    `${Math.abs(position.longitude).toFixed(2)}°${
-      position.longitude > 0 ? 'N' : 'S'
+    `${Math.abs(position.latitude).toFixed(2)}°${
+      position.latitude > 0 ? 'N' : 'S'
     }` +
     ' ' +
-    `${Math.abs(position.latitude).toFixed(2)}°${
-      position.latitude > 0 ? 'E' : 'W'
+    `${Math.abs(position.longitude).toFixed(2)}°${
+      position.longitude > 0 ? 'E' : 'W'
     }`
   );
 };
@@ -29,6 +29,6 @@ export const buildFilterQueryArray = (
       filterList.push(arr.find(item => item.key === key)?.name);
     }
   }
-  console.log('filter query', filterList);
+  //console.log('filter query', filterList);
   return filterList;
 };

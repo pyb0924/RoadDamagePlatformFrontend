@@ -26,6 +26,7 @@ export enum EventStatus {
 export enum EventType {
   HOLE,
   CRACK,
+  UNCATELOGUED,
 }
 
 export interface AddEventRequest extends BaseRequestWithToken {

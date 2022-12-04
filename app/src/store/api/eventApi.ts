@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/dist/query/react';
+import qs from 'qs';
 import Config from 'react-native-config';
 
-import qs from 'qs';
 import {BaseResponse} from '../types/base';
 import {
   Event,
@@ -32,8 +32,7 @@ export const eventApi = createApi({
     }),
     getEvents: builder.query<GetEventsResponse, GetEventsRequest>({
       query: (request: GetEventsRequest) => ({
-        url: '',
-        params: request.params,
+        url: '?' + qs.stringify(request.params, {indices: false}),
         headers: request.headers,
       }),
     }),
