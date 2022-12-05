@@ -18,7 +18,8 @@ export default function DashBoard() {
         style={{height: '100%', width: '100%'}}
         src={
           'http://8.133.173.48:3000/d/36qs3vF4z/zhi-hui-gong-lu-yang-hu-shu-ju-da-ping?orgId=2&kiosk'
-        }></iframe>
+        }
+      />
     </Content>
   );
 }

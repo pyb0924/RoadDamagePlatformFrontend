@@ -55,9 +55,17 @@ export default function EventPage() {
 
   // get events by eventStatus & eventType
   const [eventStatusFilter, setEventStatusFilter] = useState([
-    0, 1, 2, 3, 4, 5,
+    EventStatus.WITHDRAW,
+    EventStatus.ONCONFIRM,
+    EventStatus.ONCONSERVE,
+    EventStatus.CONSERVING,
+    EventStatus.ONCHECK,
+    EventStatus.CHECKED,
   ]);
-  const [eventTypeFilter, setEventTypeFilter] = useState([0, 1]);
+  const [eventTypeFilter, setEventTypeFilter] = useState([
+    EventType.HOLE,
+    EventType.CRACK,
+  ]);
 
   const {data: eventList, refetch} = useGetEventsQuery(
     buildRequestWithToken(
@@ -75,7 +83,8 @@ export default function EventPage() {
 
   // refetch data when changing eventStatus & eventType
   useEffect(() => {
-    refetch();
+    if (eventStatusFilter.length !== 0 || eventTypeFilter.length !== 0)
+      refetch();
   }, [eventStatusFilter, eventTypeFilter, refetch]);
 
   // update pagination
@@ -105,12 +114,15 @@ export default function EventPage() {
     setTableParams({
       ...tableParams,
       pagination: {
-        total: eventList?.data.total,
+        total:
+          eventStatusFilter.length === 0 || eventTypeFilter.length === 0
+            ? 0
+            : eventList?.data.total,
         current: tableParams.pagination.current,
         pageSize: tableParams.pagination.pageSize,
       },
     });
-  }, [tableParams, eventList]);
+  }, [tableParams, eventList, eventStatusFilter, eventTypeFilter]);
 
   // navigate to the eventDetail page
   const handleCheckDetails = (record: Event) => {
@@ -156,14 +168,18 @@ export default function EventPage() {
       </div>
 
       <Table<Event>
-        dataSource={eventList?.data.event_list}
+        dataSource={
+          eventStatusFilter.length === 0 || eventTypeFilter.length === 0
+            ? []
+            : eventList?.data.event_list
+        }
         pagination={tableParams.pagination}
         rowKey={record => record.event_id}
         onChange={handleTableChange}>
         <Column
-          title="事件名称"
-          dataIndex="event_id"
-          key="eventId"
+          title="事件位置"
+          dataIndex="address"
+          key="address"
           width={'20%'}
           sorter={true}
         />
