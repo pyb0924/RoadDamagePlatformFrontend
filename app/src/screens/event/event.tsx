@@ -18,7 +18,8 @@ import {EventStackParams} from '.';
 import {useAppSelector} from '../../store/hooks';
 import {eventStatusList, eventTypeList} from '../../utils/constants';
 import {useGetEventsQuery} from '../../store/api/eventApi';
-import {buildFilterQueryArray, buildRequestWithToken} from '../../utils/utils';
+import {buildRequestWithToken} from '../../utils/utils';
+import {EventStatus, EventType} from '../../store/types/event';
 
 type EventScreenProps = NativeStackScreenProps<EventStackParams, 'Event'>;
 
@@ -31,25 +32,29 @@ export function EventScreen({navigation}: EventScreenProps) {
   const [isEditDialExpand, setIsEditDialExpand] = useState(false);
   const [isFilterOverlayShow, setIsFilterOverlayShow] = useState(false);
 
-  const [eventStatusFilter, setEventStatusFilter] = useState({
-    onconfirm: true,
-    oncheck: true,
-    onconserve: true,
-    conserving: true,
-    withdraw: true,
-  });
-  const [eventTypeFilter, setEventTypeFilter] = useState({
-    hole: true,
-    crack: true,
-    uncatelogued: true,
-  });
+  const [eventStatusFilter, setEventStatusFilter] = useState(
+    new Set([
+      EventStatus.CHECKED,
+      EventStatus.ONCHECK,
+      EventStatus.ONCONFIRM,
+      EventStatus.ONCONSERVE,
+      EventStatus.WITHDRAW,
+      EventStatus.CONSERVING,
+    ]),
+  );
+  const [eventTypeFilter, setEventTypeFilter] = useState(
+    new Set([EventType.CRACK, EventType.UNCATELOGUED, EventType.HOLE]),
+  );
+
+  const [eventUserFilter, setEventUserFilter] = useState('');
 
   const {data: eventList, refetch} = useGetEventsQuery(
     buildRequestWithToken(
       {
         params: {
-          status: buildFilterQueryArray(eventStatusFilter, eventStatusList),
-          type: buildFilterQueryArray(eventTypeFilter, eventTypeList),
+          user_id: eventUserFilter,
+          status: Array.from(eventStatusFilter),
+          type: Array.from(eventTypeFilter),
         },
       },
       user.token,
@@ -64,7 +69,11 @@ export function EventScreen({navigation}: EventScreenProps) {
     <View>
       <FlatList
         style={styles.eventList}
-        data={eventList?.data.event_list}
+        data={
+          eventStatusFilter.size === 0 || eventTypeFilter.size === 0
+            ? []
+            : eventList?.data.event_list
+        }
         renderItem={({item}) => (
           <ListItem
             bottomDivider
@@ -106,84 +115,136 @@ export function EventScreen({navigation}: EventScreenProps) {
 
         <CheckBox
           title={'待确认'}
-          checked={eventStatusFilter.onconfirm}
-          onIconPress={() => {
-            setEventStatusFilter({
-              ...eventStatusFilter,
-              onconfirm: !eventStatusFilter.onconfirm,
-            });
+          checked={eventStatusFilter.has(EventStatus.ONCONFIRM)}
+          onPress={() => {
+            const curEventStatusFilter = new Set(eventStatusFilter);
+            if (eventStatusFilter.has(EventStatus.ONCONFIRM)) {
+              curEventStatusFilter.delete(EventStatus.ONCONFIRM);
+            } else {
+              curEventStatusFilter.add(EventStatus.ONCONFIRM);
+            }
+            setEventStatusFilter(curEventStatusFilter);
           }}
         />
         <CheckBox
           title={'待养护'}
-          checked={eventStatusFilter.onconserve}
-          onIconPress={() => {
-            setEventStatusFilter({
-              ...eventStatusFilter,
-              onconserve: !eventStatusFilter.onconserve,
-            });
+          checked={eventStatusFilter.has(EventStatus.ONCONSERVE)}
+          onPress={() => {
+            const curEventStatusFilter = new Set(eventStatusFilter);
+            if (eventStatusFilter.has(EventStatus.ONCONSERVE)) {
+              curEventStatusFilter.delete(EventStatus.ONCONSERVE);
+            } else {
+              curEventStatusFilter.add(EventStatus.ONCONSERVE);
+            }
+            setEventStatusFilter(curEventStatusFilter);
           }}
         />
         <CheckBox
           title={'养护中'}
-          checked={eventStatusFilter.conserving}
-          onIconPress={() => {
-            setEventStatusFilter({
-              ...eventStatusFilter,
-              conserving: !eventStatusFilter.conserving,
-            });
+          checked={eventStatusFilter.has(EventStatus.CONSERVING)}
+          onPress={() => {
+            const curEventStatusFilter = new Set(eventStatusFilter);
+            if (eventStatusFilter.has(EventStatus.CONSERVING)) {
+              curEventStatusFilter.delete(EventStatus.CONSERVING);
+            } else {
+              curEventStatusFilter.add(EventStatus.CONSERVING);
+            }
+            setEventStatusFilter(curEventStatusFilter);
           }}
         />
         <CheckBox
           title={'待验收'}
-          checked={eventStatusFilter.oncheck}
-          onIconPress={() => {
-            setEventStatusFilter({
-              ...eventStatusFilter,
-              oncheck: !eventStatusFilter.oncheck,
-            });
+          checked={eventStatusFilter.has(EventStatus.ONCHECK)}
+          onPress={() => {
+            const curEventStatusFilter = new Set(eventStatusFilter);
+            if (eventStatusFilter.has(EventStatus.ONCHECK)) {
+              curEventStatusFilter.delete(EventStatus.ONCHECK);
+            } else {
+              curEventStatusFilter.add(EventStatus.ONCHECK);
+            }
+            setEventStatusFilter(curEventStatusFilter);
           }}
         />
+
+        <CheckBox
+          title={'已验收'}
+          checked={eventStatusFilter.has(EventStatus.CHECKED)}
+          onPress={() => {
+            const curEventStatusFilter = new Set(eventStatusFilter);
+            if (eventStatusFilter.has(EventStatus.CHECKED)) {
+              curEventStatusFilter.delete(EventStatus.CHECKED);
+            } else {
+              curEventStatusFilter.add(EventStatus.CHECKED);
+            }
+            setEventStatusFilter(curEventStatusFilter);
+          }}
+        />
+
         <CheckBox
           title={'已完成'}
-          checked={eventStatusFilter.withdraw}
-          onIconPress={() => {
-            setEventStatusFilter({
-              ...eventStatusFilter,
-              withdraw: !eventStatusFilter.withdraw,
-            });
+          checked={eventStatusFilter.has(EventStatus.WITHDRAW)}
+          onPress={() => {
+            const curEventStatusFilter = new Set(eventStatusFilter);
+            if (eventStatusFilter.has(EventStatus.WITHDRAW)) {
+              curEventStatusFilter.delete(EventStatus.WITHDRAW);
+            } else {
+              curEventStatusFilter.add(EventStatus.WITHDRAW);
+            }
+            setEventStatusFilter(curEventStatusFilter);
           }}
         />
 
         <Text h4>养护类型</Text>
         <CheckBox
           title={'坑洞'}
-          checked={eventTypeFilter.hole}
-          onIconPress={() => {
-            setEventTypeFilter({
-              ...eventTypeFilter,
-              hole: !eventTypeFilter.hole,
-            });
+          checked={eventTypeFilter.has(EventType.HOLE)}
+          onPress={() => {
+            const curEventTypeFilter = new Set(eventTypeFilter);
+            if (eventTypeFilter.has(EventType.HOLE)) {
+              curEventTypeFilter.delete(EventType.HOLE);
+            } else {
+              curEventTypeFilter.add(EventType.HOLE);
+            }
+            setEventTypeFilter(curEventTypeFilter);
           }}
         />
         <CheckBox
           title={'裂痕'}
-          checked={eventTypeFilter.crack}
-          onIconPress={() => {
-            setEventTypeFilter({
-              ...eventTypeFilter,
-              crack: !eventTypeFilter.crack,
-            });
+          checked={eventTypeFilter.has(EventType.CRACK)}
+          onPress={() => {
+            const curEventTypeFilter = new Set(eventTypeFilter);
+            if (eventTypeFilter.has(EventType.CRACK)) {
+              curEventTypeFilter.delete(EventType.CRACK);
+            } else {
+              curEventTypeFilter.add(EventType.CRACK);
+            }
+            setEventTypeFilter(curEventTypeFilter);
           }}
         />
         <CheckBox
           title={'未分类'}
-          checked={eventTypeFilter.uncatelogued}
-          onIconPress={() => {
-            setEventTypeFilter({
-              ...eventTypeFilter,
-              uncatelogued: !eventTypeFilter.uncatelogued,
-            });
+          checked={eventTypeFilter.has(EventType.UNCATELOGUED)}
+          onPress={() => {
+            const curEventTypeFilter = new Set(eventTypeFilter);
+            if (eventTypeFilter.has(EventType.UNCATELOGUED)) {
+              curEventTypeFilter.delete(EventType.UNCATELOGUED);
+            } else {
+              curEventTypeFilter.add(EventType.UNCATELOGUED);
+            }
+            setEventTypeFilter(curEventTypeFilter);
+          }}
+        />
+
+        <Text h4>待办</Text>
+        <CheckBox
+          title={'只看我的'}
+          checked={eventUserFilter === user.user_id}
+          onPress={() => {
+            if (eventUserFilter === '') {
+              setEventUserFilter(user.user_id);
+            } else {
+              setEventUserFilter('');
+            }
           }}
         />
       </Overlay>
@@ -199,7 +260,6 @@ export function EventScreen({navigation}: EventScreenProps) {
           icon={{name: 'filter-alt', color: 'white'}}
           color={theme.colors.primary}
           onPress={() => {
-            console.log('show overlay');
             setIsFilterOverlayShow(true);
           }}
         />

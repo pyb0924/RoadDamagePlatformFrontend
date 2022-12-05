@@ -24,7 +24,7 @@ export enum EventStatus {
 }
 
 export enum EventType {
-  UNCATELOGUED,
+  UNCATELOGUED = 0,
   HOLE,
   CRACK,
 }

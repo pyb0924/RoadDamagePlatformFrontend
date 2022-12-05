@@ -118,6 +118,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
         type: 'image/jpeg',
       });
     });
+
     //console.log(assets);
     try {
       addEvent(
@@ -129,7 +130,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
               address: formData.eventAddress,
               user_id: user.user_id,
               type: EventType.UNCATELOGUED,
-              notes: formData.notes === '' ? '无' : formData.notes,
+              notes: formData.notes,
             },
             body: assets,
           },
@@ -239,9 +240,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
                           latitude: coords.latitude,
                           longitude: coords.longitude,
                           isLocationGet: true,
-                          address: `${location.province}|${location.city}
-                                   |${location.district}|${location.street}
-                                    ${location.streetNumber}(${location.description})`,
+                          address: `${location.province}|${location.city}|${location.district}|${location.street}${location.streetNumber}(${location.description})`,
                         });
                       },
                       error => {
