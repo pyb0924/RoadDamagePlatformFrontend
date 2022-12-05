@@ -6,6 +6,7 @@ import MainPage from '../pages/main';
 import DashBoard from '../pages/main/dashboard';
 import MapPage from '../pages/main/map';
 import EventPage from '../pages/main/event';
+import EventDetailPage from '../pages/main/eventDetail';
 import UserPage from '../pages/main/user';
 
 // TODO fix bug: change menu select when directly changing url
@@ -28,7 +29,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'event',
-        element: <EventPage/>,
+        element: <EventPage />,
+      },
+      {
+        path: 'event/:id',
+        element: <EventDetailPage />,
       },
       {
         path: 'user',

@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
 import {Space, Table, Tag, Layout, Button, Input, Checkbox} from 'antd';
-import {CheckboxValueType} from 'antd/lib/checkbox/Group';
 import {TablePaginationConfig} from 'antd/es/table';
 import Column from 'antd/es/table/Column';
 
@@ -17,6 +16,7 @@ import {useAppSelector} from '../../../store/hooks';
 import {useGetEventsQuery} from '../../../store/api/eventApi';
 import {Event, EventStatus, EventType} from '../../../store/types/event';
 import {buildRequestWithToken} from '../../../utils/utils';
+import {useNavigate} from 'react-router-dom';
 
 const {Content} = Layout;
 const {Search} = Input;
@@ -42,6 +42,7 @@ interface TableParams {
 }
 
 export default function EventPage() {
+  const navigate = useNavigate();
   const token = useAppSelector(state => state.user.token);
 
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -72,6 +73,7 @@ export default function EventPage() {
     ),
   );
 
+  // refetch data when changing eventStatus & eventType
   useEffect(() => {
     refetch();
   }, [eventStatusFilter, eventTypeFilter, refetch]);
@@ -96,6 +98,7 @@ export default function EventPage() {
     } catch (err) {
       console.log(err);
     }
+    // eslint-disable-next-line
   }, [tableParams.pagination.current, token, refetch]);
 
   useEffect(() => {
@@ -109,9 +112,12 @@ export default function EventPage() {
     });
   }, [tableParams, eventList]);
 
-  // todo: handle check details: open a new router
-  const handleCheckDetails = () => {};
+  // navigate to the eventDetail page
+  const handleCheckDetails = (record: Event) => {
+    navigate('/main/event/'.concat(record.event_id));
+  };
 
+  // TODO search function
   return (
     <Content
       className="site-layout-background"
@@ -251,14 +257,14 @@ export default function EventPage() {
         <Column
           title="查看详情"
           key="action"
-          render={() => (
+          render={record => (
             <Space>
               <Button
                 key="detail"
                 type="primary"
                 size="small"
                 icon={<LinkOutlined />}
-                onClick={handleCheckDetails}>
+                onClick={() => handleCheckDetails(record as Event)}>
                 查看详情
               </Button>
             </Space>

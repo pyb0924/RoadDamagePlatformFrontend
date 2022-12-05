@@ -67,12 +67,13 @@ const MainPage: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   useEffect(() => {
     setMenuItems(getMenuItems());
+    // eslint-disable-next-line
   }, [permissions]);
 
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
-  // TODO add subpages' navigation after finishing subpages
+  // navigate to subpages
   const handleMenuNavigation = (itemtype: MenuItemType) => {
     switch (itemtype.key) {
       case 'dashboard':
