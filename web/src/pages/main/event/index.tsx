@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
 import {Space, Table, Tag, Layout, Button, Input, Checkbox} from 'antd';
-import {CheckboxValueType} from 'antd/lib/checkbox/Group';
 import {TablePaginationConfig} from 'antd/es/table';
 import Column from 'antd/es/table/Column';
 
@@ -17,19 +16,25 @@ import {useAppSelector} from '../../../store/hooks';
 import {useGetEventsQuery} from '../../../store/api/eventApi';
 import {Event, EventStatus, EventType} from '../../../store/types/event';
 import {buildRequestWithToken} from '../../../utils/utils';
-
+import {useNavigate} from 'react-router-dom';
 
 const {Content} = Layout;
 const {Search} = Input;
 
-const plainOptions = [
+const statusOptions = [
   {label: '无需养护', value: 0},
   {label: '待确认', value: 1},
   {label: '待养护', value: 2},
   {label: '养护中', value: 3},
   {label: '待验收', value: 4},
   {label: '已验收', value: 5},
-  {label: '只看自己', value: 6},
+  // {label: '只看自己', value: 6},
+];
+
+const typeOptions = [
+  {label: '坑洞', value: 0},
+  {label: '裂缝', value: 1},
+  // {label: '未分类', value: 2},
 ];
 
 interface TableParams {
@@ -37,24 +42,29 @@ interface TableParams {
 }
 
 export default function EventPage() {
+  const navigate = useNavigate();
   const token = useAppSelector(state => state.user.token);
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       total: 1,
       current: 1,
-      pageSize: 10,
+      pageSize: 5,
     },
   });
 
-  // todo: request events by status
-  // const [eventStatusFilter, setEventStatusFilter] = useState();
+  // get events by eventStatus & eventType
+  const [eventStatusFilter, setEventStatusFilter] = useState([
+    0, 1, 2, 3, 4, 5,
+  ]);
+  const [eventTypeFilter, setEventTypeFilter] = useState([0, 1]);
 
   const {data: eventList, refetch} = useGetEventsQuery(
     buildRequestWithToken(
       {
         params: {
-          // status: eventStatusFilter,
+          status: eventStatusFilter,
+          type: eventTypeFilter,
           offset: tableParams.pagination.current as number,
           limit: tableParams.pagination.pageSize as number,
         },
@@ -63,15 +73,13 @@ export default function EventPage() {
     ),
   );
 
-  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    //  setEventStatusFilter(checkedValues);
-    // console.log(checkedValues);
-    // refetch();
-  };
+  // refetch data when changing eventStatus & eventType
+  useEffect(() => {
+    refetch();
+  }, [eventStatusFilter, eventTypeFilter, refetch]);
 
   // update pagination
   const handleTableChange = (pagination: TablePaginationConfig) => {
-    console.log(pagination);
     setTableParams({
       pagination,
     });
@@ -90,7 +98,8 @@ export default function EventPage() {
     } catch (err) {
       console.log(err);
     }
-  }, [tableParams.pagination.current, token]);
+    // eslint-disable-next-line
+  }, [tableParams.pagination.current, token, refetch]);
 
   useEffect(() => {
     setTableParams({
@@ -103,9 +112,12 @@ export default function EventPage() {
     });
   }, [tableParams, eventList]);
 
-  // todo: handle check details: open a new router
-  const handleCheckDetails = () => {};
+  // navigate to the eventDetail page
+  const handleCheckDetails = (record: Event) => {
+    navigate('/main/event/'.concat(record.event_id));
+  };
 
+  // TODO search function
   return (
     <Content
       className="site-layout-background"
@@ -124,20 +136,34 @@ export default function EventPage() {
         />
 
         <Checkbox.Group
-          options={plainOptions}
-          defaultValue={[0, 1, 2, 3, 4, 5, 6]}
-          onChange={handleCheckboxChange}
+          options={statusOptions}
+          defaultValue={[0, 1, 2, 3, 4, 5]}
+          style={{paddingLeft: 50, paddingRight: 100}}
+          onChange={checkedValues => {
+            const statusFilter = checkedValues.map(Number);
+            setEventStatusFilter(statusFilter);
+          }}
+        />
+
+        <Checkbox.Group
+          options={typeOptions}
+          defaultValue={[0, 1]}
+          onChange={checkedValues => {
+            const typeFilter = checkedValues.map(Number);
+            setEventTypeFilter(typeFilter);
+          }}
         />
       </div>
 
       <Table<Event>
         dataSource={eventList?.data.event_list}
         pagination={tableParams.pagination}
+        rowKey={record => record.event_id}
         onChange={handleTableChange}>
         <Column
           title="事件名称"
           dataIndex="event_id"
-          key="eventID"
+          key="eventId"
           width={'20%'}
           sorter={true}
         />
@@ -200,7 +226,7 @@ export default function EventPage() {
             let tagText;
             switch (status) {
               case EventType.HOLE:
-                tagColor = "#87d068";
+                tagColor = '#87d068';
                 tagText = '坑洞';
                 break;
 
@@ -212,37 +238,33 @@ export default function EventPage() {
               default:
                 break;
             }
-            return (
-              <Tag color={tagColor}>
-                {tagText}
-              </Tag>
-            )
+            return <Tag color={tagColor}>{tagText}</Tag>;
           }}
           width={'10%'}
         />
         <Column
-          title="事件创建时间"
-          dataIndex="event_id"
+          title="创建时间"
+          dataIndex="create_time"
           key="createTime"
           width={'20%'}
         />
         <Column
-          title="上次修改时间"
-          dataIndex="event_id"
-          key="lastChangeTime"
+          title="修改时间"
+          dataIndex="update_time"
+          key="updateTime"
           width={'20%'}
         />
         <Column
           title="查看详情"
           key="action"
-          render={() => (
+          render={record => (
             <Space>
               <Button
                 key="detail"
                 type="primary"
                 size="small"
                 icon={<LinkOutlined />}
-                onClick={handleCheckDetails}>
+                onClick={() => handleCheckDetails(record as Event)}>
                 查看详情
               </Button>
             </Space>

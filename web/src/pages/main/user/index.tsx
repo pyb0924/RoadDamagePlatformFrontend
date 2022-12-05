@@ -91,7 +91,8 @@ export default function UserPage() {
     } catch (err) {
       console.log(err);
     }
-  }, [tableParams.pagination.current, token]);
+    // eslint-disable-next-line
+  }, [tableParams.pagination.current, token, refetch]);
 
   useEffect(() => {
     setTableParams({

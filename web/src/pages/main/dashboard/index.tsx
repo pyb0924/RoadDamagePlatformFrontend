@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import { Layout } from "antd";
+import {Layout} from 'antd';
 
-const { Content } = Layout;
+const {Content} = Layout;
 
 export default function DashBoard() {
   return (
@@ -12,9 +12,13 @@ export default function DashBoard() {
         padding: 24,
         margin: 24,
         minHeight: 280,
-      }}
-    >
-      <div>This is a dashboard</div>
+      }}>
+      <iframe
+        title="dashboard"
+        style={{height: '100%', width: '100%'}}
+        src={
+          'http://8.133.173.48:3000/d/36qs3vF4z/zhi-hui-gong-lu-yang-hu-shu-ju-da-ping?orgId=2&kiosk'
+        }></iframe>
     </Content>
   );
 }
