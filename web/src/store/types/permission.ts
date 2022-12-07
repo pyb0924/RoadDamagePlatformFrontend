@@ -12,6 +12,8 @@ export enum PermissionType {
   USER_ADD = 'user:add',
   USER_EDIT = 'user:edit',
   USER_DELETE = 'user:delete',
+  EVENT_ADD = 'event:add',
+  EVENT_EDIT = 'event:edit',
 }
 
 export interface PermissionTreeResponse extends BaseResponse {
