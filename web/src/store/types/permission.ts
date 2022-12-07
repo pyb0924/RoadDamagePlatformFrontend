@@ -12,6 +12,9 @@ export enum PermissionType {
   USER_ADD = 'user:add',
   USER_EDIT = 'user:edit',
   USER_DELETE = 'user:delete',
+  MAP = 'map',
+  DASHBOARD = 'dashboard',
+  EVENT = 'event',
   EVENT_ADD = 'event:add',
   EVENT_EDIT = 'event:edit',
 }
