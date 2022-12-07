@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, ToastAndroid, View} from 'react-native';
+import {FlatList, RefreshControl, ToastAndroid, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {
@@ -65,9 +65,24 @@ export function EventScreen({navigation}: EventScreenProps) {
     refetch();
   }, [eventStatusFilter, eventTypeFilter, refetch]);
 
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch();
+    setRefreshing(false);
+    ToastAndroid.show('刷新事件列表成功', ToastAndroid.SHORT);
+  }, [refetch]);
+
   return (
     <View>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            title="正在获取事件列表"
+          />
+        }
         style={styles.eventList}
         data={
           eventStatusFilter.size === 0 || eventTypeFilter.size === 0
@@ -270,6 +285,7 @@ export function EventScreen({navigation}: EventScreenProps) {
             if (user.user_id === '' || user.token === '') {
               ToastAndroid.show('请先登录再上传', ToastAndroid.SHORT);
             } else {
+              setIsEditDialExpand(false);
               navigation.navigate('Upload');
             }
           }}

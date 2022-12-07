@@ -137,7 +137,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
           user.token,
         ),
       ).unwrap();
-      //navigation.navigate('Event');
+      navigation.navigate('Event', {needRefetch: true});
     } catch (error) {
       console.log(error);
     }
@@ -167,6 +167,7 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
 
   return (
     <View style={styles.container}>
+      {/*
       <MapView
         style={styles.mapView}
         initialCameraPosition={{
@@ -182,14 +183,9 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
               latitude: position.latitude,
               longitude: position.longitude,
             }}
-            icon={{
-              uri: 'https://fonts.google.com/icons?selected=Material%20Icons%3Aflag%3A',
-              width: 36,
-              height: 36,
-            }}
           />
         )}
-      </MapView>
+      </MapView> */}
 
       <Card containerStyle={styles.formView}>
         <Controller
@@ -240,7 +236,9 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
                           latitude: coords.latitude,
                           longitude: coords.longitude,
                           isLocationGet: true,
-                          address: `${location.province}|${location.city}|${location.district}|${location.street}${location.streetNumber}(${location.description})`,
+                          address:
+                            `${location.province}|${location.city}|${location.district}|` +
+                            `${location.street}${location.streetNumber}(${location.description})`,
                         });
                       },
                       error => {

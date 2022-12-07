@@ -80,7 +80,7 @@ const useStyles = makeStyles(theme => ({
   topView: {
     flexDirection: 'row',
     alignItems: 'center',
-    transform: [{translateY: 150}],
+    transform: [{translateY: 230}],
   },
   usernameText: {
     color: 'white',

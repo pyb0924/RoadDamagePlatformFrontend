@@ -42,20 +42,8 @@ export default function AMapView() {
           longitude: 121.46038,
         },
         zoom: 8,
-      }}>
-      {data === undefined || (
-        <Cluster
-          points={clusterPoints}
-          renderMarker={item => (
-            <Marker
-              key={item.properties.key}
-              icon={'asset:/point.png'}
-              position={item.position}
-            />
-          )}
-        />
-      )}
-    </MapView>
+      }}
+    />
   );
 }
 

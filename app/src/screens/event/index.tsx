@@ -6,7 +6,7 @@ import {EventScreen} from './event';
 import EventDetailScreen from './eventDetail';
 
 export type EventStackParams = {
-  Event: undefined;
+  Event: {needRefetch: boolean} | undefined;
   Upload: undefined;
   EventDetail: {eventId: string} | undefined;
 };

@@ -35,6 +35,7 @@ export const eventApi = createApi({
         url: '?' + qs.stringify(request.params, {indices: false}),
         headers: request.headers,
       }),
+      keepUnusedDataFor: 5,
     }),
     getAllEvents: builder.query<Event[], GetEventsRequest>({
       query: (request: GetEventsRequest) => ({
