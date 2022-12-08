@@ -44,16 +44,26 @@ function getItem(
   } as MenuItem;
 }
 
-
 const MainPage: React.FC = () => {
   const permissions = useAppSelector(state => state.user.permissions);
 
   const getMenuItems = () => {
-    const items: MenuItem[] = [
-      getItem('工作台', 'dashboard', <PieChartOutlined />),
-      getItem('数据地图', 'map', <GlobalOutlined />),
-      getItem('养护工作', 'event', <ReconciliationOutlined />),
-    ];
+    const items: MenuItem[] = [];
+
+    if (permissions.includes(PermissionType.DASHBOARD)) {
+      items.push(getItem('工作台', 'dashboard', <PieChartOutlined />));
+    }
+
+    if (permissions.includes(PermissionType.MAP)) {
+      items.push(getItem('数据地图', 'map', <GlobalOutlined />));
+    }
+
+    if (
+      permissions.includes(PermissionType.EVENT_ADD) ||
+      permissions.includes(PermissionType.EVENT_EDIT)
+    ) {
+      items.push(getItem('养护工作', 'event', <ReconciliationOutlined />));
+    }
 
     if (
       permissions.includes(PermissionType.USER_ADD) ||

@@ -17,25 +17,18 @@ import {useGetEventsQuery} from '../../../store/api/eventApi';
 import {Event, EventStatus, EventType} from '../../../store/types/event';
 import {buildRequestWithToken} from '../../../utils/utils';
 import {useNavigate} from 'react-router-dom';
+import {eventStatusList, eventTypeList} from '../../../utils/constants';
 
 const {Content} = Layout;
 const {Search} = Input;
 
-const statusOptions = [
-  {label: '无需养护', value: 0},
-  {label: '待确认', value: 1},
-  {label: '待养护', value: 2},
-  {label: '养护中', value: 3},
-  {label: '待验收', value: 4},
-  {label: '已验收', value: 5},
-  // {label: '只看自己', value: 6},
-];
+const statusOptions = eventStatusList.map(item => {
+  return Object.assign({}, {label: item.title, value: item.name});
+});
 
-const typeOptions = [
-  {label: '坑洞', value: 0},
-  {label: '裂缝', value: 1},
-  // {label: '未分类', value: 2},
-];
+const typeOptions = eventTypeList.map(item => {
+  return Object.assign({}, {label: item.title, value: item.name});
+});
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -44,16 +37,17 @@ interface TableParams {
 export default function EventPage() {
   const navigate = useNavigate();
   const token = useAppSelector(state => state.user.token);
+  const user_id = useAppSelector(state => state.user.user_id);
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       total: 1,
       current: 1,
-      pageSize: 5,
+      pageSize: 15,
     },
   });
 
-  // get events by eventStatus & eventType
+  // get events by eventStatus & eventType & user_id
   const [eventStatusFilter, setEventStatusFilter] = useState([
     EventStatus.WITHDRAW,
     EventStatus.ONCONFIRM,
@@ -66,6 +60,7 @@ export default function EventPage() {
     EventType.HOLE,
     EventType.CRACK,
   ]);
+  const [eventUserFilter, setEventUserFilter] = useState('');
 
   const {data: eventList, refetch} = useGetEventsQuery(
     buildRequestWithToken(
@@ -73,6 +68,7 @@ export default function EventPage() {
         params: {
           status: eventStatusFilter,
           type: eventTypeFilter,
+          user_id: eventUserFilter,
           offset: tableParams.pagination.current as number,
           limit: tableParams.pagination.pageSize as number,
         },
@@ -81,11 +77,11 @@ export default function EventPage() {
     ),
   );
 
-  // refetch data when changing eventStatus & eventType
+  // refetch data when changing eventStatus & eventType & user_id
   useEffect(() => {
     if (eventStatusFilter.length !== 0 || eventTypeFilter.length !== 0)
       refetch();
-  }, [eventStatusFilter, eventTypeFilter, refetch]);
+  }, [eventStatusFilter, eventTypeFilter, eventUserFilter, refetch]);
 
   // update pagination
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -124,11 +120,6 @@ export default function EventPage() {
     });
   }, [tableParams, eventList, eventStatusFilter, eventTypeFilter]);
 
-  // navigate to the eventDetail page
-  const handleCheckDetails = (record: Event) => {
-    navigate('/main/event/'.concat(record.event_id));
-  };
-
   // TODO search function
   return (
     <Content
@@ -165,6 +156,18 @@ export default function EventPage() {
             setEventTypeFilter(typeFilter);
           }}
         />
+
+        <Checkbox
+          style={{paddingLeft: 100}}
+          onChange={e => {
+            if (e.target.checked) {
+              setEventUserFilter(user_id);
+            } else {
+              setEventUserFilter('');
+            }
+          }}>
+          只看自己
+        </Checkbox>
       </div>
 
       <Table<Event>
@@ -177,13 +180,15 @@ export default function EventPage() {
         rowKey={record => record.event_id}
         onChange={handleTableChange}>
         <Column
+          align="center"
           title="事件位置"
           dataIndex="address"
           key="address"
-          width={'20%'}
+          width={'30%'}
           sorter={true}
         />
         <Column
+          align="center"
           title="事件状态"
           dataIndex="status"
           key="status"
@@ -234,6 +239,7 @@ export default function EventPage() {
           }}
         />
         <Column
+          align="center"
           title="病害类型"
           dataIndex="type"
           key="type"
@@ -259,20 +265,24 @@ export default function EventPage() {
           width={'10%'}
         />
         <Column
+          align="center"
           title="创建时间"
           dataIndex="create_time"
           key="createTime"
-          width={'20%'}
+          width={'17.5%'}
         />
         <Column
+          align="center"
           title="修改时间"
           dataIndex="update_time"
           key="updateTime"
-          width={'20%'}
+          width={'17.5%'}
         />
         <Column
+          align="center"
           title="查看详情"
           key="action"
+          width={'15%'}
           render={record => (
             <Space>
               <Button
@@ -280,7 +290,9 @@ export default function EventPage() {
                 type="primary"
                 size="small"
                 icon={<LinkOutlined />}
-                onClick={() => handleCheckDetails(record as Event)}>
+                onClick={() => {
+                  navigate('/main/event/'.concat(record.event_id));
+                }}>
                 查看详情
               </Button>
             </Space>
