@@ -20,6 +20,7 @@ import {eventStatusList, eventTypeList} from '../../utils/constants';
 import {useGetEventsQuery} from '../../store/api/eventApi';
 import {buildRequestWithToken} from '../../utils/utils';
 import {EventStatus, EventType} from '../../store/types/event';
+import {PermissionType} from '../../store/types/permission';
 
 type EventScreenProps = NativeStackScreenProps<EventStackParams, 'Event'>;
 
@@ -74,50 +75,56 @@ export function EventScreen({navigation}: EventScreenProps) {
   }, [refetch]);
 
   return (
-    <View>
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            title="正在获取事件列表"
-          />
-        }
-        style={styles.eventList}
-        data={
-          eventStatusFilter.size === 0 || eventTypeFilter.size === 0
-            ? []
-            : eventList?.data.event_list
-        }
-        renderItem={({item}) => (
-          <ListItem
-            bottomDivider
-            onPress={() =>
-              navigation.navigate('EventDetail', {eventId: item.event_id})
-            }>
-            <ListItem.Content>
-              <ListItem.Title>{item.address}</ListItem.Title>
-              <View style={styles.eventTagContainer}>
-                <Chip
-                  title={
-                    eventStatusList.find(value => value.name === item.status)
-                      ?.title
-                  }
-                />
-                <Divider />
+    <View style={styles.container}>
+      {user.user_id === '' ||
+      !user.permissions.includes(PermissionType.EVENT) ? (
+        <Text style={styles.errorText}>请先登录或获取权限后再查看事件列表</Text>
+      ) : (
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              title="正在获取事件列表"
+            />
+          }
+          style={styles.eventList}
+          data={
+            eventStatusFilter.size === 0 || eventTypeFilter.size === 0
+              ? []
+              : eventList?.data.event_list
+          }
+          renderItem={({item}) => (
+            <ListItem
+              bottomDivider
+              onPress={() =>
+                navigation.navigate('EventDetail', {eventId: item.event_id})
+              }>
+              <ListItem.Content>
+                <ListItem.Title>{item.address}</ListItem.Title>
+                <View style={styles.eventTagContainer}>
+                  <Chip
+                    title={
+                      eventStatusList.find(value => value.name === item.status)
+                        ?.title
+                    }
+                  />
+                  <Divider />
 
-                <Chip
-                  title={
-                    eventTypeList.find(value => value.name === item.type)?.title
-                  }
-                  color="#a10e16"
-                />
-              </View>
-            </ListItem.Content>
-            <ListItem.Chevron />
-          </ListItem>
-        )}
-      />
+                  <Chip
+                    title={
+                      eventTypeList.find(value => value.name === item.type)
+                        ?.title
+                    }
+                    color="#a10e16"
+                  />
+                </View>
+              </ListItem.Content>
+              <ListItem.Chevron />
+            </ListItem>
+          )}
+        />
+      )}
 
       <Overlay
         style={styles.overlay}
@@ -284,6 +291,8 @@ export function EventScreen({navigation}: EventScreenProps) {
           onPress={() => {
             if (user.user_id === '' || user.token === '') {
               ToastAndroid.show('请先登录再上传', ToastAndroid.SHORT);
+            } else if (!user.permissions.includes(PermissionType.EVENT_ADD)) {
+              ToastAndroid.show('你没有上传养护事件的权限', ToastAndroid.SHORT);
             } else {
               setIsEditDialExpand(false);
               navigation.navigate('Upload');
@@ -296,7 +305,19 @@ export function EventScreen({navigation}: EventScreenProps) {
 }
 
 const useStyles = makeStyles(() => ({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  errorText: {
+    width: '60%',
+    fontSize: 18,
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
   eventList: {
+    width: '100%',
     height: '100%',
   },
   overlay: {
