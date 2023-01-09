@@ -67,7 +67,6 @@ export const eventApi = createApi({
       query: (request: EditEventRequest) => ({
         url: `/${request.path}`,
         method: 'PUT',
-        params: request.params,
         body: request.body,
         headers: {...request.headers, 'Content-Type': 'multipart/form-data'},
       }),

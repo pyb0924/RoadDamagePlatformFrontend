@@ -166,26 +166,6 @@ export default function UploadScreen({navigation}: UploadScreenProps) {
 
   return (
     <View style={styles.container}>
-      {/*
-      <MapView
-        style={styles.mapView}
-        initialCameraPosition={{
-          target: {
-            latitude: position.latitude,
-            longitude: position.longitude,
-          },
-          zoom: 10,
-        }}>
-        {position.isLocationGet && (
-          <Marker
-            position={{
-              latitude: position.latitude,
-              longitude: position.longitude,
-            }}
-          />
-        )}
-      </MapView> */}
-
       <Card containerStyle={styles.formView}>
         <Controller
           control={control}
@@ -388,7 +368,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.colors.background,
     width: '90%',
     borderRadius: 10,
-
     paddingBottom: 0,
   },
   textItem: {

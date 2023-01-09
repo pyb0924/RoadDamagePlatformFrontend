@@ -92,12 +92,10 @@ export interface GetImageByLogIdResponse extends BaseResponse {
 
 export interface EditEventRequest extends BaseRequestWithToken {
   path: string;
-  params: {
+  body: {
     status: EventStatus;
     user_id: string;
     notes?: string;
-  };
-  body: {
-    file: FormData[];
+    file?: FormData[];
   };
 }
