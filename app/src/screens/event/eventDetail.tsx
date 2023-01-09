@@ -49,11 +49,11 @@ export default function EventDetailScreen({
   const token = useAppSelector(state => state.user.token);
   const cur_userId = useAppSelector(state => state.user.user_id);
 
-  const {data: eventInfo} = useGetEventByIdQuery(
+  const {data: eventInfo, refetch: refetchEvent} = useGetEventByIdQuery(
     buildRequestWithToken({path: route.params.eventId}, token),
   );
 
-  const {data: logs} = useGetLogByIdQuery(
+  const {data: logs, refetch: refetchLogs} = useGetLogByIdQuery(
     buildRequestWithToken({path: route.params.eventId}, token),
   );
 
@@ -118,53 +118,33 @@ export default function EventDetailScreen({
   );
 
   const handleOpt = () => {
-    if (eventInfo?.status === EventStatus.ONCONSERVE) {
-      handleOnConserve();
-    } else {
-      handleConserving();
-    }
-  };
+    const formData = new FormData();
+    formData.append('user_id', cur_userId);
+    formData.append('notes', notes);
 
-  const handleOnConserve = () => {
-    editEvent(
-      buildRequestWithToken(
-        {
-          path: route.params.eventId,
-          body: {
-            status: EventStatus.CONSERVING,
-            user: cur_userId,
-            notes: notes,
-          },
-        },
-        token,
-      ),
-    );
-    navigation.goBack();
-  };
-
-  const handleConserving = () => {
-    const assets = new FormData();
-    assetList.forEach(asset => {
-      assets.append('file', {
-        uri: asset.uri,
-        name: asset.fileName,
-        type: 'image/jpeg',
+    if (eventInfo?.status === EventStatus.CONSERVING) {
+      formData.append('status', EventStatus.ONCHECK);
+      assetList.forEach(asset => {
+        formData.append('file', {
+          uri: asset.uri,
+          name: asset.fileName,
+          type: 'image/jpeg',
+        });
       });
-    });
+    } else {
+      formData.append('status', EventStatus.CONSERVING);
+    }
     editEvent(
       buildRequestWithToken(
         {
           path: route.params.eventId,
-          body: {
-            status: EventStatus.ONCHECK,
-            user_id: cur_userId,
-            notes: notes,
-            file: assets,
-          },
+          body: formData,
         },
         token,
       ),
     );
+    refetchEvent();
+    refetchLogs();
     navigation.goBack();
   };
 
