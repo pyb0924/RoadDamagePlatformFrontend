@@ -16,7 +16,12 @@ import {
 
 import {EventStackParams} from '.';
 import {useAppSelector} from '../../store/hooks';
-import {eventStatusList, eventTypeList} from '../../utils/constants';
+import {
+  allEventStatus,
+  allEventTypes,
+  eventStatusList,
+  eventTypeList,
+} from '../../utils/constants';
 import {useGetEventsQuery} from '../../store/api/eventApi';
 import {buildRequestWithToken} from '../../utils/utils';
 import {EventStatus, EventType} from '../../store/types/event';
@@ -34,17 +39,10 @@ export function EventScreen({navigation}: EventScreenProps) {
   const [isFilterOverlayShow, setIsFilterOverlayShow] = useState(false);
 
   const [eventStatusFilter, setEventStatusFilter] = useState(
-    new Set([
-      EventStatus.CHECKED,
-      EventStatus.ONCHECK,
-      EventStatus.ONCONFIRM,
-      EventStatus.ONCONSERVE,
-      EventStatus.WITHDRAW,
-      EventStatus.CONSERVING,
-    ]),
+    new Set(allEventStatus),
   );
   const [eventTypeFilter, setEventTypeFilter] = useState(
-    new Set([EventType.CRACK, EventType.UNCATELOGUED, EventType.HOLE]),
+    new Set(allEventTypes),
   );
 
   const [eventUserFilter, setEventUserFilter] = useState('');
@@ -98,7 +96,10 @@ export function EventScreen({navigation}: EventScreenProps) {
             <ListItem
               bottomDivider
               onPress={() =>
-                navigation.navigate('EventDetail', {eventId: item.event_id})
+                navigation.navigate('EventDetail', {
+                  eventId: item.event_id,
+                  address: item.address.split('|').pop() as string,
+                })
               }>
               <ListItem.Content>
                 <ListItem.Title>{item.address}</ListItem.Title>

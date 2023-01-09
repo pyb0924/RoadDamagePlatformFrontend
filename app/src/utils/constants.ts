@@ -1,5 +1,20 @@
 import {EventStatus, EventType} from '../store/types/event';
 
+export const allEventStatus = [
+  EventStatus.CHECKED,
+  EventStatus.ONCHECK,
+  EventStatus.ONCONFIRM,
+  EventStatus.ONCONSERVE,
+  EventStatus.WITHDRAW,
+  EventStatus.CONSERVING,
+];
+
+export const allEventTypes = [
+  EventType.CRACK,
+  EventType.UNCATELOGUED,
+  EventType.HOLE,
+];
+
 export const eventStatusList = [
   {key: 'onconfirm', name: EventStatus.ONCONFIRM, title: '待确认'},
   {key: 'onconserve', name: EventStatus.ONCONSERVE, title: '待养护'},

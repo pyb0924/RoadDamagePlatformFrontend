@@ -12,7 +12,6 @@ import {
 } from 'react-native-image-picker';
 
 import {Geolocation} from 'react-native-amap-geolocation';
-import {MapView, Marker} from 'react-native-amap3d';
 
 import {
   BottomSheet,

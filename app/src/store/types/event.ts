@@ -14,6 +14,16 @@ export interface Event extends EventBase {
   status: EventStatus;
 }
 
+export interface Log {
+  log_id: string;
+  event_id: string;
+  datetime: string;
+  user_id: string;
+  new_status: EventStatus;
+  old_status: EventStatus;
+  notes: string;
+}
+
 export enum EventStatus {
   WITHDRAW = 0,
   ONCONFIRM,
@@ -68,8 +78,9 @@ export interface GetLogByIdRequest extends BaseRequestWithToken {
   path: string;
 }
 
-// TODO fill GetEventLogResponse
-export interface GetLogByIdResponse extends BaseResponse {}
+export interface GetLogByIdResponse extends BaseResponse {
+  data: Log[];
+}
 
 export interface GetImageByLogIdRequest extends BaseRequestWithToken {
   path: string;

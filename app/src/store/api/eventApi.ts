@@ -1,6 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/dist/query/react';
 import qs from 'qs';
 import Config from 'react-native-config';
+import {allEventStatus, allEventTypes} from '../../utils/constants';
 
 import {BaseResponse} from '../types/base';
 import {
@@ -15,6 +16,7 @@ import {
   GetImageByLogIdResponse,
   GetLogByIdRequest,
   GetLogByIdResponse,
+  Log,
 } from '../types/event';
 
 export const eventApi = createApi({
@@ -39,17 +41,27 @@ export const eventApi = createApi({
     }),
     getAllEvents: builder.query<Event[], GetEventsRequest>({
       query: (request: GetEventsRequest) => ({
-        url: '',
+        url:
+          '?' +
+          qs.stringify(
+            {
+              user_id: '',
+              status: allEventStatus,
+              type: allEventTypes,
+            },
+            {indices: false},
+          ),
         headers: request.headers,
       }),
       transformResponse: (response: GetEventsResponse) =>
         response.data.event_list,
     }),
-    getEventById: builder.query<GetEventByIdResponse, GetEventByIdRequest>({
+    getEventById: builder.query<Event, GetEventByIdRequest>({
       query: (request: GetEventByIdRequest) => ({
         url: `/${request.path}`,
         headers: request.headers,
       }),
+      transformResponse: (response: GetEventByIdResponse) => response.data,
     }),
     editEvent: builder.mutation<BaseResponse, EditEventRequest>({
       query: (request: EditEventRequest) => ({
@@ -60,11 +72,12 @@ export const eventApi = createApi({
         headers: {...request.headers, 'Content-Type': 'multipart/form-data'},
       }),
     }),
-    getLogById: builder.query<GetLogByIdResponse, GetLogByIdRequest>({
+    getLogById: builder.query<Log[], GetLogByIdRequest>({
       query: (request: GetLogByIdRequest) => ({
         url: `/log/${request.path}`,
         headers: request.headers,
       }),
+      transformResponse: (response: GetLogByIdResponse) => response.data,
     }),
     getImageByLogId: builder.query<
       GetImageByLogIdResponse,

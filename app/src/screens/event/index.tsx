@@ -8,7 +8,7 @@ import EventDetailScreen from './eventDetail';
 export type EventStackParams = {
   Event: {needRefetch: boolean} | undefined;
   Upload: undefined;
-  EventDetail: {eventId: string} | undefined;
+  EventDetail: {eventId: string; address: string};
 };
 
 const EventStack = createNativeStackNavigator<EventStackParams>();
@@ -26,7 +26,13 @@ export default function EventStackScreen() {
         component={UploadScreen}
         options={{headerTitle: '上传新养护事件'}}
       />
-      <EventStack.Screen name="EventDetail" component={EventDetailScreen} />
+      <EventStack.Screen
+        name="EventDetail"
+        component={EventDetailScreen}
+        options={({route}) => ({
+          headerTitle: route.params.address,
+        })}
+      />
     </EventStack.Navigator>
   );
 }
